@@ -17,5 +17,6 @@ public class PostDTO {
 	private String member_uuid;
 	private String name;
 	private int post_like;
+	private double star;
 	private LocalDateTime reg_Date;
 }

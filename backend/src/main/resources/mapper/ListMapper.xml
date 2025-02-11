@@ -23,7 +23,12 @@
 		<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
         	#{brand_id}
     	</foreach>
-    	group by p.post_no
 		having count(distinct brand_id)=1
+	</select>
+	
+	<select id="getStar" resultType="double">
+		select avg(star)
+		from star
+		where post_no=#{post_no}
 	</select>
 </mapper>

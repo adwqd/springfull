@@ -36,4 +36,9 @@ public class ListMapperTests {
 		pageRequestDTO.setBrand(aa);
 		log.info(listMapper.getCount(pageRequestDTO));
 	}
+	
+	@Test
+	public void testGetStar() {
+		log.info("aaa"+listMapper.getStar(1));
+	}
 }
