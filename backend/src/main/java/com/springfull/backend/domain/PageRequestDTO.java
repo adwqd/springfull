@@ -1,6 +1,8 @@
 package com.springfull.backend.domain;
 
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +22,9 @@ public class PageRequestDTO {
 		private int size=10;
 		
 		//검색조건
-		private int[] brand;
-		private int[] taste;
-		private int[] option;
+		private List<Integer> brand;
+		private List<Integer> taste;
+		private List<Integer> option;
 		
 		private int min_cost;
 		private int max_cost;

@@ -20,7 +20,7 @@ public class CorsConfig implements WebMvcConfigurer
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 	
@@ -30,7 +30,7 @@ public class CorsConfig implements WebMvcConfigurer
         config.setAllowedOriginPatterns(Arrays.asList("http://192.168.4.10:*","http://localhost:*"));  // 클라이언트 주소
         config.addAllowedMethod("*");  // 모든 HTTP 메서드 허용
         config.addAllowedHeader("*");  // 모든 헤더 허용
-        config.setAllowCredentials(true);  // 자격 증명 허용
+        config.setAllowCredentials(false);  // 자격 증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);  // 모든 경로에 대해 CORS 설정

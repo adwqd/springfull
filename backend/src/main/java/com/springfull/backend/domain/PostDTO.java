@@ -12,11 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PostDTO {
-	private int no;
+	private int post_no;
 	private String title;
-	private String writer_uuid;
-	private String writer_name;
-	private int like;
-	private double star;
-	private LocalDateTime regDate;
+	private String member_uuid;
+	private String name;
+	private int post_like;
+	private LocalDateTime reg_Date;
 }

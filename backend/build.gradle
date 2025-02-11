@@ -36,6 +36,12 @@ dependencies {
 	
 	//swagger-ui용 (rest api 테스트 및 문서화)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Use the latest version
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.0' // The Jakarta Bean Validation API
+    
+    
+
 }
 
 tasks.named('test') {

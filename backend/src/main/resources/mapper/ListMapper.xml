@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.springfull.backend.mapper.ListMapper">
+	<select id="brandList" resultType="com.springfull.backend.domain.PostDTO">
+		select p.post_no, title, p.member_uuid, name, post_like, reg_date
+		from post p
+		join member m on p.member_uuid = m.member_uuid
+		join post_brand pb on p.post_no = pb.post_no
+		where brand_id in
+		<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
+        	#{brand_id}
+    	</foreach>
+		group by p.post_no
+		having count(distinct brand_id)=1
+	</select>
+	
+	<select id="getCount">
+		select count(*)
+		from post p
+		join post_brand pb on p.post_no = pb.post_no
+		where brand_id in
+		<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
+        	#{brand_id}
+    	</foreach>
+    	group by p.post_no
+		having count(distinct brand_id)=1
+	</select>
+</mapper>

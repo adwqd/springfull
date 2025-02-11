@@ -11,25 +11,34 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PageResponseDTO;
 import com.springfull.backend.domain.PostDTO;
+import com.springfull.backend.service.BoardService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequestMapping
 @Log4j2
+@RequiredArgsConstructor
 public class BoardController {
+	
+	private final BoardService boardService;
 	
 	@GetMapping("/api/board")
 	public PageResponseDTO<PostDTO> board(){
+		List<Integer> aa = new ArrayList<>();
+		aa.add(1);
 		PageRequestDTO pageRequestDTO = new PageRequestDTO();
-		List<PostDTO> dtoList = new ArrayList<>();
-		for(int i=0; i<10; i++) {
-			PostDTO postDTO = PostDTO.builder().no(i).title(i+"번째 글").regDate(LocalDateTime.now())
-										.like(i+1).star(i).writer_name("김철수"+i).writer_uuid("aa"+i*200).build();
-			dtoList.add(postDTO);
-		}
-		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()
-				.pageRequestDTO(pageRequestDTO).dtoList(dtoList).total(20).build();
+		pageRequestDTO.setBrand(aa);
+		PageResponseDTO<PostDTO> pageResponseDTO = boardService.brandList(pageRequestDTO);
+//		List<PostDTO> dtoList = new ArrayList<>();
+//		for(int i=0; i<10; i++) {
+//			PostDTO postDTO = PostDTO.builder().post_no(i).title(i+"번째 글").reg_Date(LocalDateTime.now())
+//										.post_like(i+1).name("김철수"+i).member_uuid("aa"+i*200).build();
+//			dtoList.add(postDTO);
+//		}
+//		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()
+//				.pageRequestDTO(pageRequestDTO).dtoList(dtoList).total(20).build();
 		return pageResponseDTO;
 	}
 	
