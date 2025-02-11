@@ -16,7 +16,7 @@ public class CorsConfig implements WebMvcConfigurer
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://192.168.4.10:*")
+                .allowedOriginPatterns("http://192.168.4.10:*","http://localhost:*")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
@@ -27,7 +27,7 @@ public class CorsConfig implements WebMvcConfigurer
 	@Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("http://192.168.4.10:*"));  // 클라이언트 주소
+        config.setAllowedOriginPatterns(Arrays.asList("http://192.168.4.10:*","http://localhost:*"));  // 클라이언트 주소
         config.addAllowedMethod("*");  // 모든 HTTP 메서드 허용
         config.addAllowedHeader("*");  // 모든 헤더 허용
         config.setAllowCredentials(true);  // 자격 증명 허용
