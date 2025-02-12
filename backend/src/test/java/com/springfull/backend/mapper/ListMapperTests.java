@@ -41,4 +41,13 @@ public class ListMapperTests {
 	public void testGetStar() {
 		log.info("aaa"+listMapper.getStar(1));
 	}
+	
+	@Test
+	public void testSearch() {
+		List<Integer> aa = new ArrayList<>();
+		aa.add(1);
+		PageRequestDTO pageRequestDTO = new PageRequestDTO();
+		pageRequestDTO.setMax_cost(5000);
+		log.info("aaaaa"+listMapper.search(pageRequestDTO));
+	}
 }

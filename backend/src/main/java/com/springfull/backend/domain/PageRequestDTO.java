@@ -24,19 +24,29 @@ public class PageRequestDTO {
 		//검색조건
 		private List<Integer> brand;
 		private List<Integer> taste;
-		private List<Integer> option;
+		private List<Integer> ingredient;
 		
-		private int min_cost;
-		private int max_cost;
+		private Integer min_cost;
+		private Integer max_cost;
 		
 		private String keyword;
 		
-		private int sort;
+		private int sort=0;
 
 		
 		
 		//limit 뒤에 수식처리가 되지 않음으로 미리 값을 만들어두고 게터처럼 사용하도록 만듬
 		public int getSkip() {
 			return size*(page-1);
+		}
+		
+		public int getBrandsize() {
+			return brand.size();
+		}
+		public int getTastesize() {
+			return taste.size();
+		}
+		public int getIngredientsize() {
+			return ingredient.size();
 		}
 }

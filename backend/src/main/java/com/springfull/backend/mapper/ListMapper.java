@@ -16,4 +16,6 @@ public interface ListMapper {
 	int getCount(PageRequestDTO pageRequestDTO);
 	
 	double getStar(int post_no);
+	
+	List<PostDTO> search(PageRequestDTO pageRequestDTO);
 }
