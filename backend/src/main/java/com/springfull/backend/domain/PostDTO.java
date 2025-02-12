@@ -18,5 +18,6 @@ public class PostDTO {
 	private String name;
 	private int post_like;
 	private double star;
+	private String thumbnail;
 	private LocalDateTime reg_Date;
 }

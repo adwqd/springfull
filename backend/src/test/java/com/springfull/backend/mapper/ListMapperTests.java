@@ -45,9 +45,15 @@ public class ListMapperTests {
 	@Test
 	public void testSearch() {
 		List<Integer> aa = new ArrayList<>();
-		aa.add(1);
+		aa.add(3);
 		PageRequestDTO pageRequestDTO = new PageRequestDTO();
-		pageRequestDTO.setMax_cost(5000);
+		log.info(pageRequestDTO);
+		pageRequestDTO.setKeyword("당당");
 		log.info("aaaaa"+listMapper.search(pageRequestDTO));
+	}
+	
+	@Test
+	public void getThumbnail() {
+		log.info(listMapper.getThumbnail(2));
 	}
 }

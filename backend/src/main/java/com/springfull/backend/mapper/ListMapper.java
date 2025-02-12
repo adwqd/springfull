@@ -3,7 +3,6 @@ package com.springfull.backend.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PostDTO;
@@ -18,4 +17,6 @@ public interface ListMapper {
 	double getStar(int post_no);
 	
 	List<PostDTO> search(PageRequestDTO pageRequestDTO);
+	
+	String getThumbnail(int post_no);
 }

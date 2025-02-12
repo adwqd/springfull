@@ -2,11 +2,15 @@ package com.springfull.backend.domain;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageResponseDTO<E> {
 	//페이지정보
 		//1.페이지 번호

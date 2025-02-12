@@ -1,12 +1,13 @@
 package com.springfull.backend.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PageResponseDTO;
@@ -24,12 +25,9 @@ public class BoardController {
 	
 	private final BoardService boardService;
 	
-	@GetMapping("/api/board")
-	public PageResponseDTO<PostDTO> board(){
-		List<Integer> aa = new ArrayList<>();
-		aa.add(1);
-		PageRequestDTO pageRequestDTO = new PageRequestDTO();
-		pageRequestDTO.setBrand(aa);
+	@PostMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PageResponseDTO<PostDTO> list(@RequestBody PageRequestDTO pageRequestDTO) {
+		log.info(pageRequestDTO);
 		PageResponseDTO<PostDTO> pageResponseDTO = boardService.brandList(pageRequestDTO);
 //		List<PostDTO> dtoList = new ArrayList<>();
 //		for(int i=0; i<10; i++) {

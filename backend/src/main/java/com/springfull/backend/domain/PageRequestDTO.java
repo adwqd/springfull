@@ -1,6 +1,7 @@
 package com.springfull.backend.domain;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -22,16 +23,20 @@ public class PageRequestDTO {
 		private int size=10;
 		
 		//검색조건
-		private List<Integer> brand;
-		private List<Integer> taste;
-		private List<Integer> ingredient;
+		@Builder.Default
+		private List<Integer> brand = new ArrayList<>();
+		@Builder.Default
+		private List<Integer> taste = new ArrayList<>();
+		@Builder.Default
+		private List<Integer> ingredient = new ArrayList<>();
 		
 		private Integer min_cost;
 		private Integer max_cost;
 		
 		private String keyword;
 		
-		private int sort=0;
+		@Builder.Default
+		private Integer sort=1;
 
 		
 		
@@ -41,12 +46,24 @@ public class PageRequestDTO {
 		}
 		
 		public int getBrandsize() {
-			return brand.size();
+			if(brand == null) {
+				return 0;
+			}else {
+				return brand.size();
+			}			
 		}
 		public int getTastesize() {
-			return taste.size();
+			if(taste == null) {
+				return 0;
+			}else {
+				return taste.size();
+			}	
 		}
 		public int getIngredientsize() {
-			return ingredient.size();
+			if(ingredient == null) {
+				return 0;
+			}else {
+				return ingredient.size();
+			}	
 		}
 }

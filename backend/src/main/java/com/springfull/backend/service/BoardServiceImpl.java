@@ -22,11 +22,11 @@ public class BoardServiceImpl implements BoardService {
 	public PageResponseDTO<PostDTO> brandList(PageRequestDTO pageRequestDTO) {
 		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()
 				.pageRequestDTO(pageRequestDTO)
-				.dtoList(listMapper.brandList(pageRequestDTO))
+				.dtoList(listMapper.search(pageRequestDTO))
 				.total(listMapper.getCount(pageRequestDTO)).build();
 		List<PostDTO> dtoList = new ArrayList<>();
 		for(PostDTO temp : pageResponseDTO.getDtoList()) {
-			temp.setStar(listMapper.getStar(temp.getPost_no()));
+			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
 			dtoList.add(temp);
 		}
 		pageResponseDTO.setDtoList(dtoList);
