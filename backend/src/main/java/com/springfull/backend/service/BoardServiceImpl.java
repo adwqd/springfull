@@ -20,16 +20,16 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public PageResponseDTO<PostDTO> brandList(PageRequestDTO pageRequestDTO) {
-		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()
-				.pageRequestDTO(pageRequestDTO)
-				.dtoList(listMapper.search(pageRequestDTO))
-				.total(listMapper.getCount(pageRequestDTO)).build();
 		List<PostDTO> dtoList = new ArrayList<>();
-		for(PostDTO temp : pageResponseDTO.getDtoList()) {
+		for(PostDTO temp : listMapper.search(pageRequestDTO)) {
 			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
 			dtoList.add(temp);
 		}
-		pageResponseDTO.setDtoList(dtoList);
+		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()
+				.pageRequestDTO(pageRequestDTO)
+				.dtoList(dtoList)
+				.total(listMapper.getCount(pageRequestDTO)).build();
+		System.out.println(pageRequestDTO.getPage()+" "+pageResponseDTO.getPage());
 		return pageResponseDTO;
 	}
 
