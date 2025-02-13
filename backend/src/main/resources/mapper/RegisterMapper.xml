@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.springfull.backend.mapper.RegisterMapper">
+	<select id="getCate" resultType="com.springfull.backend.domain.CategoryVO">
+		select * from category
+	</select>
+	
+	<select id="getBrand" resultType="com.springfull.backend.domain.BrandVO">
+		select *
+		from brand
+		where cate_id in
+		<foreach item="cate_id" collection="category" open="(" separator="," close=")">
+			#{cate_id}
+		</foreach>
+		<if test="category != null and category.size>0">
+			order by cate_id
+		</if>
+	</select>
+	
+	<select id="getTaste" resultType="com.springfull.backend.domain.TasteVO">
+		select * from taste
+	</select>
+	
+	<select id="getIngredient" resultType="com.springfull.backend.domain.IngredientVO">
+		select *
+		from ingredient
+		
+		where cate_id in
+		<foreach item="cate_id" collection="category" open="(" separator="," close=")">
+			#{cate_id}
+		</foreach>
+		<if test="category!=null and category.size>0">
+			order by cate_id
+		</if>
+	</select>
+	
+	<insert id="register" useGeneratedKeys="true" parameterType="com.springfull.backend.domain.PostDetailDTO" keyProperty="post_no">
+		insert into post(title, cost, content, member_uuid)
+		values (#{title}, #{cost}, #{content}, #{member_uuid})
+	</insert>
+	
+	<insert id="inputBrand">
+		insert into post_brand
+		values (#{post_no}, #{brand_id})
+	</insert>
+	
+	<insert id="inputTaste">
+		insert into post_taste
+		values (#{post_no}, #{taste_id})
+	</insert>
+	
+	<insert id="inputIngredient">
+		insert into post_ingredient
+		values (#{post_no}, #{ingredient_id})
+	</insert>
+</mapper>

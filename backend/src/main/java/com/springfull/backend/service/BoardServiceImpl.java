@@ -23,6 +23,7 @@ public class BoardServiceImpl implements BoardService {
 		List<PostDTO> dtoList = new ArrayList<>();
 		for(PostDTO temp : listMapper.search(pageRequestDTO)) {
 			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
+			temp.setStar(listMapper.getStar(temp.getPost_no()));
 			dtoList.add(temp);
 		}
 		PageResponseDTO<PostDTO> pageResponseDTO = PageResponseDTO.<PostDTO>withAll()

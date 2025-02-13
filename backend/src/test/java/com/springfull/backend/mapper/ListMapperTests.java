@@ -1,6 +1,7 @@
 package com.springfull.backend.mapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,42 +19,39 @@ public class ListMapperTests {
 	@Autowired
 	private ListMapper listMapper;
 	
-	@Test
-	public void testBoardList() {
-		List<Integer> aa = new ArrayList<>();
-		aa.add(1);
-		PageRequestDTO pageRequestDTO = new PageRequestDTO();
-		pageRequestDTO.setBrand(aa);
-		log.info("aaaaa"+listMapper.brandList(pageRequestDTO));
-	}
 	
 	
 	@Test
 	public void testGetCount() {
-		List<Integer> aa = new ArrayList<>();
-		aa.add(1);
+		List<Integer> aa = new ArrayList<>(Arrays.asList(1));
 		PageRequestDTO pageRequestDTO = new PageRequestDTO();
 		pageRequestDTO.setBrand(aa);
 		log.info(listMapper.getCount(pageRequestDTO));
 	}
 	
-	@Test
-	public void testGetStar() {
-		log.info("aaa"+listMapper.getStar(1));
-	}
+
 	
 	@Test
 	public void testSearch() {
-		List<Integer> aa = new ArrayList<>();
-		aa.add(3);
+		List<Integer> aa = new ArrayList<>(Arrays.asList(1));
 		PageRequestDTO pageRequestDTO = new PageRequestDTO();
+		pageRequestDTO.setBrand(aa);
 		log.info(pageRequestDTO);
-		pageRequestDTO.setKeyword("당당");
 		log.info("aaaaa"+listMapper.search(pageRequestDTO));
 	}
 	
 	@Test
 	public void getThumbnail() {
 		log.info(listMapper.getThumbnail(2));
+	}
+	
+	@Test
+	public void testGetStar() {
+		log.info(listMapper.getStar(3));
+	}
+	
+	@Test
+	public void testCateSearch() {
+		log.info(listMapper.cateSearch(new ArrayList<>(Arrays.asList(1,2))));
 	}
 }

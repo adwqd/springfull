@@ -3,10 +3,9 @@
 
 <mapper namespace="com.springfull.backend.mapper.ListMapper">
 	<select id="search" resultType="com.springfull.backend.domain.PostDTO">
-		select p.post_no, title, p.member_uuid, name, post_like, reg_date, star
+		select p.post_no, title, p.member_uuid, name, post_like, reg_date
 		from post p
 		join member m on p.member_uuid = m.member_uuid
-		join (select post_no, avg(star) star from star group by post_no) s on p.post_no = s.post_no
 		<if test="brand != null and brand.size>0">
 			join post_brand pb on p.post_no = pb.post_no
 		</if>
@@ -23,6 +22,7 @@
 			<!-- 브랜드 검색 -->
 			<if test="brand != null and brand.size>0">
 				<trim prefix="and">
+					brand_id in
 					<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
 	        			#{brand_id}
 	    			</foreach>
@@ -31,6 +31,7 @@
 			<!-- 맛 검색 -->
 			<if test="taste != null and taste.size>0">
 				<trim prefix="and">
+					taste_id in
 					<foreach item="taste_id" collection="taste" open="(" separator="," close=")">
 	        			#{taste_id}
 	    			</foreach>
@@ -39,6 +40,7 @@
 			<!-- 재료 검색 -->
 			<if test="ingredient != null and ingredient.size>0">
 				<trim prefix="and">
+					ingredient_id in
 					<foreach item="ingredient_id" collection="ingredient" open="(" separator="," close=")">
 	        			#{ingredient_id}
 	    			</foreach>
@@ -67,7 +69,7 @@
 		group by p.post_no
 		<trim prefix="having" prefixOverrides="and">
 			<if test="brand != null and brand.size>0">
-				count(distinct brand_id)=#{brandsize}
+				count(distinct brand_id)>=1
 			</if>
 			<if test="taste != null and taste.size>0">
 				<trim prefix="and">
@@ -91,24 +93,11 @@
 		</if>
 		limit #{skip}, #{size}
 	</select>
-	<select id="brandList" resultType="com.springfull.backend.domain.PostDTO">
-		select p.post_no, title, p.member_uuid, name, post_like, reg_date
-		from post p
-		join member m on p.member_uuid = m.member_uuid
-		join post_brand pb on p.post_no = pb.post_no
-		where brand_id in
-		<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
-        	#{brand_id}
-    	</foreach>
-		group by p.post_no
-		having count(distinct brand_id)=#{brandsize}
-	</select>
+	
 	
 	<select id="getCount">
 		select count(*)
 		from post p
-		join member m on p.member_uuid = m.member_uuid
-		join (select post_no, avg(star) star from star group by post_no) s on p.post_no = s.post_no
 		<if test="brand != null and brand.size>0">
 			join post_brand pb on p.post_no = pb.post_no
 		</if>
@@ -125,6 +114,7 @@
 			<!-- 브랜드 검색 -->
 			<if test="brand != null and brand.size>0">
 				<trim prefix="and">
+					brand_id in
 					<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
 	        			#{brand_id}
 	    			</foreach>
@@ -133,6 +123,7 @@
 			<!-- 맛 검색 -->
 			<if test="taste != null and taste.size>0">
 				<trim prefix="and">
+					taste_id in
 					<foreach item="taste_id" collection="taste" open="(" separator="," close=")">
 	        			#{taste_id}
 	    			</foreach>
@@ -141,6 +132,7 @@
 			<!-- 재료 검색 -->
 			<if test="ingredient != null and ingredient.size>0">
 				<trim prefix="and">
+					ingredient_id in
 					<foreach item="ingredient_id" collection="ingredient" open="(" separator="," close=")">
 	        			#{ingredient_id}
 	    			</foreach>
@@ -168,7 +160,7 @@
 		</where>
 		<trim prefix="having" prefixOverrides="and">
 			<if test="brand != null and brand.size>0">
-				count(distinct brand_id)=#{brandsize}
+				count(distinct brand_id)>=1
 			</if>
 			<if test="taste != null and taste.size>0">
 				<trim prefix="and">
@@ -193,5 +185,14 @@
 		select img_uuid
 		from image
 		where post_no=#{post_no} and ord = 0
+	</select>
+	
+	<select id="cateSearch">
+		select brand_id
+		from brand
+		where cate_id in
+		<foreach item="cate_id" collection="category" open="(" separator="," close=")">
+	        	#{cate_id}
+	    </foreach>
 	</select>
 </mapper>

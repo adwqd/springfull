@@ -24,6 +24,8 @@ public class PageRequestDTO {
 		
 		//검색조건
 		@Builder.Default
+		private List<Integer> category = new ArrayList<>();
+		@Builder.Default
 		private List<Integer> brand = new ArrayList<>();
 		@Builder.Default
 		private List<Integer> taste = new ArrayList<>();
