@@ -10,6 +10,7 @@ import com.springfull.backend.domain.CategoryVO;
 import com.springfull.backend.domain.IngredientVO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.TasteVO;
+import com.springfull.backend.mapper.ListMapper;
 import com.springfull.backend.mapper.RegisterMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,9 @@ public class RegisterServiceImpl implements RegisterService {
 	}
 
 	@Override
-	public List<IngredientVO> getIngredientVO(List<Integer> category) {
-		if(category != null && category.size()>0) {
+	public List<IngredientVO> getIngredientVO(List<Integer> brand) {
+		if(brand != null && brand.size()>0) {
+			List<Integer> category = registerMapper.getCateByBrand(brand);
 			return registerMapper.getIngredient(category);
 		}else {
 			return new ArrayList<>();
@@ -55,13 +57,13 @@ public class RegisterServiceImpl implements RegisterService {
 	public int register(PostDetailDTO postDetailDTO) {
 		registerMapper.register(postDetailDTO);
 		int post_no = postDetailDTO.getPost_no();
-		for(int brand:postDetailDTO.getBrand()) {
+		for(int brand:postDetailDTO.getBrand_id()) {
 			registerMapper.inputBrand(brand, post_no);
 		}
-		for(int taste:postDetailDTO.getTaste()) {
+		for(int taste:postDetailDTO.getTaste_id()) {
 			registerMapper.inputTaste(taste, post_no);
 		}
-		for(int ingredient:postDetailDTO.getIngredient()) {
+		for(int ingredient:postDetailDTO.getIngredient_id()) {
 			registerMapper.inputIngredient(ingredient, post_no);
 		}
 		

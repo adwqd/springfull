@@ -15,6 +15,7 @@ import com.springfull.backend.domain.TasteVO;
 public interface RegisterMapper {
 	
 	List<CategoryVO> getCate();
+	List<Integer> getCateByBrand(@Param("brand") List<Integer> brand);
 	
 	List<BrandVO> getBrand(@Param("category") List<Integer> category);
 	

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.springfull.backend.mapper.PostMapper">
+	<select id="read">
+		select * 
+		from post
+		where state = 1 and post_no = #{post_no}
+	</select>
+	
+	<select id="getCate">
+		select cate_id
+		from brand b
+		join post_brand pb on pb.brand_id = b.brand_id
+		where post_no = #{post_no}
+		group by cate_id
+	</select>
+	
+	<select id="getBrand">
+		select brand_id
+		from post_brand
+		where post_no = #{post_no}
+	</select>
+	
+	<select id="getTaste">
+		select taste_id
+		from post_taste
+		where post_no = #{post_no}
+	</select>
+	
+	<select id="getIngredient">
+		select ingredient_id
+		from post_ingredient
+		where post_no=#{post_no}
+	</select>
+	
+	<select id="like_check">
+		select record_no
+		from like_record
+		where post_no = #{post_no} and date = current_date()
+	</select>
+	
+	<insert id="new_like">
+		insert into like_record(date, post_no)
+		values (current_date(), #{post_no})
+	</insert>
+	
+	<update id="like_plus">
+		update like_record
+		set like_number = like_number+1
+		where record_no = #{record_no};
+	</update>
+	
+	<select id="getLike">
+		select sum(like_number)
+		from like_record
+		where post_no = #{post_no}
+	</select>
+	
+	<update id="like_update">
+		update post
+		set post_like = #{like}
+		where post_no = #{post_no}
+	</update>
+</mapper>

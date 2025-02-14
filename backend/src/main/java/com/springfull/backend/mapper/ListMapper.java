@@ -13,7 +13,7 @@ public interface ListMapper {
 	//1.검색해서 목록 뿌려주기
 	List<PostDTO> search(PageRequestDTO pageRequestDTO);
 	
-	int getCount(PageRequestDTO pageRequestDTO);
+	Integer getCount(PageRequestDTO pageRequestDTO);
 	
 	Double getStar(@Param("post_no") int post_no);
 				

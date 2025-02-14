@@ -6,6 +6,16 @@
 		select * from category
 	</select>
 	
+	<select id="getCateByBrand">
+		select cate_id
+		from brand
+		where brand_id in
+		<foreach item="brand_id" collection="brand" open="(" separator="," close=")">
+			#{brand_id}
+		</foreach>
+		group by cate_id
+	</select>
+	
 	<select id="getBrand" resultType="com.springfull.backend.domain.BrandVO">
 		select *
 		from brand
@@ -24,8 +34,7 @@
 	
 	<select id="getIngredient" resultType="com.springfull.backend.domain.IngredientVO">
 		select *
-		from ingredient
-		
+		from ingredient		
 		where cate_id in
 		<foreach item="cate_id" collection="category" open="(" separator="," close=")">
 			#{cate_id}

@@ -14,7 +14,7 @@ public interface RegisterService {
 	
 	List<BrandVO> getBrandVO(List<Integer> category);
 	List<TasteVO> getTasteVO();
-	List<IngredientVO> getIngredientVO(List<Integer> category);
+	List<IngredientVO> getIngredientVO(List<Integer> brand);
 	
 	int register(PostDetailDTO postDetailDTO);
 	

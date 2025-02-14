@@ -21,14 +21,17 @@ public class PostDetailDTO {
 	private String content;
 	private int post_like;
 	private int hits;
+	private Double star;
 	private LocalDateTime reg_date;
 	private LocalDateTime mod_date;
 	private String member_uuid;
 	@Builder.Default
-	private List<Integer> brand = new ArrayList<>();
+	private List<Integer> cate_id = new ArrayList<>();
 	@Builder.Default
-	private List<Integer> taste = new ArrayList<>();
+	private List<Integer> brand_id = new ArrayList<>();
 	@Builder.Default
-	private List<Integer> ingredient = new ArrayList<>();
+	private List<Integer> taste_id = new ArrayList<>();
+	@Builder.Default
+	private List<Integer> ingredient_id = new ArrayList<>();
 	
 }
