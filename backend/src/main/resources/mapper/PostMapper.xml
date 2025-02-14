@@ -62,4 +62,16 @@
 		set post_like = #{like}
 		where post_no = #{post_no}
 	</update>
+	
+	<select id="isBookMarked">
+		select *
+		from bookmark
+		where post_no=#{post_no} and member_uuid=#{member_uuid}
+	</select>
+	
+	<select id="getStar">
+		select star
+		from star
+		where post_no=#{post_no} and member_uuid=#{member_uuid}
+	</select>
 </mapper>

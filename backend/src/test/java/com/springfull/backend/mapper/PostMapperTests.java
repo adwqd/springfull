@@ -37,4 +37,9 @@ public class PostMapperTests {
 	public void testGetIngredient() {
 		log.info(postMapper.getIngredient(13));
 	}
+	
+	@Test
+	public void testIsBookMarked() {
+		log.info(postMapper.isBookMarked(1, "aaa"));
+	}
 }

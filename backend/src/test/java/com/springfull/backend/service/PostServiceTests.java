@@ -15,7 +15,7 @@ public class PostServiceTests {
 	
 	@Test
 	public void testRead() {
-		log.info(postService.read(13));
+		log.info(postService.read(13, "aaa"));
 	}
 	
 	@Test

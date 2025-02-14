@@ -1,12 +1,10 @@
 package com.springfull.backend.controller;
 
-import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springfull.backend.domain.PostDetailDTO;
@@ -23,8 +21,13 @@ public class PostController {
 	
 	private final PostService postService;
 	
-	@PostMapping("/read")
-	public PostDetailDTO read(@RequestBody HashMap<String, Integer> map) {
-		return postService.read(map.get("post_no"));
+	@GetMapping("/read")
+	public PostDetailDTO read(@RequestParam("post_no") int post_no, @RequestParam("member_uuid") String member_uuid) {
+		return postService.read(post_no, member_uuid);
+	}
+	
+	@GetMapping("/post-like/{post_no}")
+	public int post_like(@PathVariable("post_no") int post_no) {
+		return postService.like(post_no);
 	}
 }

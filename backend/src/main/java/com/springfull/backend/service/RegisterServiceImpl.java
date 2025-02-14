@@ -10,7 +10,6 @@ import com.springfull.backend.domain.CategoryVO;
 import com.springfull.backend.domain.IngredientVO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.TasteVO;
-import com.springfull.backend.mapper.ListMapper;
 import com.springfull.backend.mapper.RegisterMapper;
 
 import lombok.RequiredArgsConstructor;

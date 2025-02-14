@@ -17,12 +17,16 @@ public class PostServiceImpl implements PostService {
 	private final PostMapper postMapper;
 
 	@Override
-	public PostDetailDTO read(int post_no) {
+	public PostDetailDTO read(int post_no, String member_uuid) {
 		PostDetailDTO postDetailDTO = postMapper.read(post_no);
 		postDetailDTO.setBrand_id(postMapper.getBrand(post_no));
 		postDetailDTO.setCate_id(postMapper.getCate(post_no));
 		postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
 		postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
+		if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
+			postDetailDTO.setBookmark(true);
+		}
+		postDetailDTO.setStar(postMapper.getStar(post_no, member_uuid));
 		return postDetailDTO;
 	}
 

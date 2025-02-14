@@ -19,5 +19,6 @@ public class PostDTO {
 	private int post_like;
 	private Double star;
 	private String thumbnail;
+	private String profile_img;
 	private LocalDateTime reg_Date;
 }

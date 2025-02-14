@@ -83,13 +83,10 @@
 			</if>
 		</trim>
 		<if test="sort == 1">
-			order by post_no
+			order by post_no desc
 		</if>
 		<if test="sort == 2">
 			order by post_like desc
-		</if>
-		<if test="sort == 3">
-			order by star desc
 		</if>
 		limit #{skip}, #{size}
 	</select>

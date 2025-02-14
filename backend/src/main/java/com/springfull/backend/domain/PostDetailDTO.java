@@ -26,6 +26,8 @@ public class PostDetailDTO {
 	private LocalDateTime mod_date;
 	private String member_uuid;
 	@Builder.Default
+	private Boolean bookmark =  false;
+	@Builder.Default
 	private List<Integer> cate_id = new ArrayList<>();
 	@Builder.Default
 	private List<Integer> brand_id = new ArrayList<>();

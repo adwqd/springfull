@@ -32,4 +32,8 @@ public interface PostMapper {
 	Integer getLike(@Param("post_no") int post_no);
 	//좋아요 갯수 반영하기
 	void like_update(@Param("post_no") int post_no, @Param("like") int like);
+	
+	Integer isBookMarked(@Param("post_no") int post_no, @Param("member_uuid") String member_uuid);
+	
+	Double getStar(@Param("post_no") int post_no, @Param("member_uuid") String member_uuid);
 }
