@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="com.springfull.backend.mapper.RegisterMapper">
-	<select id="getCate" resultType="com.springfull.backend.domain.CategoryVO">
-		select * from category
+	<select id="getCate" resultType="com.springfull.backend.domain.TagVO">
+		select cate_id as tag_id, cate_name as tag_name from category
 	</select>
 	
 	<select id="getCateByBrand">
@@ -16,8 +16,8 @@
 		group by cate_id
 	</select>
 	
-	<select id="getBrand" resultType="com.springfull.backend.domain.BrandVO">
-		select *
+	<select id="getBrand" resultType="com.springfull.backend.domain.TagVO">
+		select brand_id as tag_id, brand_name as tag_name, cate_id
 		from brand
 		where cate_id in
 		<foreach item="cate_id" collection="category" open="(" separator="," close=")">
@@ -28,12 +28,12 @@
 		</if>
 	</select>
 	
-	<select id="getTaste" resultType="com.springfull.backend.domain.TasteVO">
-		select * from taste
+	<select id="getTaste" resultType="com.springfull.backend.domain.TagVO">
+		select taste_id as tag_id, taste_name as tag_name from taste
 	</select>
 	
-	<select id="getIngredient" resultType="com.springfull.backend.domain.IngredientVO">
-		select *
+	<select id="getIngredient" resultType="com.springfull.backend.domain.TagVO">
+		select ingredient_id as tag_id, ingredient_name as tag_name, cate_id
 		from ingredient		
 		where cate_id in
 		<foreach item="cate_id" collection="category" open="(" separator="," close=")">

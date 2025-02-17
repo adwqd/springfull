@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springfull.backend.domain.BrandVO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.TagDTO;
 import com.springfull.backend.service.RegisterService;
@@ -26,7 +26,7 @@ public class RegisterController {
 	
 	@PostMapping("/tag")
 	public TagDTO tag(@RequestBody HashMap<String, List<Integer>> tag){
-		List<BrandVO> brand = registerService.getBrandVO(tag.get("category"));
+		List<TagVO> brand = registerService.getBrandVO(tag.get("category"));
 		TagDTO tagDTO = TagDTO.builder()
 				.category(registerService.getCategory())
 				.brand(brand)

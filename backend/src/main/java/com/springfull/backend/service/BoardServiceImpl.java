@@ -42,4 +42,14 @@ public class BoardServiceImpl implements BoardService {
 		return pageResponseDTO;
 	}
 
+	@Override
+	public List<PostDTO> hotRanking() {
+		return listMapper.hotRanking();
+	}
+
+	@Override
+	public List<PostDTO> cateRanking(int cate_id) {
+		return listMapper.cateRanking(cate_id);
+	}
+
 }

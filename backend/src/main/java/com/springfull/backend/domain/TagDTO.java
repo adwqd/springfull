@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 public class TagDTO {
 	
 	@Builder.Default
-	List<CategoryVO> category= new ArrayList<>();
+	List<TagVO> category= new ArrayList<>();
 	@Builder.Default
-	List<BrandVO> brand= new ArrayList<>();
+	List<TagVO> brand= new ArrayList<>();
 	@Builder.Default
-	List<TasteVO> taste= new ArrayList<>();
+	List<TagVO> taste= new ArrayList<>();
 	@Builder.Default
-	List<IngredientVO> ingredient= new ArrayList<>();
+	List<TagVO> ingredient= new ArrayList<>();
 	
 
 }

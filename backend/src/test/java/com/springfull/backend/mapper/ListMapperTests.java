@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.springfull.backend.domain.PageRequestDTO;
+import com.springfull.backend.domain.PostDTO;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -53,5 +54,19 @@ public class ListMapperTests {
 	@Test
 	public void testCateSearch() {
 		log.info(listMapper.cateSearch(new ArrayList<>(Arrays.asList(1,2))));
+	}
+	
+	@Test
+	public void testHotRanking() {
+		for(PostDTO temp:listMapper.hotRanking()) {
+			log.info(temp);
+		}
+	}
+	
+	@Test
+	public void testCateRanking() {
+		for(PostDTO temp:listMapper.cateRanking(1)) {
+			log.info(temp);
+		}
 	}
 }

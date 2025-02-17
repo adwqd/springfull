@@ -40,6 +40,14 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Use the latest version
     implementation 'jakarta.validation:jakarta.validation-api:3.0.0' // The Jakarta Bean Validation API
     
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    
+    // https://mvnrepository.com/artifact/net.coobird/thumbnailator
+	implementation 'net.coobird:thumbnailator:0.4.16'
+
+    
     
     
 

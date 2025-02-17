@@ -28,7 +28,7 @@ public class RegisterMapperTests {
 	
 	@Test
 	public void testGetBrand() {
-		log.info(registerMapper.getBrand(new ArrayList<>(Arrays.asList(1,2))));
+		log.info(registerMapper.getBrand(new ArrayList<>(Arrays.asList(1))));
 	}
 	
 	@Test

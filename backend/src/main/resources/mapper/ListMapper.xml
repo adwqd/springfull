@@ -192,4 +192,32 @@
 	        	#{cate_id}
 	    </foreach>
 	</select>
+	<select id="hotRanking">
+		select *
+		from post p
+		join (select post_no, sum(like_number) as likes 
+			from like_record 
+			where date >= current_date()-6 and 
+			<![CDATA[
+					date <=current_date()
+			]]> 
+			group by post_no) lr on lr.post_no = p.post_no
+		where state=1
+		order by likes desc
+		limit 0, 10
+	</select>
+	<select id="cateRanking">
+		select p.*, (post_like*star) as 'score', name, star
+		from post p
+		join post_brand pb on p.post_no = pb.post_no
+		join brand b on b.brand_id = pb.brand_id
+		join member m on p.member_uuid = m.member_uuid
+		join (
+			select post_no, sum(star) as 'star'
+			from star
+			group by post_no) s on p.post_no = s.post_no
+		where cate_id = #{cate_id}
+		order by 'score' desc
+		limit 0, 10
+	</select>
 </mapper>

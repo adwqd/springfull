@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.springfull.backend.mapper.UserMapper">
+	<select id="check">
+		select member_uuid
+		from member
+		where user_id = #{id} and state = 1
+	</select>
+	<insert id="signIn">
+		insert into member(member_uuid, logintype, user_id, name, state)
+		values (#{member_uuid}, 1, #{user_id}, #{name}, 1)
+	</insert>
+</mapper>

@@ -20,4 +20,8 @@ public interface ListMapper {
 	String getThumbnail(int post_no);
 	
 	List<Integer> cateSearch(@Param("category") List<Integer> category);
+	
+	List<PostDTO> hotRanking();
+	
+	List<PostDTO> cateRanking(@Param("cate_id") int cate_id);
 }

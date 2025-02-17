@@ -5,23 +5,20 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.springfull.backend.domain.BrandVO;
-import com.springfull.backend.domain.CategoryVO;
-import com.springfull.backend.domain.IngredientVO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.domain.PostDetailDTO;
-import com.springfull.backend.domain.TasteVO;
 
 @Mapper
 public interface RegisterMapper {
 	
-	List<CategoryVO> getCate();
+	List<TagVO> getCate();
 	List<Integer> getCateByBrand(@Param("brand") List<Integer> brand);
 	
-	List<BrandVO> getBrand(@Param("category") List<Integer> category);
+	List<TagVO> getBrand(@Param("category") List<Integer> category);
 	
-	List<TasteVO> getTaste();
+	List<TagVO> getTaste();
 	
-	List<IngredientVO> getIngredient(@Param("category") List<Integer> category);
+	List<TagVO> getIngredient(@Param("category") List<Integer> category);
 	
 	int register(PostDetailDTO postDetailDTO);
 	

@@ -5,11 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.springfull.backend.domain.BrandVO;
-import com.springfull.backend.domain.CategoryVO;
-import com.springfull.backend.domain.IngredientVO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.domain.PostDetailDTO;
-import com.springfull.backend.domain.TasteVO;
 import com.springfull.backend.mapper.RegisterMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -23,12 +20,12 @@ public class RegisterServiceImpl implements RegisterService {
 	private final RegisterMapper registerMapper;
 
 	@Override
-	public List<CategoryVO> getCategory() {
+	public List<TagVO> getCategory() {
 		return registerMapper.getCate();
 	}
 
 	@Override
-	public List<BrandVO> getBrandVO(List<Integer> category) {
+	public List<TagVO> getBrandVO(List<Integer> category) {
 		if(category != null && category.size()>0) {
 			return registerMapper.getBrand(category);
 		}else {
@@ -38,12 +35,12 @@ public class RegisterServiceImpl implements RegisterService {
 	}
 
 	@Override
-	public List<TasteVO> getTasteVO() {
+	public List<TagVO> getTasteVO() {
 		return registerMapper.getTaste();
 	}
 
 	@Override
-	public List<IngredientVO> getIngredientVO(List<Integer> brand) {
+	public List<TagVO> getIngredientVO(List<Integer> brand) {
 		if(brand != null && brand.size()>0) {
 			List<Integer> category = registerMapper.getCateByBrand(brand);
 			return registerMapper.getIngredient(category);

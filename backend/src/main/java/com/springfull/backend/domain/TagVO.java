@@ -5,8 +5,8 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class BrandVO {
-	private int brand_id;
-	private String brand_name;
+public class TagVO {
+	private int tag_id;
+	private String tag_name;
 	private int cate_id;
 }

@@ -36,7 +36,7 @@ public class LoginController {
         session.setAttribute("nickname", nickname);
         session.setAttribute("accessToken", accessToken);
         
-		return "redirect:http://192.168.4.10:5173/read";
+		return "redirect:http://192.168.4.10:5173/list";
 	}
 	
 	
