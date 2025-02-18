@@ -16,5 +16,8 @@ public class ReplyDTO {
 	private String reply_content;
 	private LocalDateTime reply_reg_date;
 	private LocalDateTime reply_mod_date;
+	private Integer reply_like;
+	private Integer post_no;
+	private String member_uuid;
 	
 }

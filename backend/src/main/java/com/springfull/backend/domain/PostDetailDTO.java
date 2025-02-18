@@ -25,6 +25,7 @@ public class PostDetailDTO {
 	private LocalDateTime reg_date;
 	private LocalDateTime mod_date;
 	private String member_uuid;
+	private List<ImageDTO> image;
 	@Builder.Default
 	private Boolean bookmark =  false;
 	@Builder.Default

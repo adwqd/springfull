@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
+import com.springfull.backend.domain.ReplyDTO;
 
 @Mapper
 public interface PostMapper {
@@ -36,4 +38,13 @@ public interface PostMapper {
 	Integer isBookMarked(@Param("post_no") int post_no, @Param("member_uuid") String member_uuid);
 	
 	Double getStar(@Param("post_no") int post_no, @Param("member_uuid") String member_uuid);
+	
+	List<ImageDTO> getImage(@Param("post_no") int post_no);
+	
+	void writeReply(ReplyDTO replyDTO);
+	
+	List<ReplyDTO> getReply(@Param("post_no") int post_no);
+	
+	Integer replyLikeCheck(@Param("reply_no") int reply_no, @Param("member_uuid") String member_uuid);
+	void replyLike(@Param("reply_no") int reply_no, @Param("member_uuid") String member_uuid);
 }

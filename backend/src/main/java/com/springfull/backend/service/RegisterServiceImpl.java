@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.springfull.backend.domain.TagVO;
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.mapper.RegisterMapper;
 
@@ -61,6 +62,14 @@ public class RegisterServiceImpl implements RegisterService {
 		}
 		for(int ingredient:postDetailDTO.getIngredient_id()) {
 			registerMapper.inputIngredient(ingredient, post_no);
+		}
+		if(postDetailDTO.getImage()!=null && postDetailDTO.getImage().size()>0) {
+			int i=0;
+			for(ImageDTO temp:postDetailDTO.getImage()) {
+				temp.setOrd(i);
+				temp.setPost_no(post_no);
+				registerMapper.saveImage(temp);
+			}
 		}
 		
 		return post_no;

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.springfull.backend.domain.TagVO;
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 
 @Mapper
@@ -25,4 +26,7 @@ public interface RegisterMapper {
 	int inputBrand(@Param("brand_id") int brand_id, @Param("post_no") int post_no);
 	int inputTaste(@Param("taste_id") int taste_id, @Param("post_no") int post_no);
 	int inputIngredient(@Param("ingredient_id") int ingredient_id, @Param("post_no") int post_no);
+	void saveImage(ImageDTO imageDTO);
+	
+	
 }

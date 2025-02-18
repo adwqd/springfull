@@ -38,6 +38,7 @@ public class RegisterController {
 	
 	@PostMapping("/register")
 	public int register(@RequestBody PostDetailDTO postDetailDTO) {
+		log.info(postDetailDTO.getImage());
 		return registerService.register(postDetailDTO);
 	}
 }

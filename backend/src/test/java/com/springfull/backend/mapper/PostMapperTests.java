@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.springfull.backend.domain.ReplyDTO;
+
 import lombok.extern.log4j.Log4j2;
 
 @SpringBootTest
@@ -42,4 +44,23 @@ public class PostMapperTests {
 	public void testIsBookMarked() {
 		log.info(postMapper.isBookMarked(1, "aaa"));
 	}
+	
+	@Test
+	public void testGetImage() {
+		log.info(postMapper.getImage(18));
+	}
+	
+	@Test
+	public void testWriteReply() {
+		postMapper.writeReply(ReplyDTO.builder().reply_content("댓글입니다.").post_no(1).member_uuid("aaa").build());
+	}
+	
+	@Test
+	public void testGetReply() {
+		for(ReplyDTO temp:postMapper.getReply(1)) {
+			log.info(temp);
+		}
+	}
+	
+
 }

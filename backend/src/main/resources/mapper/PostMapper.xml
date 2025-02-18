@@ -74,4 +74,33 @@
 		from star
 		where post_no=#{post_no} and member_uuid=#{member_uuid}
 	</select>
+	
+	<select id="getImage">
+		select *
+		from image
+		where post_no=#{post_no}
+		order by ord
+	</select>
+	<insert id="writeReply">
+		insert into reply(content, post_no, member_uuid)
+		values (#{reply_content}, #{post_no}, #{member_uuid})
+	</insert>
+	
+	<select id="getReply">
+		select reply_no, content as reply_content, reg_Date as reply_reg_date, mod_date as reply_mod_date, reply_like, post_no, member_uuid
+		from reply
+		where post_no = #{post_no}
+		order by reply_like
+	</select>
+	
+	<select id="replyLikeCheck">
+		select rl_no
+		from reply_like
+		where reply_no = #{reply_no} and member_uuid = #{member_uuid}
+	</select>
+	
+	<insert id="replyLike">
+		insert into reply_like (reply_no, member_uuid)
+		values (#{reply_no}, #{member_uuid})
+	</insert>
 </mapper>

@@ -1,9 +1,18 @@
 package com.springfull.backend.service;
 
+import java.util.List;
+
 import com.springfull.backend.domain.PostDetailDTO;
+import com.springfull.backend.domain.ReplyDTO;
 
 public interface PostService {
 	PostDetailDTO read(int post_no, String member_uuid);
 	
 	int like(int post_no);
+	
+	void writeReply(ReplyDTO replyDTO);
+	
+	List<ReplyDTO> getReply(int post_no);
+	
+	boolean replyLike(int reply_no, String member_uuid);
 }

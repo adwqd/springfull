@@ -63,4 +63,9 @@
 		insert into post_ingredient
 		values (#{post_no}, #{ingredient_id})
 	</insert>
+	
+	<insert id="saveImage">
+		insert into image
+		values (#{img_uuid}, #{filename}, #{ord}, #{post_no})
+	</insert>
 </mapper>

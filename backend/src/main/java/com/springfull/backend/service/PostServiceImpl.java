@@ -1,8 +1,11 @@
 package com.springfull.backend.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.springfull.backend.domain.PostDetailDTO;
+import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.mapper.PostMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class PostServiceImpl implements PostService {
 			postDetailDTO.setBookmark(true);
 		}
 		postDetailDTO.setStar(postMapper.getStar(post_no, member_uuid));
+		postDetailDTO.setImage(postMapper.getImage(post_no));
 		return postDetailDTO;
 	}
 
@@ -41,6 +45,25 @@ public class PostServiceImpl implements PostService {
 		int like = postMapper.getLike(post_no);
 		postMapper.like_update(post_no, like);
 		return like;
+	}
+
+	@Override
+	public void writeReply(ReplyDTO replyDTO) {
+		postMapper.writeReply(replyDTO);		
+	}
+
+	@Override
+	public List<ReplyDTO> getReply(int post_no) {
+		return postMapper.getReply(post_no);
+	}
+
+	@Override
+	public boolean replyLike(int reply_no, String member_uuid) {
+		if(postMapper.replyLikeCheck(reply_no, member_uuid)==null) {
+			postMapper.replyLike(reply_no, member_uuid);
+			return true;
+		}
+		return false;
 	}
 
 }

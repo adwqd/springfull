@@ -22,4 +22,9 @@ public class PostServiceTests {
 	public void testLike() {
 		postService.like(4);
 	}
+	
+	@Test
+	public void testReplyLike() {
+		log.info(postService.replyLike(1, "aaa"));
+	}
 }
