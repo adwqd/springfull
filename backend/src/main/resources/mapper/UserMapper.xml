@@ -11,4 +11,131 @@
 		insert into member(member_uuid, logintype, user_id, name, state)
 		values (#{member_uuid}, 1, #{user_id}, #{name}, 1)
 	</insert>
+	<select id="viewProfile">
+		select concat(img_uuid,'_',filename)
+		from image
+		where img_uuid = #{img_uuid}
+	</select>
+	<insert id="saveProfile">
+		insert into image (img_uuid, filename, ord, post_no)
+		values (#{img_uuid}, #{filename}, 0, -1)
+	</insert>
+	<delete id="deleteProfile">
+		delete from image
+		where img_uuid = #{img_uuid}
+	</delete>
+	
+	<update id="updateProfile">
+		update member
+		set name = #{name}, description = #{description}
+		where member_uuid = #{member_uuid}
+	</update>
+	
+	<select id="myPost" resultType="com.springfull.backend.domain.PostDTO">
+		select post_no, title, p.member_uuid, name, post_like, reg_date
+		from post p
+		join member m on p.member_uuid = m.member_uuid
+		<where>
+			p.state=1
+			and p.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+		<if test="sort == 1">
+			order by post_no desc
+		</if>
+		<if test="sort == 2">
+			order by post_like desc
+		</if>
+		limit #{skip}, #{size}
+	</select>
+	
+	
+	<select id="getMyPostCount">
+		select count(*)
+		from post p
+		<where>
+			p.state=1
+			and p.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+	</select>
+	
+	<select id="starPost" resultType="com.springfull.backend.domain.PostDTO">
+		select p.post_no, title, p.member_uuid, name, post_like, reg_date, star
+		from post p
+		join member m on p.member_uuid = m.member_uuid
+		join star s on p.post_no = s.post_no
+		<where>
+			p.state=1
+			and s.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+			order by star desc
+		limit #{skip}, #{size}
+	</select>
+	
+	<select id="getStarPostCount">
+		select count(*)
+		from post p
+		join star s on p.post_no = s.post_no
+		<where>
+			p.state=1
+			and s.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+	</select>
+	
+	<select id="bookMarkedPost" resultType="com.springfull.backend.domain.PostDTO">
+		select p.post_no, title, p.member_uuid, name, post_like, reg_date
+		from post p
+		join member m on p.member_uuid = m.member_uuid
+		join bookmark bm on p.post_no = bm.post_no
+		<where>
+			p.state=1
+			and bm.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+		<if test="sort == 1">
+			order by post_no desc
+		</if>
+		<if test="sort == 2">
+			order by post_like desc
+		</if>
+		limit #{skip}, #{size}
+	</select>
+	
+	<select id="getBookMarkedPostCount">
+		select count(*)
+		from post p
+		join bookmark bm on p.post_no = bm.post_no
+		<where>
+			p.state=1
+			and bm.member_uuid = #{member_uuid}
+			<if test="keyword != null and keyword.length>0">
+				<trim prefix="and">
+					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				</trim>
+			</if>
+		</where>
+	</select>
 </mapper>

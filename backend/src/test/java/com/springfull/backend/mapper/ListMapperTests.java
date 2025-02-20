@@ -65,7 +65,14 @@ public class ListMapperTests {
 	
 	@Test
 	public void testCateRanking() {
-		for(PostDTO temp:listMapper.cateRanking(1)) {
+		for(PostDTO temp:listMapper.cateRanking(1, 10)) {
+			log.info(temp);
+		}
+	}
+	
+	@Test
+	public void testRecent() {
+		for(PostDTO temp:listMapper.recent()) {
 			log.info(temp);
 		}
 	}

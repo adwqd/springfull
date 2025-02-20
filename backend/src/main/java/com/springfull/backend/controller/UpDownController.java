@@ -125,35 +125,5 @@ public class UpDownController {
 		return resultMap;
 	}
 	
-	@PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public List<UploadResultDTO> profile(UploadFileDTO uploadFileDTO, @RequestParam("uuid") String uuid) {
-		
-		log.info(uploadFileDTO);
-		if(uploadFileDTO.getFiles() != null) {
-			List<UploadResultDTO> list = new ArrayList<>();
-			uploadFileDTO.getFiles().forEach(multipartFile -> {
-				String originalName =  multipartFile.getOriginalFilename();
-				
-				log.info(originalName);
-				Path savePath = Paths.get(uploadPath, uuid+"_"+originalName);
-				boolean img = false;
-				try {
-					multipartFile.transferTo(savePath);
-					
-					//썸네일 저장
-					if(Files.probeContentType(savePath).startsWith("image")) {
-						img = true;
-						File thumbFile = new File(uploadPath, "s_" + uuid+"_"+originalName);
-						Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 200, 200);
-					}
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-				list.add(UploadResultDTO.builder().img_uuid(uuid).filename(originalName).img(img).build());
-			});
-			return list;
-		}
-		
-		return null;
-	}
+	
 }

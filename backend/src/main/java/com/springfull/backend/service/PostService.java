@@ -15,4 +15,10 @@ public interface PostService {
 	List<ReplyDTO> getReply(int post_no);
 	
 	boolean replyLike(int reply_no, String member_uuid);
+	
+	void insertStar(int post_no, String member_uuid, Double star);
+	
+	int modReply(ReplyDTO replyDTO);
+	
+	void bookMark(int post_no, String member_uuid);
 }

@@ -1,16 +1,19 @@
 package com.springfull.backend.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springfull.backend.domain.PostDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.service.PostService;
@@ -49,6 +52,24 @@ public class PostController {
 	@PostMapping("/replylike")
 	public Boolean replyLike(@RequestBody ReplyDTO replyDTO) {
 		return postService.replyLike(replyDTO.getReply_no(), replyDTO.getMember_uuid());
+	}
+	
+	@PostMapping("/star")
+	public void star(@RequestBody HashMap<String, String> map) {
+		int post_no = Integer.parseInt(map.get("post_no"));
+		String member_uuid = map.get("member_uuid");
+		Double star = Double.parseDouble(map.get("star"));
+		postService.insertStar(post_no, member_uuid, star);
+	}
+	
+	@PutMapping("/reply")
+	public int modReply(@RequestBody ReplyDTO replyDTO) {
+		return postService.modReply(replyDTO);
+	}
+	
+	@PostMapping("/bookmark")
+	public void bookmark(@RequestBody PostDTO postDTO) {
+		postService.bookMark(postDTO.getPost_no(), postDTO.getMember_uuid());
 	}
 	
 }

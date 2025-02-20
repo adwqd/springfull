@@ -69,6 +69,7 @@ public class RegisterServiceImpl implements RegisterService {
 				temp.setOrd(i);
 				temp.setPost_no(post_no);
 				registerMapper.saveImage(temp);
+				i++;
 			}
 		}
 		

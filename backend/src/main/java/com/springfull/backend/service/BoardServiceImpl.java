@@ -8,15 +8,22 @@ import org.springframework.stereotype.Service;
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PageResponseDTO;
 import com.springfull.backend.domain.PostDTO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.mapper.ListMapper;
+import com.springfull.backend.mapper.RegisterMapper;
+import com.springfull.backend.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class BoardServiceImpl implements BoardService {
 	
 	private final ListMapper listMapper;
+	private final UserMapper userMapper;
+	private final RegisterMapper registerMapper;
 	
 	@Override
 	public PageResponseDTO<PostDTO> brandList(PageRequestDTO pageRequestDTO) {
@@ -28,6 +35,7 @@ public class BoardServiceImpl implements BoardService {
 		for(PostDTO temp : listMapper.search(pageRequestDTO)) {
 			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
 			temp.setStar(listMapper.getStar(temp.getPost_no()));
+			temp.setProfile_img(userMapper.viewProfile(temp.getMember_uuid()));
 			dtoList.add(temp);
 		}
 		Integer count = listMapper.getCount(pageRequestDTO);
@@ -49,7 +57,24 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public List<PostDTO> cateRanking(int cate_id) {
-		return listMapper.cateRanking(cate_id);
+		return listMapper.cateRanking(cate_id, 10);
+	}
+
+	@Override
+	public List<PostDTO> cateBest() {
+		List<PostDTO> list = new ArrayList<>();
+		List<TagVO> cate = registerMapper.getCate();
+		for(TagVO temp:cate) {
+			List<PostDTO> tempList = listMapper.cateRanking(temp.getTag_id(), 1);
+			PostDTO post = new PostDTO();
+			if(tempList!=null && tempList.size()>0) {
+				post = tempList.get(0);
+				post.setMember_uuid(String.valueOf(temp.getTag_id()));
+				post.setName(temp.getTag_name());
+			}
+			list.add(post);
+		}
+		return list;
 	}
 
 }

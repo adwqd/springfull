@@ -62,5 +62,40 @@ public class PostMapperTests {
 		}
 	}
 	
+	@Test
+	public void testInsertStar() {
+		postMapper.insertStar(2, "aaa", (double) 3);
+	}
+	
+	@Test
+	public void testGetStar() {
+		log.info(postMapper.getStar(2, null));
+	}
+	
+	@Test
+	public void testUpdateStar() {
+		postMapper.updateStar(1,3);
+	}
+	
+	@Test
+	public void testReplyLike() {
+		postMapper.replyLike(2, "ccc");
+	}
+	
+	@Test
+	public void testReplyLikeCheck() {
+		log.info(postMapper.replyLikeCheck(2, "aaa"));
+	}
+	
+	@Test
+	public void testReplyLikeUpdate() {
+		postMapper.replyLikeUpdate(2);
+	}
+	
+	@Test
+	public void testModReply() {
+		postMapper.modReply(ReplyDTO.builder().reply_no(1).reply_content("크리스탈리리").member_uuid("aaa").build());
+	}
+	
 
 }

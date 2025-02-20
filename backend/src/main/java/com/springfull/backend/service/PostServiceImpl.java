@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 		if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
 			postDetailDTO.setBookmark(true);
 		}
-		postDetailDTO.setStar(postMapper.getStar(post_no, member_uuid));
+		postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
 		postDetailDTO.setImage(postMapper.getImage(post_no));
 		return postDetailDTO;
 	}
@@ -61,9 +61,35 @@ public class PostServiceImpl implements PostService {
 	public boolean replyLike(int reply_no, String member_uuid) {
 		if(postMapper.replyLikeCheck(reply_no, member_uuid)==null) {
 			postMapper.replyLike(reply_no, member_uuid);
+			postMapper.replyLikeUpdate(reply_no);
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void insertStar(int post_no, String member_uuid, Double star) {
+		Integer star_no = postMapper.getStar(post_no, member_uuid);
+		if(star_no!=null) {
+			postMapper.updateStar(star_no, star);
+		}else {
+			postMapper.insertStar(post_no, member_uuid, star);
+		}
+	}
+
+	@Override
+	public int modReply(ReplyDTO replyDTO) {
+		return postMapper.modReply(replyDTO);
+	}
+
+	@Override
+	public void bookMark(int post_no, String member_uuid) {
+		Integer bookmark_no = postMapper.isBookMarked(post_no, member_uuid);
+		if(bookmark_no == null) {
+			postMapper.bookMark(post_no, member_uuid);
+		}else {
+			postMapper.deleteBookMark(bookmark_no);
+		}
 	}
 
 }

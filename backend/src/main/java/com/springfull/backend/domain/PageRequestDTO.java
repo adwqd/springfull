@@ -36,6 +36,8 @@ public class PageRequestDTO {
 		private Integer max_cost;
 		
 		private String keyword;
+		//사용자 uuid
+		private String member_uuid;
 		
 		@Builder.Default
 		private Integer sort=1;

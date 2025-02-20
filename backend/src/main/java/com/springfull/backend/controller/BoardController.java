@@ -44,14 +44,19 @@ public class BoardController {
 		return pageResponseDTO;
 	}
 	
-	@GetMapping("hotranking")
+	@GetMapping("/hotranking")
 	public List<PostDTO> hotranking(){
 		return boardService.hotRanking();
 	}
 	
-	@GetMapping("cateranking/{cate_id}")
+	@GetMapping("/cateranking/{cate_id}")
 	public List<PostDTO> cateRanking(@PathVariable("cate_id") int cate_id){
 		return boardService.cateRanking(cate_id);
+	}
+	
+	@GetMapping("/catebest")
+	public List<PostDTO> cateBest(){
+		return boardService.cateBest();
 	}
 	
 }

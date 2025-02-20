@@ -23,5 +23,8 @@ public interface ListMapper {
 	
 	List<PostDTO> hotRanking();
 	
-	List<PostDTO> cateRanking(@Param("cate_id") int cate_id);
+	List<PostDTO> cateRanking(@Param("cate_id") int cate_id, @Param("size") int size);
+	
+	List<PostDTO> recent();
+	
 }

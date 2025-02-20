@@ -69,11 +69,38 @@
 		where post_no=#{post_no} and member_uuid=#{member_uuid}
 	</select>
 	
+	<insert id="bookMark">
+		insert into bookmark(bookmark_date, post_no, member_uuid)
+		values (current_timestamp(), #{post_no}, #{member_uuid})
+	</insert>
+	
+	<delete id="deleteBookMark">
+		delete from bookmark
+		where bookmark_no = #{bookmark_no}
+	</delete>
+	
 	<select id="getStar">
+		select star_no
+		from star
+		where post_no=#{post_no} and member_uuid=#{member_uuid}
+	</select>
+	
+	<select id="getMyStar">
 		select star
 		from star
 		where post_no=#{post_no} and member_uuid=#{member_uuid}
 	</select>
+	
+	<insert id="insertStar">
+		insert into star (star, post_no, member_uuid)
+		values (#{star}, #{post_no}, #{member_uuid})
+	</insert>
+	
+	<update id="updateStar">
+		update star
+		set star = #{star}
+		where star_no=#{star_no}
+	</update>
 	
 	<select id="getImage">
 		select *
@@ -103,4 +130,16 @@
 		insert into reply_like (reply_no, member_uuid)
 		values (#{reply_no}, #{member_uuid})
 	</insert>
+	
+	<update id="replyLikeUpdate">
+		update reply
+		set reply_like = (select count(*) from reply_like where reply_no = #{reply_no})
+		where reply_no = #{reply_no}
+	</update>
+	
+	<update id="modReply">
+		update reply
+		set content = #{reply_content}, mod_date = current_timestamp
+		where reply_no = #{reply_no} and member_uuid = #{member_uuid}
+	</update>
 </mapper>

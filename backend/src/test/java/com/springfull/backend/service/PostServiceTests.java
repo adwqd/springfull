@@ -27,4 +27,9 @@ public class PostServiceTests {
 	public void testReplyLike() {
 		log.info(postService.replyLike(1, "aaa"));
 	}
+	
+	@Test
+	public void testBookMark() {
+		postService.bookMark(1, "ccc");
+	}
 }

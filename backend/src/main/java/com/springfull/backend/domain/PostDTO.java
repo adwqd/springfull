@@ -17,6 +17,7 @@ public class PostDTO {
 	private String member_uuid;
 	private String name;
 	private int post_like;
+	private Integer cost;
 	private Double star;
 	private String thumbnail;
 	private String profile_img;

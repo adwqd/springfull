@@ -179,7 +179,7 @@
 	</select>
 	
 	<select id="getThumbnail">
-		select img_uuid
+		select concat('s_',img_uuid,'_',filename)
 		from image
 		where post_no=#{post_no} and ord = 0
 	</select>
@@ -202,7 +202,7 @@
 					date <=current_date()
 			]]> 
 			group by post_no) lr on lr.post_no = p.post_no
-		where state=1
+		where p.state=1
 		order by likes desc
 		limit 0, 10
 	</select>
@@ -213,11 +213,20 @@
 		join brand b on b.brand_id = pb.brand_id
 		join member m on p.member_uuid = m.member_uuid
 		join (
-			select post_no, sum(star) as 'star'
+			select post_no, avg(star) as 'star'
 			from star
 			group by post_no) s on p.post_no = s.post_no
-		where cate_id = #{cate_id}
+		where cate_id = #{cate_id} and p.state = 1
 		order by 'score' desc
-		limit 0, 10
+		limit 0, #{size}
+	</select>
+	
+	<select id="recent">
+		select p.*, name
+		from post p 
+		join member m on p.member_uuid = m.member_uuid
+		where p.state = 1
+		order by reg_date desc
+		limit 0, 3
 	</select>
 </mapper>

@@ -3,12 +3,17 @@ package com.springfull.backend.controller;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springfull.backend.domain.TagVO;
+import com.springfull.backend.domain.UploadFileDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.TagDTO;
 import com.springfull.backend.service.RegisterService;
@@ -41,4 +46,6 @@ public class RegisterController {
 		log.info(postDetailDTO.getImage());
 		return registerService.register(postDetailDTO);
 	}
+	
+
 }
