@@ -12,4 +12,5 @@ public interface BoardService {
 	List<PostDTO> hotRanking();
 	List<PostDTO> cateRanking(int cate_id);
 	List<PostDTO> cateBest();
+	List<PostDTO> recent();
 }

@@ -142,4 +142,30 @@
 		set content = #{reply_content}, mod_date = current_timestamp
 		where reply_no = #{reply_no} and member_uuid = #{member_uuid}
 	</update>
+	
+	<delete id="deleteReplyLike">
+		delete from reply_like
+		where reply_no = #{reply_no}
+	</delete>
+	
+	<delete id="deleteReply">
+		delete from reply
+		where reply_no = #{reply_no}
+	</delete>
+	
+	<select id="readReply">
+		select *
+		from reply
+		where reply_no = #{reply_no}
+	</select>
+	
+	<select id="reportType">
+		select type_id as tag_id, type_name as tag_name
+		from report_type
+	</select>
+	
+	<insert id="report">
+		insert into report(report_type, content, post_no, member_uuid)
+		values (#{report_type}, #{content}, #{post_no}, #{member_uuid})
+	</insert>
 </mapper>

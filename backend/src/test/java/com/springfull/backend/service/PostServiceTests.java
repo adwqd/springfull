@@ -25,11 +25,16 @@ public class PostServiceTests {
 	
 	@Test
 	public void testReplyLike() {
-		log.info(postService.replyLike(1, "aaa"));
+		log.info(postService.replyLike(4, "ccc"));
 	}
 	
 	@Test
 	public void testBookMark() {
 		postService.bookMark(1, "ccc");
+	}
+	
+	@Test
+	public void testDeleteReply() {
+		postService.deleteReply(4);
 	}
 }

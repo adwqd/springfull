@@ -4,6 +4,8 @@ package com.springfull.backend.controller;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springfull.backend.domain.PostDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
+import com.springfull.backend.domain.ReportDTO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.service.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -70,6 +74,21 @@ public class PostController {
 	@PostMapping("/bookmark")
 	public void bookmark(@RequestBody PostDTO postDTO) {
 		postService.bookMark(postDTO.getPost_no(), postDTO.getMember_uuid());
+	}
+	
+	@DeleteMapping("/reply/{reply_no}")
+	public void deleteReply(@PathVariable("reply_no") int reply_no) {		
+		postService.deleteReply(reply_no);
+	}
+	
+	@GetMapping("/reporttype")
+	public List<TagVO> reportType(){
+		return postService.reportType();
+	}
+	
+	@PostMapping("/report")
+	public void report(@RequestBody ReportDTO reportDTO) {
+		postService.report(reportDTO);
 	}
 	
 }

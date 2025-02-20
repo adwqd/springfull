@@ -21,4 +21,11 @@ public class BoardServiceTests {
 			log.info(temp);
 		}
 	}
+	
+	@Test
+	public void testRecent() {
+		for(PostDTO temp:boardService.recent()) {
+			log.info(temp);
+		}
+	}
 }

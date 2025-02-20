@@ -27,13 +27,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String login(UserDTO userDTO) {
-		String member_uuid = userMapper.check(userDTO.getUser_id());
-		if(member_uuid==null) {
-			member_uuid = UUID.randomUUID().toString();
+		UserDTO data = userMapper.check(userDTO.getUser_id());
+		if(data==null) {
+			String member_uuid = UUID.randomUUID().toString();
 			userDTO.setMember_uuid(member_uuid);
 			userMapper.signIn(userDTO);
+		}else if(data.getState()==1) {
+			return data.getMember_uuid();
 		}
-		return member_uuid;
+		return null;
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
+import com.springfull.backend.domain.ReportDTO;
+import com.springfull.backend.domain.TagVO;
 
 public interface PostService {
 	PostDetailDTO read(int post_no, String member_uuid);
@@ -21,4 +23,10 @@ public interface PostService {
 	int modReply(ReplyDTO replyDTO);
 	
 	void bookMark(int post_no, String member_uuid);
+	
+	void deleteReply(int reply_no);
+	
+	List<TagVO> reportType();
+	
+	void report(ReportDTO reportDTO);
 }

@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Param;
 import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
+import com.springfull.backend.domain.ReportDTO;
+import com.springfull.backend.domain.TagDTO;
+import com.springfull.backend.domain.TagVO;
 
 @Mapper
 public interface PostMapper {
@@ -66,4 +69,15 @@ public interface PostMapper {
 	void replyLikeUpdate(@Param("reply_no") int reply_no);
 	//댓글 수정
 	int modReply(ReplyDTO replyDTO);
+	//댓글 좋아요 삭제
+	void deleteReplyLike(@Param("reply_no") int reply_no);
+	//댓글 삭제
+	void deleteReply(@Param("reply_no") int reply_no);
+	//댓글 하나 읽기
+	ReplyDTO readReply(@Param("reply_no") int reply_no);
+	
+	//신고 종류
+	List<TagVO> reportType(); 
+	//신고하기
+	void report(ReportDTO reportDTO);
 }

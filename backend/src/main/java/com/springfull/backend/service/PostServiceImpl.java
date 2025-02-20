@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
+import com.springfull.backend.domain.ReportDTO;
+import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.mapper.PostMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,15 +24,17 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostDetailDTO read(int post_no, String member_uuid) {
 		PostDetailDTO postDetailDTO = postMapper.read(post_no);
-		postDetailDTO.setBrand_id(postMapper.getBrand(post_no));
-		postDetailDTO.setCate_id(postMapper.getCate(post_no));
-		postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
-		postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
-		if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
-			postDetailDTO.setBookmark(true);
+		if(postDetailDTO !=null) {
+			postDetailDTO.setBrand_id(postMapper.getBrand(post_no));
+			postDetailDTO.setCate_id(postMapper.getCate(post_no));
+			postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
+			postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
+			if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
+				postDetailDTO.setBookmark(true);
+			}
+			postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
+			postDetailDTO.setImage(postMapper.getImage(post_no));
 		}
-		postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
-		postDetailDTO.setImage(postMapper.getImage(post_no));
 		return postDetailDTO;
 	}
 
@@ -90,6 +94,24 @@ public class PostServiceImpl implements PostService {
 		}else {
 			postMapper.deleteBookMark(bookmark_no);
 		}
+	}
+
+	@Override
+	public void deleteReply(int reply_no) {
+		postMapper.deleteReplyLike(reply_no);
+		postMapper.deleteReply(reply_no);
+	}
+
+	@Override
+	public List<TagVO> reportType() {
+		// TODO Auto-generated method stub
+		return postMapper.reportType();
+	}
+
+	@Override
+	public void report(ReportDTO reportDTO) {
+		postMapper.report(reportDTO);
+		
 	}
 
 }

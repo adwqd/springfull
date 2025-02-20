@@ -14,14 +14,16 @@ import com.springfull.backend.domain.UserDTO;
 public interface UserMapper {
 	
 	//1.기존 회원인지 확인(기존 회원일시 uuid반환)
-	String check(@Param("id") String id);
+	UserDTO check(@Param("id") String id);
 	//2.회원가입
 	void signIn(UserDTO userDTO);
-	
+	//프로필 주소 가져오기
 	String viewProfile(@Param("img_uuid") String img_uuid);
+	//프로필 저장하기
 	void saveProfile(UploadResultDTO uploadResultDTO);
+	//프로필 지우기
 	void deleteProfile(@Param("img_uuid") String img_uuid);
-	
+	//프로필 바꾸기
 	void updateProfile(UserDTO userdto);
 	
 	//내가 쓴 글

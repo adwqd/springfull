@@ -30,6 +30,7 @@ import com.springfull.backend.domain.UploadResultDTO;
 import com.springfull.backend.domain.UserDTO;
 import com.springfull.backend.kakao.KakaoApi;
 import com.springfull.backend.service.UserService;
+import com.springfull.backend.util.JWTUtil;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,12 @@ public class UserController {
 	
 	private final KakaoApi kakaoApi;
 	private final UserService userService;
+	private final JWTUtil jwtUtil;
 	@Value("${com.springfull.upload.path}")
 	private String uploadPath;
 	
 	@GetMapping("/kakao/callback")
-	public HashMap<String, String> login(HttpSession session, @RequestParam("code") String code) {
+	public HashMap<String, String> login(@RequestParam("code") String code) {
 		// 1. 인가 코드 받기 (@RequestParam String code)
 
         // 2. 토큰 받기
@@ -58,13 +60,18 @@ public class UserController {
         String nickname = (String) userInfo.get("nickname");
         UserDTO userDTO = UserDTO.builder().user_id((String)userInfo.get("id")).name(nickname).build();
         String member_uuid =userService.login(userDTO);
-        
+        if(member_uuid==null) {
+        	return null;
+        }
         System.out.println("nickname = " + nickname);
         System.out.println("accessToken = " + accessToken);
         System.out.println(member_uuid+"이거다");
         HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> claim = new HashMap<>();
+        claim.put("member_uuid", member_uuid);
         map.put("member_uuid", member_uuid);
-        map.put("accessToken", "액세스 토큰 만들어서 쏴주기");
+        map.put("accessToken", jwtUtil.generateToken(claim, 1));
+        map.put("refreshToken", jwtUtil.generateToken(claim, 30));
         
 		return map;
 	}

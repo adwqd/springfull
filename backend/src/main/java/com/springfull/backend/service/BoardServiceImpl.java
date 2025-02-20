@@ -77,4 +77,14 @@ public class BoardServiceImpl implements BoardService {
 		return list;
 	}
 
+	@Override
+	public List<PostDTO> recent() {
+		List<PostDTO> list = new ArrayList<>();
+		for(PostDTO temp:listMapper.recent()) {
+			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
+			list.add(temp);
+		}
+		return list;
+	}
+
 }
