@@ -37,4 +37,9 @@ public class PostServiceTests {
 	public void testDeleteReply() {
 		postService.deleteReply(4);
 	}
+	
+	@Test
+	public void testDeletePost() {
+		log.info(postService.deletePost(2));
+	}
 }

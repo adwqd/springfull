@@ -9,7 +9,6 @@ import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.domain.ReportDTO;
-import com.springfull.backend.domain.TagDTO;
 import com.springfull.backend.domain.TagVO;
 
 @Mapper
@@ -80,4 +79,8 @@ public interface PostMapper {
 	List<TagVO> reportType(); 
 	//신고하기
 	void report(ReportDTO reportDTO);
+	
+	int getPostLike(@Param("post_no") int post_no);
+	//상태변경
+	void updateState(@Param("post_no") int post_no, @Param("state") int state);
 }

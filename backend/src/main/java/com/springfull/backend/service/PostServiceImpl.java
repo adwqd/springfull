@@ -114,4 +114,14 @@ public class PostServiceImpl implements PostService {
 		
 	}
 
+	@Override
+	public String deletePost(int post_no) {
+		int like = postMapper.getPostLike(post_no);
+		if(like<=50) {
+			postMapper.updateState(post_no, 3);
+			return "삭제";
+		}
+		return "실패";
+	}
+
 }

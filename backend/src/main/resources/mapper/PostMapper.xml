@@ -168,4 +168,16 @@
 		insert into report(report_type, content, post_no, member_uuid)
 		values (#{report_type}, #{content}, #{post_no}, #{member_uuid})
 	</insert>
+	
+	<select id="getPostLike">
+		select post_like
+		from post
+		where post_no = #{post_no}
+	</select>
+	
+	<update id="updateState">
+		update post
+		set state = #{state}
+		where post_no = #{post_no}
+	</update>
 </mapper>

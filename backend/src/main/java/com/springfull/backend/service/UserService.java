@@ -3,7 +3,6 @@ package com.springfull.backend.service;
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PageResponseDTO;
 import com.springfull.backend.domain.PostDTO;
-import com.springfull.backend.domain.UploadResultDTO;
 import com.springfull.backend.domain.UserDTO;
 
 public interface UserService {

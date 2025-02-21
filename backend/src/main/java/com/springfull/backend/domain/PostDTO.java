@@ -22,4 +22,5 @@ public class PostDTO {
 	private String thumbnail;
 	private String profile_img;
 	private LocalDateTime reg_Date;
+	private Integer state;
 }

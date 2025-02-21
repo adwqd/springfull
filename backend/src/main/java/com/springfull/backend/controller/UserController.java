@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,7 +31,6 @@ import com.springfull.backend.kakao.KakaoApi;
 import com.springfull.backend.service.UserService;
 import com.springfull.backend.util.JWTUtil;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -86,30 +84,32 @@ public class UserController {
 				String originalName =  multipartFile.getOriginalFilename();
 				log.info(originalName);
 				Path savePath = Paths.get(uploadPath, uuid+"_"+originalName);
-				String past = userService.viewProfile(uuid);
-				boolean img = false;
-				if(past != null) {
-					Resource resource = new FileSystemResource(uploadPath+File.separator+past);
-					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
-					resource = new FileSystemResource(uploadPath+File.separator+"s_"+past);
-					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
-					userService.deleteProfile(uuid);
-				}				
 				try {
-					multipartFile.transferTo(savePath);
-					//썸네일 저장
-					if(Files.probeContentType(savePath).startsWith("image")) {
-						img = true;
+					if(Files.probeContentType(savePath).startsWith("image")) {					
+						String past = userService.viewProfile(uuid);
+						boolean img = true;
+						if(past != null) {
+							Resource resource = new FileSystemResource(uploadPath+File.separator+past);
+							try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+							resource = new FileSystemResource(uploadPath+File.separator+"s_"+past);
+							try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+							userService.deleteProfile(uuid);
+						}				
+						multipartFile.transferTo(savePath);
+						//썸네일 저장
 						File thumbFile = new File(uploadPath, "s_" + uuid+"_"+originalName);
-						Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 100, 100);
+						Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 100, 100);						
+						UploadResultDTO uploadResultDTO = UploadResultDTO.builder().img_uuid(uuid).filename(originalName).img(img).build();
+						userService.insertProfile(uuid, originalName);
+						list.add(uploadResultDTO);
+					}else{
+						list.add(null);
 					}
-				} catch(IOException e) {
+				} catch (IllegalStateException e) {
 					e.printStackTrace();
-				}
-				UploadResultDTO uploadResultDTO = UploadResultDTO.builder().img_uuid(uuid).filename(originalName).img(img).build();
-				userService.insertProfile(uuid, originalName);
-				list.add(uploadResultDTO);
-			});
+				} catch (IOException e) {
+					e.printStackTrace();
+				}});
 			return list;
 		}
 		

@@ -4,7 +4,6 @@ package com.springfull.backend.controller;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -89,6 +88,11 @@ public class PostController {
 	@PostMapping("/report")
 	public void report(@RequestBody ReportDTO reportDTO) {
 		postService.report(reportDTO);
+	}
+	
+	@DeleteMapping("/post/{post_no}")
+	public String deletePost(@PathVariable("post_no") int post_no) {
+		return postService.deletePost(post_no);
 	}
 	
 }

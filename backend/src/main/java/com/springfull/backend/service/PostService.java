@@ -29,4 +29,6 @@ public interface PostService {
 	List<TagVO> reportType();
 	
 	void report(ReportDTO reportDTO);
+	
+	String deletePost(int post_no);
 }

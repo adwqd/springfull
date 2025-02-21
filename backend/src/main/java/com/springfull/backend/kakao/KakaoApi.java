@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.shaded.gson.JsonElement;

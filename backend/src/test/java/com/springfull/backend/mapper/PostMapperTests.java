@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.domain.ReportDTO;
-import com.springfull.backend.domain.TagDTO;
 import com.springfull.backend.domain.TagVO;
 
 import lombok.extern.log4j.Log4j2;
@@ -120,6 +119,16 @@ public class PostMapperTests {
 	@Test
 	public void testReport() {
 		postMapper.report(ReportDTO.builder().report_type(1).content("보기싫음").post_no(1).member_uuid("aaa").build());
+	}
+	
+	@Test
+	public void testPostLike() {
+		log.info(postMapper.getPostLike(1));
+	}
+	
+	@Test
+	public void testUpdateState() {
+		postMapper.updateState(2, 1);
 	}
 	
 
