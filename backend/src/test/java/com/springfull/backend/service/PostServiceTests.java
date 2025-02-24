@@ -40,6 +40,6 @@ public class PostServiceTests {
 	
 	@Test
 	public void testDeletePost() {
-		log.info(postService.deletePost(2));
+		postService.deletePost(2);
 	}
 }

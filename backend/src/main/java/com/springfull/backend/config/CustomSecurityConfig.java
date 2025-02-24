@@ -9,9 +9,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import com.springfull.backend.util.JWTUtil;
 
 import javax.sql.DataSource;
 
@@ -23,6 +25,7 @@ public class CustomSecurityConfig {
 
     //주입 필요
     private final DataSource dataSource;
+    private final JWTUtil jwtUtil;
 
 //    @Bean
 //    public PasswordEncoder passwordEncoder() {
@@ -45,12 +48,11 @@ public class CustomSecurityConfig {
         http.csrf(httpSecurityCsrfConfigurer -> {
             httpSecurityCsrfConfigurer.disable();
         });
-
-
+        
 
         return http.build();
-
     }
+    
 
 
     @Bean

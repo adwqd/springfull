@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 public class KakaoApi {
 	private String kakaoApiKey = "6d359ee5b5e0d0aa0ae57d4714f1b04c";
 
-	private String kakaoRedirectUri = "http://192.168.4.10:8081/kakao/callback";
+	private String kakaoRedirectUri = "http://192.168.4.10:5173/kakao/callback";
     
     //인가 코드를 받아서 accessToken을 반환
 	public String getAccessToken(String code){

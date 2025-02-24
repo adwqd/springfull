@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.springfull.backend.mapper.RemoveMapper">
+	<delete id="deleteBrand">
+		delete from post_brand
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteTaste">
+		delete from post_taste
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteIngredient">
+		delete from post_ingredient
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteImage">
+		delete from image
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteLike">
+		delete from like_record
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteStar">
+		delete from star
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteBookmark">
+		delete from bookmark
+		where post_no = #{post_no}
+	</delete>
+	
+	<select id="getReply">
+		select reply_no
+		from reply
+		where post_no = #{post_no}
+	</select>
+	
+	<delete id="deleteReplyLike">
+		delete from reply_like
+		where reply_no = #{reply_no}
+	</delete>
+	
+	<delete id="deleteReply">
+		delete from reply
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deleteReport">
+		delete from report
+		where post_no = #{post_no}
+	</delete>
+	
+	<delete id="deletePost">
+		delete from post
+		where post_no = #{post_no}
+	</delete>
+	
+	<select id="getLike">
+		select post_like
+		from post
+		where post_no = #{post_no}
+	</select>
+</mapper>

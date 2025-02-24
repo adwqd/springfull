@@ -2,6 +2,7 @@ package com.springfull.backend.service;
 
 import java.util.List;
 
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.domain.ReportDTO;
@@ -30,5 +31,11 @@ public interface PostService {
 	
 	void report(ReportDTO reportDTO);
 	
-	String deletePost(int post_no);
+	void deletePost(int post_no);
+	
+	List<ImageDTO> getImage(int post_no);
+	
+	boolean likeCheck(int post_no);
+	
+	void modPost(PostDetailDTO postDetailDTO);
 }

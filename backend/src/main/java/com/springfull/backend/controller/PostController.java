@@ -1,9 +1,14 @@
 package com.springfull.backend.controller;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
@@ -31,8 +37,10 @@ import lombok.extern.log4j.Log4j2;
 public class PostController {
 	
 	private final PostService postService;
+	@Value("${com.springfull.upload.path}")
+	private String uploadPath;
 	
-	@GetMapping("/read")
+	@GetMapping("/member/read")
 	public PostDetailDTO read(@RequestParam("post_no") int post_no, @RequestParam("member_uuid") String member_uuid) {
 		return postService.read(post_no, member_uuid);
 	}
@@ -92,7 +100,39 @@ public class PostController {
 	
 	@DeleteMapping("/post/{post_no}")
 	public String deletePost(@PathVariable("post_no") int post_no) {
-		return postService.deletePost(post_no);
+		if(postService.likeCheck(post_no)) {
+			List<ImageDTO> list = postService.getImage(post_no);
+			if(list!=null && list.size()>0) {
+				for(ImageDTO image:list) {
+					String link = image.getLink();
+					Resource resource = new FileSystemResource(uploadPath+File.separator+link);
+					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+					resource = new FileSystemResource(uploadPath+File.separator+"s_"+link);
+					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+				}
+			}
+			postService.deletePost(post_no);
+			return "성공";
+		}
+		return "좋아요가 너무 많습니다.";
+	}
+	
+	@PutMapping("/post")
+	public void modPost(@RequestBody PostDetailDTO postDetailDTO) {
+		int post_no = postDetailDTO.getPost_no();
+		if(postService.likeCheck(post_no)) {
+			List<ImageDTO> list = postService.getImage(post_no);
+			if(list!=null && list.size()>0) {
+				for(ImageDTO image:list) {
+					String link = image.getLink();
+					Resource resource = new FileSystemResource(uploadPath+File.separator+link);
+					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+					resource = new FileSystemResource(uploadPath+File.separator+"s_"+link);
+					try {resource.getFile().delete();} catch (IOException e) {e.printStackTrace();}
+				}
+			}
+			postService.modPost(postDetailDTO);
+		}
 	}
 	
 }

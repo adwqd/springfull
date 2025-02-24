@@ -83,4 +83,6 @@ public interface PostMapper {
 	int getPostLike(@Param("post_no") int post_no);
 	//상태변경
 	void updateState(@Param("post_no") int post_no, @Param("state") int state);
+	
+	void modPost(PostDetailDTO postDetailDTO);
 }

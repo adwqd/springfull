@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.domain.ReportDTO;
 import com.springfull.backend.domain.TagVO;
@@ -54,7 +55,7 @@ public class PostMapperTests {
 	
 	@Test
 	public void testWriteReply() {
-		postMapper.writeReply(ReplyDTO.builder().reply_content("댓글입니다.").post_no(1).member_uuid("aaa").build());
+		postMapper.writeReply(ReplyDTO.builder().reply_content("댓글입니다.").post_no(22).member_uuid("aaa").build());
 	}
 	
 	@Test
@@ -81,7 +82,7 @@ public class PostMapperTests {
 	
 	@Test
 	public void testReplyLike() {
-		postMapper.replyLike(2, "ccc");
+		postMapper.replyLike(5, "ccc");
 	}
 	
 	@Test
@@ -129,6 +130,11 @@ public class PostMapperTests {
 	@Test
 	public void testUpdateState() {
 		postMapper.updateState(2, 1);
+	}
+	
+	@Test
+	public void testModPost() {
+		postMapper.modPost(PostDetailDTO.builder().post_no(12).title("수정").cost(4321).content("수정내용").build());
 	}
 	
 

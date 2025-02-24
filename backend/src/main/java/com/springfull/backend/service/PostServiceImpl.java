@@ -2,13 +2,17 @@ package com.springfull.backend.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.springfull.backend.domain.ImageDTO;
 import com.springfull.backend.domain.PostDetailDTO;
 import com.springfull.backend.domain.ReplyDTO;
 import com.springfull.backend.domain.ReportDTO;
 import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.mapper.PostMapper;
+import com.springfull.backend.mapper.RegisterMapper;
+import com.springfull.backend.mapper.RemoveMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +24,8 @@ import lombok.extern.log4j.Log4j2;
 public class PostServiceImpl implements PostService {
 	
 	private final PostMapper postMapper;
+	private final RemoveMapper removeMapper;
+	private final RegisterMapper registerMapper;
 
 	@Override
 	public PostDetailDTO read(int post_no, String member_uuid) {
@@ -115,13 +121,65 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public String deletePost(int post_no) {
-		int like = postMapper.getPostLike(post_no);
-		if(like<=50) {
-			postMapper.updateState(post_no, 3);
-			return "삭제";
+	public void deletePost(int post_no) {
+		removeMapper.deleteBrand(post_no);
+		removeMapper.deleteTaste(post_no);
+		removeMapper.deleteIngredient(post_no);
+		removeMapper.deleteLike(post_no);
+		removeMapper.deleteImage(post_no);
+		removeMapper.deleteStar(post_no);
+		removeMapper.deleteBookmark(post_no);
+		removeMapper.deleteReport(post_no);
+		List<Integer> replyList = removeMapper.getReply(post_no);
+		if(replyList !=null) {
+			for(int reply_no:replyList) {
+				removeMapper.deleteReplyLike(reply_no);
+			}
 		}
-		return "실패";
+		removeMapper.deleteReply(post_no);
+		removeMapper.deletePost(post_no);
+	}
+
+	@Override
+	public List<ImageDTO> getImage(int post_no) {
+		
+		return postMapper.getImage(post_no);
+	}
+
+	@Override
+	public boolean likeCheck(int post_no) {
+		if(postMapper.read(post_no).getPost_like()<50) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void modPost(PostDetailDTO postDetailDTO) {
+		int post_no = postDetailDTO.getPost_no();
+		removeMapper.deleteBrand(post_no);
+		removeMapper.deleteTaste(post_no);
+		removeMapper.deleteIngredient(post_no);
+		removeMapper.deleteImage(post_no);
+		postMapper.modPost(postDetailDTO);
+		for(int brand:postDetailDTO.getBrand_id()) {
+			registerMapper.inputBrand(brand, post_no);
+		}
+		for(int taste:postDetailDTO.getTaste_id()) {
+			registerMapper.inputTaste(taste, post_no);
+		}
+		for(int ingredient:postDetailDTO.getIngredient_id()) {
+			registerMapper.inputIngredient(ingredient, post_no);
+		}
+		if(postDetailDTO.getImage()!=null && postDetailDTO.getImage().size()>0) {
+			int i=0;
+			for(ImageDTO temp:postDetailDTO.getImage()) {
+				temp.setOrd(i);
+				temp.setPost_no(post_no);
+				registerMapper.saveImage(temp);
+				i++;
+			}
+		}
 	}
 
 }

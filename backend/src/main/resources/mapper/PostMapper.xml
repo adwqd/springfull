@@ -180,4 +180,10 @@
 		set state = #{state}
 		where post_no = #{post_no}
 	</update>
+	
+	<update id="modPost">
+		update post
+		set title = #{title}, cost=#{cost}, content=#{content}, mod_date=current_timestamp
+		where post_no = #{post_no}
+	</update>
 </mapper>

@@ -49,7 +49,7 @@ public class UserController {
 	@GetMapping("/kakao/callback")
 	public HashMap<String, String> login(@RequestParam("code") String code) {
 		// 1. 인가 코드 받기 (@RequestParam String code)
-
+		log.info("이거시코드"+code);
         // 2. 토큰 받기
         String accessToken = kakaoApi.getAccessToken(code);
 
@@ -68,8 +68,8 @@ public class UserController {
         HashMap<String, Object> claim = new HashMap<>();
         claim.put("member_uuid", member_uuid);
         map.put("member_uuid", member_uuid);
-        map.put("accessToken", jwtUtil.generateToken(claim, 1));
-        map.put("refreshToken", jwtUtil.generateToken(claim, 30));
+        map.put("accessToken", jwtUtil.generateToken(member_uuid, nickname));
+        map.put("refreshToken", jwtUtil.generateToken(member_uuid, nickname));
         
 		return map;
 	}

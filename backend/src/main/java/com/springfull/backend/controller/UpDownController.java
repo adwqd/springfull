@@ -104,7 +104,6 @@ public class UpDownController {
 	@DeleteMapping("/remove/{fileName}")
 	public Map<String, Boolean> removeFile(@PathVariable("fileName") String fileName){
 		Resource resource = new FileSystemResource(uploadPath+File.separator+fileName);
-		//String resourceName = resource.getFilename();
 		Map<String, Boolean> resultMap = new HashMap<>();
 		boolean removed = false;
 		try {
