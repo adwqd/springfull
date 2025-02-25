@@ -31,6 +31,7 @@ import com.springfull.backend.kakao.KakaoApi;
 import com.springfull.backend.service.UserService;
 import com.springfull.backend.util.JWTUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -56,8 +57,10 @@ public class UserController {
         // 3. 사용자 정보 받기
         Map<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
         String nickname = (String) userInfo.get("nickname");
-        UserDTO userDTO = UserDTO.builder().user_id((String)userInfo.get("id")).name(nickname).build();
-        String member_uuid =userService.login(userDTO);
+        UserDTO userDTO = userService.login(UserDTO.builder().user_id((String)userInfo.get("id")).name(nickname).build());
+        
+        String member_uuid = userDTO.getMember_uuid();
+        String state = Integer.toString(userDTO.getState());
         if(member_uuid==null) {
         	return null;
         }
@@ -65,18 +68,19 @@ public class UserController {
         System.out.println("accessToken = " + accessToken);
         System.out.println(member_uuid+"이거다");
         HashMap<String, String> map = new HashMap<>();
-        HashMap<String, Object> claim = new HashMap<>();
-        claim.put("member_uuid", member_uuid);
         map.put("member_uuid", member_uuid);
-        map.put("accessToken", jwtUtil.generateToken(member_uuid, nickname));
-        map.put("refreshToken", jwtUtil.generateToken(member_uuid, nickname));
+        map.put("accessToken", jwtUtil.generateToken(member_uuid, nickname, state));
+        String refreshToken = jwtUtil.generateRefreshToken(member_uuid);
+        map.put("refreshToken", refreshToken);
+        userService.saveToken(member_uuid, refreshToken);
         
 		return map;
 	}
 	
-	@PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public List<UploadResultDTO> profile(UploadFileDTO uploadFileDTO, @RequestParam("uuid") String uuid) {
-		
+	@PostMapping(value = "/member/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public List<UploadResultDTO> profile(UploadFileDTO uploadFileDTO, HttpServletRequest httpServletRequest) {
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
 		log.info(uploadFileDTO);
 		if(uploadFileDTO.getFiles() != null) {
 			List<UploadResultDTO> list = new ArrayList<>();
@@ -116,30 +120,60 @@ public class UserController {
 		return null;
 	}
 	
-	@PutMapping("/modprofile")
-	public void updateProfile(@RequestBody UserDTO userDTO) {
-		userService.updateProfile(userDTO);
+	@PutMapping("/member/modprofile")
+	public void updateProfile(@RequestBody UserDTO userDTO, HttpServletRequest httpServletRequest) {
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
+		if(uuid.equals(userDTO.getMember_uuid())) {
+			userService.updateProfile(userDTO);
+		}
+		
 	}
 	
-	@PostMapping(value = "/mypost", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public PageResponseDTO<PostDTO> myPost(@RequestBody PageRequestDTO pageRequestDTO) {
+	@PostMapping(value = "/member/mypost", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PageResponseDTO<PostDTO> myPost(@RequestBody PageRequestDTO pageRequestDTO, HttpServletRequest httpServletRequest) {
 		log.info(pageRequestDTO);
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
+		pageRequestDTO.setMember_uuid(uuid);
 		PageResponseDTO<PostDTO> pageResponseDTO = userService.myPost(pageRequestDTO);
 		return pageResponseDTO;
 	}
 	
-	@PostMapping(value = "/starpost", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public PageResponseDTO<PostDTO> starPost(@RequestBody PageRequestDTO pageRequestDTO) {
+	@PostMapping(value = "/member/starpost", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PageResponseDTO<PostDTO> starPost(@RequestBody PageRequestDTO pageRequestDTO, HttpServletRequest httpServletRequest) {
 		log.info(pageRequestDTO);
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
+		pageRequestDTO.setMember_uuid(uuid);
 		PageResponseDTO<PostDTO> pageResponseDTO = userService.starPost(pageRequestDTO);
 		return pageResponseDTO;
 	}
 	
-	@PostMapping(value = "/mybookmark", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public PageResponseDTO<PostDTO> bookMarkedPost(@RequestBody PageRequestDTO pageRequestDTO) {
+	@PostMapping(value = "/member/mybookmark", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PageResponseDTO<PostDTO> bookMarkedPost(@RequestBody PageRequestDTO pageRequestDTO, HttpServletRequest httpServletRequest) {
 		log.info(pageRequestDTO);
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
+		pageRequestDTO.setMember_uuid(uuid);
 		PageResponseDTO<PostDTO> pageResponseDTO = userService.bookMarkedPost(pageRequestDTO);
 		return pageResponseDTO;
+	}
+	
+	@GetMapping("/token")
+	public HashMap<String, String> tokenCheck(HttpServletRequest httpServletRequest){
+		String refreshToken = jwtUtil.getRefreshToken(httpServletRequest);
+		String uuid = jwtUtil.getRefreshUUID(refreshToken);
+		if(userService.tokenCheck(uuid, refreshToken)) {
+			UserDTO userDTO = userService.getUser(uuid);
+			HashMap<String, String> map = new HashMap<>();
+	        map.put("member_uuid", uuid);
+	        map.put("accessToken", jwtUtil.generateToken(uuid, userDTO.getName(), Integer.toString(userDTO.getState())));
+	        map.put("refreshToken", jwtUtil.generateRefreshToken(uuid));
+	        userService.saveToken(uuid, refreshToken);
+	        return map;
+		}
+		return null;
 	}
 	
 }

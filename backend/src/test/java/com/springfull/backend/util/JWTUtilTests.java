@@ -21,13 +21,13 @@ public class JWTUtilTests {
 		Map<String, Object> map = new HashMap<>();
 		map.put("aaa", "aaa");
 		map.put("bbb", "ccc");
-		log.info(jwtUtil.generateToken("aaa", "bbb"));
+		log.info(jwtUtil.generateToken("aaa", "bbb", "0"));
 	}
 	
 	@Test
 	public void testValidate() {
 		String token = 
-				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJfdXVpZCI6ImFhYSIsIm5hbWUiOiJiYmIiLCJpYXQiOjE3NDAzODY5MzMsImV4cCI6MTc0MDM5NzczM30.Daw63aL8hfaYqKoVoa1LHlrB4Ldmit4-l7nTlKbsKZ4";
+				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJfdXVpZCI6ImFhYSIsIm5hbWUiOiJiYmIiLCJpYXQiOjE3NDA0NDIzOTYsImV4cCI6MTc0MDQ1MzE5Nn0.rQc8_YGnwfXohyIZ5QtFsXK-wJYEHhSPok9KgdQVg0M";
 		boolean claim = jwtUtil.validateToken(token);
 		log.info(claim);
 	}
@@ -35,8 +35,16 @@ public class JWTUtilTests {
 	@Test
 	public void testGetUUID() {
 		String token = 
-				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJfdXVpZCI6ImFhYSIsIm5hbWUiOiJiYmIiLCJpYXQiOjE3NDAzODY5MzMsImV4cCI6MTc0MDM5NzczM30.Daw63aL8hfaYqKoVoa1LHlrB4Ldmit4-l7nTlKbsKZ4";
+				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJfdXVpZCI6ImFhYSIsIm5hbWUiOiJiYmIiLCJzdGF0ZSI6IjAiLCJpYXQiOjE3NDA0NTMxNDgsImV4cCI6MTc0MDQ2Mzk0OH0.Qd8ck22eicACGhpdXhHrYI5dfWqIhnBEDSgBAul5weA";
 		log.info(jwtUtil.getUUID(token));
+		
+	}
+	
+	@Test
+	public void testGetName() {
+		String token = 
+				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJfdXVpZCI6ImFhYSIsIm5hbWUiOiJiYmIiLCJpYXQiOjE3NDA0NDIzOTYsImV4cCI6MTc0MDQ1MzE5Nn0.rQc8_YGnwfXohyIZ5QtFsXK-wJYEHhSPok9KgdQVg0M";
+		log.info(jwtUtil.getName(token));
 		
 	}
 }

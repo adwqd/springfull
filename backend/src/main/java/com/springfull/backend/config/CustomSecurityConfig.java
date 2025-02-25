@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 import com.springfull.backend.util.JWTUtil;
 
+import jakarta.servlet.DispatcherType;
+
 import javax.sql.DataSource;
 
 @Log4j2
@@ -40,6 +42,14 @@ public class CustomSecurityConfig {
         http.formLogin( httpSecurityFormLoginConfigurer -> {
             httpSecurityFormLoginConfigurer.loginPage("/member/login");
         });
+        
+//        http.authorizeHttpRequests(authz -> {
+//        	authz.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
+//        	.requestMatchers("/").permitAll()
+//        	.requestMatchers("/member/**").hasAnyRole("MEMBER", "ADMIN")
+//        	.requestMatchers("/admin/**").hasRole("ADMIN")
+//        	.anyRequest().authenticated();
+//        });
 
         http.logout( httpSecurityLogoutConfigurer -> {
             httpSecurityLogoutConfigurer.deleteCookies();

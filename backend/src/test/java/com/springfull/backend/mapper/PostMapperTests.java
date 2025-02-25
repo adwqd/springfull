@@ -137,5 +137,6 @@ public class PostMapperTests {
 		postMapper.modPost(PostDetailDTO.builder().post_no(12).title("수정").cost(4321).content("수정내용").build());
 	}
 	
+	
 
 }

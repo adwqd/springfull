@@ -138,5 +138,23 @@
 			</if>
 		</where>
 	</select>
-
+	
+	<insert id="saveToken">
+		insert into refresh_token(token, member_uuid)
+		values (#{token}, #{member_uuid})
+	</insert>
+	
+	<select id="getToken">
+		select token
+		from refresh_token
+		where member_uuid=#{member_uuid}
+		order by token_id desc
+		limit 0,1
+	</select>
+	
+	<select id="getUser">
+		select *
+		from member
+		where member_uuid=#{member_uuid}
+	</select>
 </mapper>

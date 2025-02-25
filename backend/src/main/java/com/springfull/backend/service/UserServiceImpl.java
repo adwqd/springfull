@@ -26,14 +26,16 @@ public class UserServiceImpl implements UserService {
 	private final ListMapper listMapper;
 
 	@Override
-	public String login(UserDTO userDTO) {
+	public UserDTO login(UserDTO userDTO) {
 		UserDTO data = userMapper.check(userDTO.getUser_id());
 		if(data==null) {
 			String member_uuid = UUID.randomUUID().toString();
 			userDTO.setMember_uuid(member_uuid);
+			userDTO.setState(1);
 			userMapper.signIn(userDTO);
-		}else if(data.getState()==1) {
-			return data.getMember_uuid();
+			return userDTO;
+		}else if(data.getState()!=2) {
+			return data;
 		}
 		return null;
 	}
@@ -120,6 +122,22 @@ public class UserServiceImpl implements UserService {
 				.total(count).build();
 		System.out.println(pageRequestDTO.getPage()+" "+pageResponseDTO.getPage());
 		return pageResponseDTO;
+	}
+
+	@Override
+	public void saveToken(String member_uuid, String token) {
+		userMapper.saveToken(member_uuid, token);	
+	}
+
+	@Override
+	public boolean tokenCheck(String member_uuid, String token) {
+		return token.equals(userMapper.getToken(member_uuid));
+	}
+
+	@Override
+	public UserDTO getUser(String member_uuid) {
+		// TODO Auto-generated method stub
+		return userMapper.getUser(member_uuid);
 	}
 
 }

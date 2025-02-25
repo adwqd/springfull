@@ -2,6 +2,7 @@ package com.springfull.backend.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,7 +27,9 @@ import com.springfull.backend.domain.ReportDTO;
 import com.springfull.backend.domain.UserDTO;
 import com.springfull.backend.service.AdminService;
 import com.springfull.backend.service.PostService;
+import com.springfull.backend.util.JWTUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,12 +41,15 @@ public class AdminController {
 	
 	private final AdminService adminService;
 	private final PostService postService;
+	private final JWTUtil jwtUtil;
 	@Value("${com.springfull.upload.path}")
 	private String uploadPath;
 	
 	@PostMapping("/board")
-	public PageResponseDTO<PostDTO> allPost(@RequestBody PageRequestDTO pageRequestDTO){
+	public PageResponseDTO<PostDTO> allPost(@RequestBody PageRequestDTO pageRequestDTO, HttpServletRequest httpServletRequest){
 		log.info("모든글 보기");
+		String token = jwtUtil.getAccessToken(httpServletRequest);
+		log.info(jwtUtil.getUUID(token));
 		return adminService.allPost(pageRequestDTO);
 	}
 	

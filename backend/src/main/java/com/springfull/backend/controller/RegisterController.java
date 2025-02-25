@@ -36,7 +36,7 @@ public class RegisterController {
 		return tagDTO;
 	}
 	
-	@PostMapping("/register")
+	@PostMapping("/member/register")
 	public int register(@RequestBody PostDetailDTO postDetailDTO) {
 		log.info(postDetailDTO.getImage());
 		return registerService.register(postDetailDTO);

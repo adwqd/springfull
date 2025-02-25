@@ -35,9 +35,11 @@ public class PostServiceImpl implements PostService {
 			postDetailDTO.setCate_id(postMapper.getCate(post_no));
 			postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
 			postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
-			if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
-				postDetailDTO.setBookmark(true);
-			}
+			if(member_uuid!=null) {
+				if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
+					postDetailDTO.setBookmark(true);
+				}
+			}			
 			postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
 			postDetailDTO.setImage(postMapper.getImage(post_no));
 		}

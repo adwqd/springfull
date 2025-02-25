@@ -45,4 +45,14 @@ public class UserMapperTests {
 	public void testGetStarPostCount(){
 		log.info(userMapper.getStarPostCount(PageRequestDTO.builder().member_uuid("aaa").build()));
 	}
+	
+	@Test
+	public void testSaveToken() {
+		userMapper.saveToken("bbbb", "ccc");
+	}
+	
+	@Test
+	public void testGetToken() {
+		log.info(userMapper.getToken("bbbb"));
+	}
 }

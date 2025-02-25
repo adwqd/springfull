@@ -35,4 +35,9 @@ public interface UserMapper {
 	//북마크 한 글
 	List<PostDTO> bookMarkedPost(PageRequestDTO pageRequestDTO);
 	Integer getBookMarkedPostCount(PageRequestDTO pageRequestDTO);
+	
+	void saveToken(@Param("member_uuid") String member_uuid, @Param("token") String token);
+	String getToken(@Param("member_uuid") String member_uuid);
+	
+	UserDTO getUser(@Param("member_uuid") String member_uuid);
 }

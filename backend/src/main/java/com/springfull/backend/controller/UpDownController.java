@@ -37,7 +37,7 @@ public class UpDownController {
 	@Value("${com.springfull.upload.path}")
 	private String uploadPath;
 	
-	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/member/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public List<UploadResultDTO> upload(UploadFileDTO uploadFileDTO) {
 		
 		log.info(uploadFileDTO);
