@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaStar } from "react-icons/fa"; // ✅ 리액트 아이콘 추가
+import { FaStar, FaArrowLeft } from "react-icons/fa"; // ✅ 리액트 아이콘 추가
 
 // 📝 **데모 데이터 (API 연결 전까지 사용)**
 const mockRatedPosts = [
@@ -27,8 +27,12 @@ const MyRatedPostsPage = () => {
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-center">별점 준 글⭐</h2>
-                <button onClick={() => navigate("/")} className="text-gray-500 text-sm">
-                    ← 홈으로
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                >
+                    <FaArrowLeft />
+                    <span className="text-sm">뒤로 가기</span>
                 </button>
             </div>
 
@@ -81,7 +85,7 @@ const MyRatedPostsPage = () => {
                                     </p>
                                     <div className="flex items-center space-x-2">
                                         {/* 🔹 작성자 프로필 이미지 */}
-                                        <img src={post.profile_img} alt="Profile" className="w-5 h-5 rounded-full" />
+                                        <img src={post.profile_img} alt="Profile" className="w-4 h-4 rounded-full" />
                                         <p className="text-gray-600 text-xs">{post.writer}</p>
                                     </div>
                                     <p className="text-gray-400 text-xs mt-1">

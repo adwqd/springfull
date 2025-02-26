@@ -68,7 +68,7 @@ const BrandBoardPage = () => {
                     <button
                         key={b}
                         onClick={() => handleBrandChange(b)}
-                        className={`px-2 py-1 text-sm rounded-md transition ${selectedBrand === b ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"}`}
+                        className={`px-1 py-1 text-sm rounded-md transition ${selectedBrand === b ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"}`}
                     >
                         {b}
                     </button>
@@ -118,7 +118,7 @@ const BrandBoardPage = () => {
                                     <div className="flex items-center mt-1 space-x-2">
                                         {/* 🔹 작성자 프로필 이미지 (없으면 기본 아이콘) */}
                                         {post.profile_img ? (
-                                            <img src={post.profile_img} alt="프로필" className="w-6 h-6 rounded-full" />
+                                            <img src={post.profile_img} alt="프로필" className="w-4 h-4 rounded-full" />
                                         ) : (
                                             <FaUserCircle className="text-gray-400 w-6 h-6" />
                                         )}

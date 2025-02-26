@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaStar, FaHeart, FaRegHeart, FaTrophy, FaUserCircle } from "react-icons/fa";
+import { FaStar, FaHeart, FaTrophy, FaUserCircle } from "react-icons/fa";
 
 // 카테고리 목록
 const categories = [
@@ -12,12 +12,12 @@ const categories = [
 
 // 더미 데이터 (API 자리 확보)
 const mockData = [
-    { id: 1, title: "서브웨이 우즈 정식 레시피", writer: "writer name", date: "2025/01/03", rating: 4.0, likes: 43, image: null, profileImg: "https://source.unsplash.com/40x40/?person", category: ["subway"] },
-    { id: 2, title: "GS25 꿀조합", writer: "writer name", date: "2025/01/05", rating: 5.0, likes: 17, image: "https://source.unsplash.com/80x80/?food", profileImg: "https://source.unsplash.com/40x40/?avatar", category: ["convenience"] },
-    { id: 3, title: "내가 만든 최고의 레시피", writer: "writer name", date: "2025/01/10", rating: 4.5, likes: 3, image: null, profileImg: null, category: ["subway", "convenience"] },
-    { id: 4, title: "이마트24 한정판 조합", writer: "writer name", date: "2025/01/14", rating: 5.0, likes: 1, image: null, profileImg: "https://source.unsplash.com/40x40/?face", category: ["convenience"] },
-    { id: 5, title: "서브웨이 & 편의점 콜라보", writer: "writer name", date: "2025/01/03", rating: 4.0, likes: 2, image: "https://source.unsplash.com/80x80/?sandwich", profileImg: null, category: ["subway", "convenience"] },
-    { id: 6, title: "이색적인 기타 메뉴", writer: "writer name", date: "2025/01/05", rating: 4.0, likes: 0, image: null, profileImg: "https://source.unsplash.com/40x40/?headshot", category: ["others"] },
+    { id: 1, title: "서브웨이 우즈sssssssssssss 정식 레시피", writer: "writer name", date: "2025/01/03", update_date: "2025/01/05", rating: 4.0, likes: 43, image: null, profileImg: "https://source.unsplash.com/40x40/?person", category: ["subway"] },
+    { id: 2, title: "GS25 ssssssssssssssss조합", writer: "writer name", date: "2025/01/05", update_date: "2025/01/05", rating: 5.0, likes: 17, image: "https://source.unsplash.com/80x80/?food", profileImg: "https://source.unsplash.com/40x40/?avatar", category: ["convenience"] },
+    { id: 3, title: "내가 만든 최고의 레시피", writer: "writer name", date: "2025/01/10", update_date: "2025/01/05", rating: 4.5, likes: 3, image: null, profileImg: null, category: ["subway", "convenience"] },
+    { id: 4, title: "이마트24 한정판 조합", writer: "writer name", date: "2025/01/14", update_date: "2025/01/05", rating: 5.0, likes: 1, image: null, profileImg: "https://source.unsplash.com/40x40/?face", category: ["convenience"] },
+    { id: 5, title: "서브웨이 & 편의점 콜라보", writer: "writer name", date: "2025/01/03", update_date: "2025/01/05", rating: 4.0, likes: 2, image: "https://source.unsplash.com/80x80/?sandwich", profileImg: null, category: ["subway", "convenience"] },
+    { id: 6, title: "이색적인 기타 메뉴", writer: "writer name", date: "2025/01/05", update_date: "2025/01/05", rating: 4.0, likes: 0, image: null, profileImg: "https://source.unsplash.com/40x40/?headshot", category: ["others"] },
 ];
 
 const CategoryRankingPage = () => {
@@ -66,7 +66,7 @@ const CategoryRankingPage = () => {
                     <button
                         key={c.id}
                         onClick={() => handleCategoryClick(c.id)}
-                        className={`px-3 py-1 text-sm rounded-md transition ${selectedCategory === c.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"}`}
+                        className={`px-1 py-1 text-sm rounded-md transition ${selectedCategory === c.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"}`}
                     >
                         {c.name}
                     </button>
@@ -78,16 +78,22 @@ const CategoryRankingPage = () => {
                 {rankingData.length > 0 ? (
                     <ul className="space-y-3">
                         {rankingData.map((post, index) => (
-                            <li key={post.id} className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-4 shadow-lg scale-105" : ""}`} onClick={() => navigate(`/posts/${post.id}`)}>
-
+                            <li
+                                key={post.id}
+                                className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-4 shadow-lg scale-105" : ""
+                                    }`}
+                                onClick={() => navigate(`/posts/${post.id}`)}
+                            >
                                 {/* 🔹 1등 트로피 아이콘 */}
-                                {index === 0 && (
+                                {index === 0 ? (
                                     <FaTrophy className="text-yellow-600 text-lg flex-shrink-0" />
+                                ) : (
+                                    <span className="text-gray-500 text-sm w-6 text-center font-bold">{index + 1}.</span>
                                 )}
 
                                 {/* 🔹 이미지 (없으면 공백 없이 텍스트 영역 앞으로 이동) */}
                                 {post.image ? (
-                                    <div className="w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-300">
+                                    <div className="w-12 h-12 flex-shrink-0 rounded-md overflow-hidden bg-gray-300 ml-3">
                                         <img src={post.image} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
@@ -105,17 +111,20 @@ const CategoryRankingPage = () => {
                                             <img
                                                 src={post.profileImg}
                                                 alt="프로필"
-                                                className="w-6 h-6 rounded-full mr-2"
+                                                className="w-4 h-4 rounded-full mr-2"
                                             />
                                         ) : (
                                             <FaUserCircle className="w-6 h-6 text-gray-400 mr-2" />
                                         )}
-                                        <p className="text-xs text-gray-500">{post.writer} • {post.date}</p>
+                                        <p className="text-xs text-gray-500">{post.writer} </p>
                                     </div>
+                                    <p className="text-gray-400 text-xs mt-1">
+                                        {post.date} {post.update_date && `(수정:${post.update_date})`}
+                                    </p>
                                 </div>
 
                                 {/* 🔹 좋아요 & 평점 (세로 정렬 & 위치 고정) */}
-                                <div className="flex flex-col items-end min-w-[70px] text-sm space-y-1">
+                                <div className="flex flex-col items-end min-w-[50px] text-sm space-y-1">
                                     <div className="flex items-center text-yellow-500 space-x-1 w-full justify-end">
                                         <FaStar /> <span className="w-6 text-right text-gray-500">{post.rating.toFixed(1)}</span>
                                     </div>

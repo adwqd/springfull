@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHeart, FaStar } from "react-icons/fa"; // ✅ 리액트 아이콘 추가
+import { FaHeart, FaStar, FaArrowLeft } from "react-icons/fa"; // ✅ 리액트 아이콘 추가
 
 // 📝 **데모 데이터 (API 연결 전까지 사용)**
 const mockMyPosts = [
@@ -31,8 +31,12 @@ const MyPostsPage = () => {
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-center">내가 작성한 글 📝</h2>
-                <button onClick={() => navigate("/")} className="text-gray-500 text-sm">
-                    ← 홈으로
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                >
+                    <FaArrowLeft />
+                    <span className="text-sm">뒤로 가기</span>
                 </button>
             </div>
 

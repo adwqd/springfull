@@ -9,7 +9,7 @@ const categories = [
     { id: "collab", name: "콜라보" },
 ];
 
-const Navbar = ({ userInfo, onLogout }) => {
+const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { category } = useParams();
@@ -59,7 +59,14 @@ const Navbar = ({ userInfo, onLogout }) => {
                         <DropdownMenu label="📌 브랜드 게시판" isOpen={brandMenuOpen} setOpen={setBrandMenuOpen} items={brands} handleClick={handleBrandClick} />
 
                         {/* 🏆 카테고리 드롭다운 */}
-                        <DropdownMenu label="🏆 카테고리 랭킹" isOpen={categoryMenuOpen} setOpen={setCategoryMenuOpen} items={categories.map((cat) => cat.id)} handleClick={handleCategoryClick} />
+                        <DropdownMenu
+                            label="🏆 카테고리 랭킹"
+                            isOpen={categoryMenuOpen}
+                            setOpen={setCategoryMenuOpen}
+                            items={categories}
+                            handleClick={handleCategoryClick}
+                            isCategory
+                        />
 
                         <NavItem to="/hotRanking" label="📈 급상승 랭킹" currentPath={location.pathname} onClick={closeAllMenus} />
                         <NavItem to="/users/me" label="👩 마이페이지" currentPath={location.pathname} onClick={closeAllMenus} />
@@ -74,15 +81,7 @@ const Navbar = ({ userInfo, onLogout }) => {
                         맛있조합
                     </Link>
 
-                    {!userInfo ? (
-                        <button onClick={() => navigate("/login")} className="bg-yellow-500 text-sm text-gray-700 font-bold px-3 py-1 rounded-md hover:bg-yellow-600 transition">
-                            로그인
-                        </button>
-                    ) : (
-                        <button onClick={onLogout} className="bg-red-500 text-sm text-white px-3 py-1 font-bold rounded-md hover:bg-red-600 transition">
-                            로그아웃
-                        </button>
-                    )}
+
 
                     <button onClick={() => setNavOpen(!navOpen)} className="text-gray-700 font-semibold text-lg">
                         ☰ 메뉴
@@ -100,7 +99,14 @@ const Navbar = ({ userInfo, onLogout }) => {
                             <DropdownMenu label="📌 브랜드 게시판" isOpen={brandMenuOpen} setOpen={setBrandMenuOpen} items={brands} handleClick={handleBrandClick} />
 
                             {/* 🏆 카테고리 드롭다운 */}
-                            <DropdownMenu label="🏆 카테고리 랭킹" isOpen={categoryMenuOpen} setOpen={setCategoryMenuOpen} items={categories.map((cat) => cat.id)} handleClick={handleCategoryClick} />
+                            <DropdownMenu
+                                label="🏆 카테고리 랭킹"
+                                isOpen={categoryMenuOpen}
+                                setOpen={setCategoryMenuOpen}
+                                items={categories}
+                                handleClick={handleCategoryClick}
+                                isCategory
+                            />
 
                             <NavItem to="/hotRanking" label="📈 급상승 랭킹" currentPath={location.pathname} onClick={closeAllMenus} />
                             <NavItem to="/users/me" label="👩 마이페이지" currentPath={location.pathname} onClick={closeAllMenus} />
@@ -122,7 +128,7 @@ const NavItem = ({ to, label, currentPath, onClick }) => (
 );
 
 // ✅ 드롭다운 컴포넌트
-const DropdownMenu = ({ label, isOpen, setOpen, items, handleClick }) => (
+const DropdownMenu = ({ label, isOpen, setOpen, items, handleClick, isCategory }) => (
     <li>
         <button onClick={() => setOpen(!isOpen)} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-green-700 font-semibold transition-colors duration-200">
             {label}
@@ -130,9 +136,12 @@ const DropdownMenu = ({ label, isOpen, setOpen, items, handleClick }) => (
         {isOpen && (
             <ul className="pl-6 mt-1 space-y-2">
                 {items.map((item) => (
-                    <li key={item}>
-                        <button onClick={() => handleClick(item)} className="block px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-green-700 rounded-md transition-colors duration-200 w-full text-left">
-                            {item}
+                    <li key={item.id || item}>
+                        <button
+                            onClick={() => handleClick(item.id || item)}
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-green-700 rounded-md transition-colors duration-200 w-full text-left"
+                        >
+                            {isCategory ? item.name : item}
                         </button>
                     </li>
                 ))}

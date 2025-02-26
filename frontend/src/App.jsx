@@ -19,16 +19,14 @@ import MyPage from "./pages/MyPage";
 import BookmarkPage from "./pages/BookmarkPage";
 import MyPostPage from "./pages/MyPostPage";
 import StarRatingPage from "./pages/StarRatingPage";
-import ProfileEditPage from "./pages/ProfileEditPage";
 import LoginPage from "./pages/LoginPage";
-import ChatbotPage from "./pages/ChatbotPage";
 import PostEditPage from "./pages/PostEditPage";
 
 // 관리자 페이지
-import AdminLoginPage from "./pages/AdminLoginPage";
 import PostReportBoardPage from "./pages/PostReportBoardPage";
 import DeleteBoardPage from "./pages/DeleteBoardPage";
-
+import BoardListPage
+  from "./pages/BoardListPage";
 const App = () => {
   // ✅ 로그인 상태 관리
   const [userInfo, setUserInfo] = useState(null);
@@ -84,23 +82,22 @@ const App = () => {
             <Route path="/users/me/posts" element={<MyPostPage />} />
             {/* 내가 매긴 별점을 모아는 목록 페이지 */}
             <Route path="/users/me/ratings" element={<StarRatingPage />} />
-            {/* 프로필 수정 페이지 */}
-            <Route path="/users/me/edit" element={<ProfileEditPage />} />
+            {/* 프로필 수정 페이지 - 카카오로 연결
+            <Route path="/users/me/edit" element={<ProfileEditPage />} /> */}
 
             {/* 기타 */}
             {/* 로그인 페이지 */}
             <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/oauth/kakao/callback" element={<OAuthRedirectHandler onLoginSuccess={setUserInfo} />} />
-            {/* 챗봇 페이지 */}
-            <Route path="/chatbot" element={<ChatbotPage />} />
+
 
             {/* 관리자 라우팅 */}
-            {/* 관리자 로그인 페이지 */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* 관리자 로그인 페이지 - 카카오 로그인으로 관리자 권한을 준뒤 토큰을 확인 후 관리자 페이지확인*/}
+            {/* <Route path="/admin/login" element={<AdminLoginPage />} /> */}
             {/* 신고받은 게시글 목록 페이지 */}
             <Route path="/admin/reports" element={<PostReportBoardPage />} />
             {/* 전체 게시글 목록 페이지 */}
-            {/* <Route path="/admin/list" element={<PostReportBoardPage />} /> */}
+            <Route path="/admin/list" element={<BoardListPage />} />
             {/* 삭제된 게시글 목록 페이지 */}
             <Route path="/admin/deletedPosts" element={<DeleteBoardPage />} />
             {/* 회원관리 페이지 */}

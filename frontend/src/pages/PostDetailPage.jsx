@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaPaperPlane, FaArrowLeft, FaEdit, FaTrash, FaExclamationTriangle } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaPaperPlane, FaArrowLeft } from "react-icons/fa";
 
 //더미 데이터
 const mockPost = {
@@ -54,26 +54,24 @@ const PostDetailPage = () => {
     const [likeCount, setLikeCount] = useState(post.likes);
     const [rating, setRating] = useState(post.rating);
     const [bookmarked, setBookmarked] = useState(post.bookmarked);
-    const [commentModalOpen, setCommentModalOpen] = useState(null);
+
+    // 게시글 작성/수정/삭제/신고 상태
     const [postModalOpen, setPostModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [selectedReason, setSelectedReason] = useState("");
     const [customReason, setCustomReason] = useState("");
 
+    // 댓글 작성/수정/삭제 상태
     const [comments, setComments] = useState(post.comments);
-    // ✅ 댓글 수정 상태
+    const [commentModalOpen, setCommentModalOpen] = useState(null);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editCommentContent, setEditCommentContent] = useState("");
-
-    // ✅ 댓글 삭제, 신고 상태
     const [deleteCommentId, setDeleteCommentId] = useState(null);
-    const [reportCommentId, setReportCommentId] = useState(null);
-    const [reportReason, setReportReason] = useState("");
-    const [showReportModal, setShowReportModal] = useState(false);
-
-    const [notification, setNotification] = useState("");
     const [newComment, setNewComment] = useState("");
+
+    //상태 완료 알림
+    const [notification, setNotification] = useState("");
 
 
 
@@ -85,13 +83,13 @@ const PostDetailPage = () => {
         // }).catch(error => console.error(error));
     }, [id]);
 
-    //좋아요,북마크,별점,댓글 후 알림 기능 2초 후에 사라짐
+    //상태 알림 기능 2초 후에 사라짐
     const showNotification = (message) => {
         setNotification(message);
         setTimeout(() => setNotification(""), 2000);
     };
 
-
+    //게시글 -----------------------------------------------------------------------------------------------------------------------------------------------
     // 게시글 좋아요 
     const handleLike = () => {
         setLiked((prevLiked) => !prevLiked); // 상태만 업데이트
@@ -102,7 +100,6 @@ const PostDetailPage = () => {
 
         showNotification(liked ? "게시글 좋아요를 취소했습니다." : "게시글에 좋아요를 남겼습니다");
     };
-
 
 
     // 별점 추가
@@ -117,7 +114,63 @@ const PostDetailPage = () => {
         showNotification(bookmarked ? "게시글 북마크를 취소했습니다." : "게시글을 북마크했습니다");
     };
 
-    // ❤️ 댓글 좋아요 토글 (색상 변경 & 숫자 업데이트)
+    // 게시글 모달 토글
+    const togglePostModal = (e) => {
+        e.stopPropagation();
+        setPostModalOpen(!postModalOpen);
+    };
+
+    // 게시글 신고 모달 토글
+    const toggleReportModal = () => {
+        setReportModalOpen(!reportModalOpen);
+        setPostModalOpen(false); // 신고 모달 열면 기존 모달 닫기
+    };
+
+    // 게시글  신고 제출 처리
+    const handleReportSubmit = () => {
+        if (!selectedReason) {
+            alert("신고 사유를 선택해주세요.");
+            return;
+        }
+
+        const reportDetails = selectedReason === "기타" ? customReason : selectedReason;
+        if (!reportDetails.trim()) {
+            alert("신고 내용을 입력해주세요.");
+            return;
+        }
+
+        console.log("신고 접수 완료:", reportDetails);
+        alert("신고가 접수되었습니다.");
+        setReportModalOpen(false);
+        setSelectedReason("");
+        setCustomReason("");
+    };
+
+    // 게시글 삭제 모달 토글
+    const toggleDeleteModal = () => {
+        setDeleteModalOpen(!deleteModalOpen);
+        setPostModalOpen(false);
+    };
+
+    // 게시글 삭제 처리
+    const handleDeletePost = async () => {
+        try {
+            console.log(`🚮 게시글 삭제 요청: ${post.id}`);
+            // TODO: 실제 삭제 API 호출 자리 (백엔드 연동 필요)
+            // const response = await fetch(`/api/posts/${post.id}`, { method: "DELETE" });
+
+            // if (!response.ok) throw new Error("삭제 실패");
+
+            alert("✅ 게시글이 삭제되었습니다.");
+            navigate("/users/me"); // 삭제 후 마이페이지로 이동
+        } catch (error) {
+            console.error("게시글 삭제 오류:", error);
+            alert("삭제 중 오류가 발생했습니다.");
+        }
+    };
+
+    //댓글 ------------------------------------------------------------------------------------------------------------------------------------------
+    // 댓글 좋아요 토글 (색상 변경 & 숫자 업데이트)
     const handleCommentLike = (commentId) => {
         setComments((prevComments) => {
             return prevComments.map((comment) => {
@@ -131,113 +184,66 @@ const PostDetailPage = () => {
         });
     };
 
-
-    // 댓글 모달 토글
-    const toggleCommentModal = (e, commentId) => {
-        e.stopPropagation();
+    //댓글 모달창
+    const toggleCommentModal = (event, commentId) => {
+        event?.stopPropagation();
         setCommentModalOpen(commentModalOpen === commentId ? null : commentId);
     };
-    // ✅ 댓글 수정 시작
+    //댓글 수정 입력창
     const handleEditComment = (commentId, content) => {
         setEditingCommentId(commentId);
         setEditCommentContent(content);
+        setCommentModalOpen(null);
     };
-
-    // ✅ 댓글 수정 저장
+    // ✅ 댓글 수정 저장 (Enter 키 적용)
     const handleSaveEditComment = (commentId) => {
         if (editCommentContent.trim() === "") return;
-        setComments((prevComments) =>
-            prevComments.map((comment) =>
+        setComments((prev) =>
+            prev.map((comment) =>
                 comment.id === commentId ? { ...comment, content: editCommentContent } : comment
             )
         );
         setEditingCommentId(null);
-        showNotification("댓글이 수정되었습니다");
+        showNotification("댓글이 수정되었습니다.");
     };
 
-    // ✅ 댓글 삭제 확인 모달 열기
-    const confirmDeleteComment = (commentId) => {
-        setDeleteCommentId(commentId);
+    // ✅ 엔터키로 댓글 저장
+    const handleEditKeyDown = (e, commentId) => {
+        if (e.key === "Enter" && !e.shiftKey) {  // Shift + Enter 입력 시 줄바꿈
+            e.preventDefault();
+            handleSaveEditComment(commentId);
+        }
     };
 
-    // ✅ 댓글 삭제 처리
     const handleDeleteComment = () => {
-        setComments((prevComments) => prevComments.filter((comment) => comment.id !== deleteCommentId));
-        setDeleteCommentId(null);
-        showNotification("댓글이 삭제되었습니다");
-    };
-
-    // ✅ 댓글 신고 모달 열기
-    const handleReportComment = (commentId) => {
-        setReportCommentId(commentId);
-        setShowReportModal(true);
-    };
-
-    // ✅ 댓글 신고 제출
-    const handleSubmitReport = () => {
-        if (!reportReason.trim()) {
-            alert("🚨 신고 사유를 입력해주세요.");
-            return;
-        }
-        showNotification("🚨 댓글이 신고되었습니다.");
-        setShowReportModal(false);
-        setReportReason("");
-    };
-
-    // 게시글 모달 토글
-    const togglePostModal = (e) => {
-        e.stopPropagation();
-        setPostModalOpen(!postModalOpen);
-    };
-    // ✅ 신고 모달 토글
-    const toggleReportModal = () => {
-        setReportModalOpen(!reportModalOpen);
-        setPostModalOpen(false); // 신고 모달 열면 기존 모달 닫기
-    };
-    // ✅ 신고 제출 처리
-
-    const handleReportSubmit = () => {
-        if (!selectedReason) {
-            alert("🚨 신고 사유를 선택해주세요.");
-            return;
-        }
-
-        const reportDetails = selectedReason === "기타" ? customReason : selectedReason;
-        if (!reportDetails.trim()) {
-            alert("🚨 신고 내용을 입력해주세요.");
-            return;
-        }
-
-        console.log("🚨 신고 접수 완료:", reportDetails);
-        alert("신고가 접수되었습니다.");
-        setReportModalOpen(false);
-        setSelectedReason("");
-        setCustomReason("");
-    };
-    // ✅ 삭제 모달 토글
-    const toggleDeleteModal = () => {
-        setDeleteModalOpen(!deleteModalOpen);
-        setPostModalOpen(false);
-    };
-
-    // ✅ 게시글 삭제 처리
-    const handleDeletePost = async () => {
-        try {
-            console.log(`🚮 게시글 삭제 요청: ${post.id}`);
-            // TODO: 실제 삭제 API 호출 자리 (백엔드 연동 필요)
-            // const response = await fetch(`/api/posts/${post.id}`, { method: "DELETE" });
-
-            // if (!response.ok) throw new Error("삭제 실패");
-
-            alert("✅ 게시글이 삭제되었습니다.");
-            navigate("/users/me"); // 삭제 후 마이페이지로 이동
-        } catch (error) {
-            console.error("게시글 삭제 오류:", error);
-            alert("🚨 삭제 중 오류가 발생했습니다.");
+        if (deleteCommentId !== null) {
+            setComments((prevComments) => prevComments.filter((comment) => comment.id !== deleteCommentId));
+            setDeleteCommentId(null);
+            showNotification("댓글이 삭제되었습니다.");
         }
     };
 
-    // 다른 곳 클릭하면 모달 닫기
+
+    //댓글 작성
+    const handleAddComment = () => {
+        if (newComment.trim() === "") return;
+        const newCommentObj = {
+            id: comments.length + 1,
+            writer: "현재 사용자",
+            profileImg: "https://source.unsplash.com/40x40/?profile", // 더미 프로필 이미지 추가
+            content: newComment,
+            date: formatDate(new Date()),
+            likes: 0,
+            liked: false,
+        };
+        setComments([...comments, newCommentObj]);
+        setNewComment(""); // 입력창 초기화
+        showNotification("댓글이 작성되었습니다.");
+    };
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // 모달창 다른 곳 클릭하면 모달 닫기
     useEffect(() => {
         const closeModals = (e) => {
             if (!e.target.closest(".modal")) {
@@ -249,7 +255,7 @@ const PostDetailPage = () => {
         return () => document.removeEventListener("click", closeModals);
     }, []);
 
-    // ✅ 날짜를 `YYYY/MM/DD` 포맷으로 변환하는 함수 추가
+    // 날짜 `YYYY/MM/DD` 포맷
     const formatDate = (date) => {
         const d = new Date(date);
         const year = d.getFullYear();
@@ -259,20 +265,6 @@ const PostDetailPage = () => {
     };
 
 
-    const handleAddComment = () => {
-        if (newComment.trim() === "") return;
-        const newCommentObj = {
-            id: comments.length + 1,
-            writer: "현재 사용자",
-            content: newComment,
-            date: formatDate(new Date()),
-            likes: 0,
-            liked: false,
-        };
-        setComments([...comments, newCommentObj]);
-        setNewComment("");
-        showNotification("댓글을 작성했습니다");
-    };
 
     return (
 
@@ -321,9 +313,9 @@ const PostDetailPage = () => {
                 {postModalOpen && (
                     <div className="absolute top-12 right-4 bg-white border rounded-md shadow-lg p-2 w-40 modal z-50">
                         <ul className="space-y-2 text-gray-700">
-                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => navigate(`/posts/${post.id}/edit`)}>수정하기</li>
-                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleDeleteModal}>삭제하기</li>
-                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleReportModal}>신고하기</li>
+                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => navigate(`/posts/${post.id}/edit`)}>수정</li>
+                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleDeleteModal}>삭제</li>
+                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleReportModal}>신고</li>
                         </ul>
                     </div>
                 )}
@@ -377,43 +369,11 @@ const PostDetailPage = () => {
                     </div>
                 </div>
 
-
-
-            </div>
-
-            <div className="max-w-2xl mx-auto p-0 space-y-6 shadow-md" >
-                {/* 🔹 댓글 목록 */}
-                <div className="border p-3 shadow-md rounded-xl">
-                    <h3 className="text-base font-bold text-gray-800">댓글</h3>
-
-                    {comments.map((comment) => (
-                        <div key={comment.id} className="border p-3 rounded-md shadow-sm relative">
-                            <p className="text-sm text-gray-700">{comment.writer}</p>
-                            <p className="text-gray-900">{comment.content}</p>
-
-                            <button onClick={(e) => toggleCommentModal(e, comment.id)} className="absolute top-4 right-4 text-gray-500">
-                                ⋮
-                            </button>
-
-                            {commentModalOpen === comment.id && (
-                                <div className="absolute right-4 top-10 bg-white border rounded-md shadow-lg p-2 w-32 z-50">
-                                    <ul className="space-y-2 text-gray-700">
-                                        <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(comment.id, comment.content)}>수정</li>
-                                        <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => confirmDeleteComment(comment.id)}>삭제</li>
-                                        <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => confirmReportComment(comment.id)}>신고</li>
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-
-
-                </div>
-                {/* 🔹 신고 모달 */}
+                {/* 🔹게시글 신고 모달 */}
                 {reportModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                         <div className="bg-white p-5 rounded-lg shadow-md w-80">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">🚨 신고 사유 선택</h3>
+                            <h3 className="text-lg font-bold text-gray-800 mb-4">신고 사유 선택</h3>
 
                             {/* 사유 선택 드롭다운 */}
                             <select
@@ -446,12 +406,12 @@ const PostDetailPage = () => {
                         </div>
                     </div>
                 )}
-                {/* 🔹 삭제 확인 모달 */}
+                {/* 🔹게시글 삭제 확인 모달 */}
                 {deleteModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                         <div className="bg-white p-5 rounded-lg shadow-md w-80">
                             <h3 className="text-lg font-bold text-gray-800 mb-4">게시글 삭제</h3>
-                            <p className="text-gray-600 text-sm mb-4">정말로 이 게시글을 삭제하시겠습니까?</p>
+                            <p className="text-gray-600 text-sm mb-4">해당 게시글을 삭제하시겠습니까?</p>
                             <div className="flex justify-end space-x-3">
                                 <button onClick={() => setDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded-md">취소</button>
                                 <button onClick={handleDeletePost} className="bg-red-500 text-white px-4 py-2 rounded-md">삭제</button>
@@ -461,6 +421,114 @@ const PostDetailPage = () => {
                 )}
 
             </div>
+
+            <div className="max-w-2xl mx-auto p-0 space-y-6 shadow-md" >
+                {/* 🔹 댓글 목록 */}
+                <div className="border p-3 shadow-md rounded-xl">
+                    <h3 className="text-base font-bold text-gray-800">댓글</h3>
+
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="mt-3 border p-3 rounded-md shadow-sm relative text-sm">
+
+                            {/* 작성자 정보*/}
+                            <div className="flex items-center space-x-2">
+                                <img src={comment.profileImg} alt="프로필" className="w-4 h-4 rounded-full" />
+                                <p className="text-xs font-semibold text-gray-700">{comment.writer}</p>
+                            </div>
+
+                            {/* 댓글 수정시 */}
+                            <div className="p-2">
+                                {editingCommentId === comment.id ? (
+                                    <textarea
+                                        className="w-full border p-2 rounded-md text-sm"
+                                        value={editCommentContent}
+                                        onChange={(e) => setEditCommentContent(e.target.value)}
+                                        onKeyDown={(e) => handleEditKeyDown(e, comment.id)}
+                                    />
+                                ) : (
+                                    <p className=" text-gray-900">{comment.content}</p>
+                                )}
+                            </div>
+
+                            {/* ✅ 좋아요 버튼 + 옵션 버튼을 오른쪽에 고정, 입력창과 겹치지 않도록 분리 */}
+                            <div className="absolute top-3 right-2 flex items-center space-x-1.5">
+                                {/* 좋아요 버튼 */}
+                                <button onClick={() => handleCommentLike(comment.id)} className="text-gray-500 flex items-center space-x-1">
+                                    {comment.liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+                                    <span className="text-sm">{comment.likes}</span>
+                                </button>
+
+                                {/* 옵션 버튼 (⋮) */}
+                                <button onClick={(e) => toggleCommentModal(e, comment.id)} className="text-gray-500">
+                                    ⋮
+                                </button>
+                            </div>
+
+
+                            {commentModalOpen === comment.id && (
+                                <div className="absolute right-4 top-10 bg-white border rounded-md shadow-lg p-2 w-32 z-50">
+                                    <ul className="space-y-2 text-gray-700">
+                                        {editingCommentId !== comment.id && ( // 수정 중이 아닐 때만 수정 버튼 표시
+                                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(comment.id, comment.content)}>
+                                                수정
+                                            </li>
+                                        )}
+                                        <li className="cursor-pointer hover:bg-gray-100 p-2 " onClick={() => setDeleteCommentId(comment.id)}>
+                                            삭제
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+
+                    ))}
+
+                </div>
+
+                {/* ✅ 댓글 삭제 확인 모달 */}
+                {deleteCommentId !== null && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white p-5 rounded-lg shadow-md w-80">
+                            <h3 className="text-lg font-bold text-gray-800 mb-4">댓글 삭제</h3>
+                            <p className="text-gray-600 text-sm mb-4">해당 댓글을 삭제하시겠습니까?</p>
+                            <div className="flex justify-end space-x-3">
+                                <button onClick={() => setDeleteCommentId(null)} className="bg-gray-400 text-white px-4 py-2 rounded-md">취소</button>
+                                <button onClick={() => handleDeleteComment()} className="bg-red-500 text-white px-4 py-2 rounded-md">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+            </div>
+
+            {/* ✅ 댓글 입력창과 작성 버튼 (높이 동일 & 공간 분리) */}
+            <div className="bg-white border-t p-3 sticky bottom-0 left-0 w-full flex items-center z-50">
+                {/* 입력창 */}
+                <input
+                    type="text"
+                    className="flex-1 p-3 text-sm focus:outline-none border border-gray-200 h-12"
+                    placeholder="댓글을 입력하세요..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleAddComment()}
+                />
+
+                {/* 작성 버튼 */}
+                <button
+                    onClick={handleAddComment}
+                    className="border rounded-sm text-gray-600 px-4 flex items-center justify-center h-12 "
+                >
+                    <FaPaperPlane className="text-lg" />
+                </button>
+            </div>
+
+
+
+
+
+
+
         </div >
     );
 };

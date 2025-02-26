@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const KAKAO_CLIENT_ID = "534cb5dc275508d96089504a240da925"; // ✅ REST API 키 사용
-const REDIRECT_URI = "http://localhost:5173/oauth/kakao/callback"; // ✅ 반드시 카카오 개발자 콘솔과 일치
+const KAKAO_REST_API_KEY = "f9b961caf76caffaab08ed1e2ce895cb"; // 🔥 REST API 키
+const REDIRECT_URI = "http://localhost:5173/oauth/kakao/callback"; // 🔥 카카오 개발자 콘솔과 일치해야 함
 
+
+// 🔹 OAuth Redirect 처리 컴포넌트
 const OAuthRedirectHandler = () => {
     const navigate = useNavigate();
 
@@ -11,13 +13,12 @@ const OAuthRedirectHandler = () => {
         console.log("✅ OAuthRedirectHandler 실행됨!");
 
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("code"); // ✅ 카카오에서 받은 인가 코드 확인
+        const code = urlParams.get("code"); // 🔹 카카오에서 받은 인가 코드 확인
 
         console.log("🔹 URL에서 추출한 인가 코드:", code);
 
         if (code) {
-            console.log("✅ 카카오 로그인 성공! 인가 코드:", code);
-            fetchAccessToken(code); // ✅ 액세스 토큰 요청
+            fetchAccessToken(code); // 🔹 인가 코드로 액세스 토큰 요청
         } else {
             console.error("❌ 카카오 로그인 실패: 인가 코드 없음");
             alert("카카오 로그인 실패");
@@ -25,14 +26,11 @@ const OAuthRedirectHandler = () => {
         }
     }, []);
 
-    // ✅ 액세스 토큰 요청 함수
+    // 🔹 액세스 토큰 요청 함수
     const fetchAccessToken = async (code) => {
         console.log("🔹 fetchAccessToken 실행됨, 인가 코드:", code);
 
         try {
-            // ✅ 기존 인가 코드 삭제 (중복 사용 방지)
-            localStorage.removeItem("kakaoAuthCode");
-
             const response = await fetch("https://kauth.kakao.com/oauth/token", {
                 method: "POST",
                 headers: {
@@ -40,9 +38,10 @@ const OAuthRedirectHandler = () => {
                 },
                 body: new URLSearchParams({
                     grant_type: "authorization_code",
-                    client_id: "your-rest-api-key", // ✅ JavaScript 키가 아닌 REST API 키 사용!
-                    redirect_uri: "http://localhost:5173/oauth/kakao/callback", // ✅ 반드시 카카오 개발자 콘솔과 동일해야 함
-                    code: code, // ✅ 로그인 후 받은 인가 코드
+                    client_id: KAKAO_REST_API_KEY,
+                    redirect_uri: REDIRECT_URI,
+                    code: code,
+
                 }),
             });
 
@@ -64,8 +63,7 @@ const OAuthRedirectHandler = () => {
         }
     };
 
-
-    // ✅ 사용자 정보 요청 함수 (이메일 제거 & 마이페이지 이동 추가)
+    // 🔹 사용자 정보 요청 함수
     const fetchUserInfo = async (accessToken) => {
         try {
             const response = await fetch("https://kapi.kakao.com/v2/user/me", {
@@ -95,8 +93,6 @@ const OAuthRedirectHandler = () => {
             navigate("/login");
         }
     };
-
-
 
     return <p>카카오 로그인 처리 중...</p>;
 };

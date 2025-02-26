@@ -25,10 +25,7 @@ const Footer = () => {
                         <PlusCircle size={24} />
                         <span className="mt-1 text-xs">글작성</span>
                     </Link>
-                    <Link to="/chatbot" className={`flex flex-col items-center ${isActive("/chatbot")}`}>
-                        <MessageCircle size={24} />
-                        <span className="mt-1 text-xs">챗봇</span>
-                    </Link>
+
                     <Link to="/users/me" className={`flex flex-col items-center ${isActive("/users/me")}`}>
                         <User size={24} />
                         <span className="mt-1 text-xs">마이페이지</span>

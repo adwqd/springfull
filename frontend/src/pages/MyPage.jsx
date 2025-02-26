@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaEdit, FaCog, FaBookmark, FaStar } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaCog, FaBookmark, FaStar, FaFile, FaPortrait, FaBell } from "react-icons/fa";
 import KakaoLoginButton from "../components/KakaoLoginButton";
 import Image from "../assets/Rules!.png"; // ✅ 이미지 경로 확인
-
 
 const MyPage = () => {
     const navigate = useNavigate();
@@ -17,8 +16,10 @@ const MyPage = () => {
         } else if (window.Kakao && window.Kakao.Auth.getAccessToken()) {
             console.log("🔹 카카오 세션 유지됨, 사용자 정보 불러오기...");
             fetchUserInfo(window.Kakao.Auth.getAccessToken());
+        } else {
+            navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
         }
-    }, []);
+    }, [navigate]);
 
     // ✅ 사용자 정보 요청 함수
     const fetchUserInfo = async (accessToken) => {
@@ -37,8 +38,6 @@ const MyPage = () => {
             const nickname = userData.kakao_account?.profile?.nickname || "사용자";
             const profileImage = userData.kakao_account?.profile?.profile_image_url || "https://source.unsplash.com/100x100/?avatar";
 
-            console.log("🔹 닉네임:", nickname);
-
             const userProfile = {
                 id: userData.id || "Unknown",
                 nickname,
@@ -52,6 +51,7 @@ const MyPage = () => {
         }
     };
 
+    // ✅ 로그아웃 처리
     const handleLogout = () => {
         if (window.Kakao && window.Kakao.Auth) {
             window.Kakao.Auth.logout(() => {
@@ -59,10 +59,7 @@ const MyPage = () => {
             });
         }
 
-        // ✅ localStorage에서 모든 로그인 정보 삭제
-        localStorage.removeItem("userInfo");
-        localStorage.removeItem("kakaoAccessToken");
-
+        localStorage.removeItem("userInfo"); // ✅ localStorage에서 로그인 정보 삭제
         setUserInfo(null);
         console.log("✅ 로컬 스토리지 초기화 완료!");
 
@@ -70,29 +67,8 @@ const MyPage = () => {
         navigate("/login"); // ✅ 로그인 페이지로 이동
     };
 
-    // ✅ 로그인되지 않은 경우 로그인 버튼 표시
-    if (!userInfo) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen ">
-                <div className="bg-white p-10 shadow-lg rounded-2xl text-center w-auto flex flex-col items-center">
-                    {/* ✅ 이미지 추가 */}
-                    <img src={Image} alt="로그인 안내 배너" className="w-40 h-40 object-cover rounded-full border border-gray-300 shadow-md" />
-
-                    {/* ✅ 안내 문구 */}
-                    <p className="text-gray-500 text-sm font-semibold mt-4">
-                        맛있조합을 이용해주셔서 감사합니다.
-                        <br />
-                        로그인 후 더 많은 기능을 이용해보세요. 😀
-                    </p>
-
-                    {/* ✅ 로그인 버튼 */}
-                    <div className="mt-10 w-full">
-                        <KakaoLoginButton />
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // ✅ 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    if (!userInfo) return null;
 
     return (
         <div className="max-w-md mx-auto p-4 space-y-6">
@@ -115,7 +91,7 @@ const MyPage = () => {
 
                 <button
                     onClick={handleLogout}
-                    className="mt-4 bg-gray-400 text-sm  text-white px-3 py-1 rounded-md hover:bg-red-500 transition"
+                    className="mt-4 bg-gray-400 text-sm text-white px-3 py-1 rounded-md hover:bg-red-500 transition"
                 >
                     로그아웃
                 </button>
@@ -146,6 +122,18 @@ const MyPage = () => {
                     onClick={() => navigate("/users/me/bookmarks")}
                 >
                     북마크 <FaBookmark />
+                </button>
+                <button
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
+                    onClick={() => navigate("/admin/reports")}
+                >
+                    신고 게시판 <FaBell />
+                </button>
+                <button
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
+                    onClick={() => navigate("/admin/list")}
+                >
+                    전체 게시판 <FaFile />
                 </button>
             </div>
         </div>

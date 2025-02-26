@@ -184,7 +184,7 @@ const SearchDetailPage = () => {
                             >
                                 {/* 🔹 이미지 (없으면 공백 없이 텍스트 앞으로 이동) */}
                                 {post.image ? (
-                                    <div className="w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-gray-300">
+                                    <div className="w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-300">
                                         <img src={post.image} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
