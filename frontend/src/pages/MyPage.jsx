@@ -147,7 +147,9 @@ const MyPage = () => {
                 >
                     북마크 <FaBookmark />
                 </button>
-                <button
+                {userInfo.state==0 &&
+                <div className="bg-white shadow-md rounded-lg divide-y">
+                    <button
                     className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/admin/reports")}
                 >
@@ -159,6 +161,9 @@ const MyPage = () => {
                 >
                     전체 게시판 <FaFile />
                 </button>
+                </div>
+                }
+                
             </div>
         </div>
     );

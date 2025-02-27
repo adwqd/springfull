@@ -38,6 +38,7 @@ import com.springfull.backend.util.JWTUtil;
 import com.springfull.backend.util.MultipartFileUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -221,6 +222,13 @@ public class UserController {
 			return ResponseEntity.internalServerError().build();
 		}
 		return ResponseEntity.ok().headers(headers).body(resource);
+	}
+	
+	@GetMapping("/member/check")
+	public String check(HttpServletResponse httpServletResponse) {
+		System.out.println("회원 확인");
+		httpServletResponse.setStatus(200);
+		return "aa";
 	}
 	
 }

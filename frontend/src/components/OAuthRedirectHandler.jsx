@@ -69,6 +69,7 @@ const OAuthRedirectHandler = () => {
     // 🔹 사용자 정보 요청 함수
     const fetchUserInfo = async (code) => {
         try {
+            
             const response = await axios.get(`${apiURL}/kakao/callback?code=${code}`, {});
             console.log("로그인 응답", response);
             localStorage.setItem("token", response.data.accessToken);
