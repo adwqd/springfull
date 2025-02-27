@@ -14,11 +14,13 @@ const ReportedPosts = () => {
         const fetchReports = async () => {
             try {
                 // ❌ 백엔드 API 연결 예시 (현재는 더미 데이터 사용)
+                // const response = await fetch("/api/reports");
+                // const data = await response.json();
                 const dummyReports = [
                     {
                         reportId: 1,
                         postId: 101,
-                        title: "서브웨이 우즈정식 조합ssssssssssssssssssssss",
+                        title: "서브웨이 우즈정식 조합",
                         reportReason: "부적절한 내용",
                         customReason: "",
                         reportDate: "2025-02-26",
@@ -67,25 +69,24 @@ const ReportedPosts = () => {
     );
 
     return (
-        <div className="max-w-lg mx-auto p-4 space-y-6 lg:max-w-4xl lg:space-y-9">
-            {/* 🔹 헤더 & 홈 버튼 */}
+        <div className="max-w-2xl mx-auto p-4 space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold lg:text-2xl">신고 게시판 🔔</h2>
+                <h2 className="text-xl font-bold text-center">신고 게시판 🔔</h2>
+                {/* 🔹 뒤로 가기 버튼 */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 lg:text-base"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
                 >
                     <FaArrowLeft />
                     <span className="text-sm">뒤로 가기</span>
                 </button>
             </div>
-
-            {/* 🔽 필터 드롭다운 (셀렉트 박스) */}
+            {/* 🔹 필터 드롭다운 (셀렉트 박스) */}
             <div className="flex justify-end">
                 <select
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
-                    className="px-3 py-1 lg:py-2 border border-gray-300 rounded-md text-gray-700"
+                    className="px-3 py-1 border border-gray-300 rounded-md text-gray-700"
                 >
                     <option value="전체">전체</option>
                     <option value="정상">정상</option>
@@ -93,16 +94,16 @@ const ReportedPosts = () => {
                 </select>
             </div>
 
-            <div className="border p-3 shadow-md rounded-xl lg:p-5">
+            <div className="border p-3 shadow-md rounded-xl">
                 {/* 신고된 게시글 목록 */}
-                <table className="w-full text-sm lg:text-base">
+                <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b">
-                            <th className="p-2 text-left lg:p-3">게시글 제목</th>
-                            <th className="p-2 lg:p-3">신고 사유</th>
-                            <th className="p-2 lg:p-3">작성자</th>
-                            <th className="p-2 lg:p-3">상태</th>
-                            <th className="p-2 lg:p-3">액션</th>
+                            <th className="p-2 text-left">게시글 제목</th>
+                            <th className="p-2">신고 사유</th>
+                            <th className="p-2">작성자</th>
+                            <th className="p-2">상태</th>
+                            <th className="p-2">액션</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,22 +111,20 @@ const ReportedPosts = () => {
                             <tr key={report.reportId} className="border-b text-center">
                                 {/* 게시글 제목 클릭하면 상세 페이지로 이동 */}
                                 <td
-                                    className="p-2 text-left text-blue-600 cursor-pointer hover:underline text-xs lg:text-lg"
+                                    className="p-2 text-left text-blue-600 cursor-pointer hover:underline text-xs"
                                     onClick={() => handleViewDetails(report.postId)}
                                 >
-                                    {report.title.length > (window.innerWidth >= 1024 ? 20 : 15)
-                                        ? report.title.slice(0, window.innerWidth >= 1024 ? 20 : 15) + "..."
-                                        : report.title}
+                                    {report.title}
                                 </td>
-                                <td className="p-2 text-xs lg:text-base">{report.customReason || report.reportReason}</td>
-                                <td className="p-2 text-xs lg:text-base">{report.postOwner}</td>
-                                <td className={`p-2 font-bold text-xs lg:text-base ${report.status === "삭제" ? "text-red-500" : "text-green-600"}`}>
+                                <td className="p-2 text-xs">{report.customReason || report.reportReason}</td>
+                                <td className="p-2 text-xs">{report.postOwner}</td>
+                                <td className={`p-2 font-bold text-xs ${report.status === "삭제" ? "text-red-500" : "text-green-600"}`}>
                                     {report.status}
                                 </td>
                                 <td className="p-2">
                                     <button
                                         onClick={() => handleUpdateStatus(report.reportId)}
-                                        className={`px-2 py-1 text-xs lg:text-base rounded-md text-gray-700 ${report.status === "정상" ? "bg-red-300" : " bg-gray-300"
+                                        className={`px-2 py-1 text-xs rounded-md text-gray-700 ${report.status === "정상" ? "bg-red-300" : " bg-gray-300"
                                             }`}
                                     >
                                         {report.status === "정상" ? "삭제처리" : "정상처리"}

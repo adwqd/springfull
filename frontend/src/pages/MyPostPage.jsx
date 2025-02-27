@@ -27,16 +27,16 @@ const MyPostsPage = () => {
     });
 
     return (
-        <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl lg:space-y-9">
+        <div className="p-4 max-w-lg mx-auto space-y-6">
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-center lg:text-2xl">내가 작성한 글 📝</h2>
+                <h2 className="text-xl font-bold text-center">내가 작성한 글 📝</h2>
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 lg:text-lg"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
                 >
                     <FaArrowLeft />
-                    <span className="text-sm lg:text-base">뒤로 가기</span>
+                    <span className="text-sm">뒤로 가기</span>
                 </button>
             </div>
 
@@ -45,7 +45,7 @@ const MyPostsPage = () => {
                 <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="border px-3 py-1 rounded-md lg:px-4 lg:py-2 lg:text-lg"
+                    className="border px-3 py-1 rounded-md"
                 >
                     <option value="latest">최신순</option>
                     <option value="likes">좋아요순</option>
@@ -56,37 +56,37 @@ const MyPostsPage = () => {
             {/* 🔹 게시글 목록 */}
             <div>
                 {sortedPosts.length > 0 ? (
-                    <ul className="space-y-3 lg:space-y-5">
+                    <ul className="space-y-3">
                         {sortedPosts.map((post) => (
-                            <li key={post.id} className="p-3 border rounded-lg flex items-center justify-between transition hover:shadow-md lg:p-4">
+                            <li key={post.id} className="p-3 border rounded-lg flex items-center justify-between transition hover:shadow-md">
                                 {/* 🔹 썸네일 (이미지가 있을 때만 표시) */}
                                 {post.thumbnail && (
-                                    <div className="w-14 h-14 lg:w-16 lg:h-16 flex-shrink-0">
+                                    <div className="w-14 h-14 flex-shrink-0">
                                         <img src={post.thumbnail} alt="thumbnail" className="w-full h-full object-cover rounded-md" />
                                     </div>
                                 )}
 
                                 {/* 🔹 글 정보 */}
-                                <div className="flex-1 ml-3 lg:ml-5">
+                                <div className="flex-1 ml-3">
                                     <button
                                         onClick={() => navigate(`/posts/${post.id}`)}
-                                        className="block text-gray-800 font-bold mt-1 text-sm lg:text-lg truncate"
+                                        className="block text-gray-800 font-bold mt-1 text-sm"
                                     >
-                                        {post.title.length > (window.innerWidth >= 1024 ? 50 : 15) ? post.title.slice(0, window.innerWidth >= 1024 ? 50 : 15) + "..." : post.title}
+                                        {post.title.length > 15 ? post.title.slice(0, 15) + "..." : post.title}
                                     </button>
-                                    <p className="text-gray-500 text-xs lg:text-sm">브랜드: {post.brand}</p>
-                                    <p className="text-gray-400 text-xs mt-1 lg:text-sm">
+                                    <p className="text-gray-500 text-xs">브랜드: {post.brand}</p>
+                                    <p className="text-gray-400 text-xs mt-1">
                                         {post.date} {post.update_date && ` (수정:${post.update_date})`}
                                     </p>
                                 </div>
 
                                 {/* 🔹 좋아요 & 평점 */}
-                                <div className="text-gray-500 text-sm flex flex-col items-end space-y-1 w-20 lg:w-24">
-                                    <div className="flex items-center space-x-1 w-full justify-end lg:text-lg">
-                                        <FaStar className="text-yellow-500" /> <span className="font-medium text-right w-8 lg:w-12">{post.rating.toFixed(1)}</span>
+                                <div className="text-gray-500 text-sm flex flex-col items-end space-y-1 w-20">
+                                    <div className="flex items-center space-x-1 w-full justify-end">
+                                        <FaStar className="text-yellow-500" /> <span className="font-medium text-right w-8">{post.rating.toFixed(1)}</span>
                                     </div>
-                                    <div className="flex items-center space-x-1 w-full justify-end lg:text-lg">
-                                        <FaHeart className="text-red-500" /> <span className="font-medium text-right w-8 lg:w-12">{post.likes}</span>
+                                    <div className="flex items-center space-x-1 w-full justify-end">
+                                        <FaHeart className="text-red-500" /> <span className="font-medium text-right w-8">{post.likes}</span>
                                     </div>
                                 </div>
                             </li>

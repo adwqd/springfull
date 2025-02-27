@@ -4,10 +4,10 @@ import { FaStar, FaArrowLeft } from "react-icons/fa"; // ✅ 리액트 아이콘
 
 // 📝 **데모 데이터 (API 연결 전까지 사용)**
 const mockRatedPosts = [
-    { id: 1, title: "편의점 조합 리뷰! 정말 맛있어요. 꼭 드셔보세요!", writer: "user1", profile_img: "https://source.unsplash.com/40x40/?face", date: "2025/01/03", update_date: "2025/01/05", myRating: 4.5, avgRating: 4.2, thumbnail: "https://source.unsplash.com/80x80/?food" },
-    { id: 2, title: "서브웨이 리뷰 - 다양한 조합을 추천합니다.", writer: "user2", profile_img: "https://source.unsplash.com/40x40/?avatar", date: "2025/01/08", update_date: null, myRating: 4.0, avgRating: 3.8, thumbnail: null },
-    { id: 3, title: "CU 신상 리뷰! 핫한 제품들을 모아봤어요.", writer: "user3", profile_img: "https://source.unsplash.com/40x40/?portrait", date: "2025/01/10", update_date: "2025/01/12", myRating: 5.0, avgRating: 4.8, thumbnail: "https://source.unsplash.com/80x80/?drink" },
-    { id: 4, title: "세븐일레븐 신제품 리뷰! 신상 간식 후기입니다.", writer: "user4", profile_img: "https://source.unsplash.com/40x40/?headshot", date: "2025/01/15", update_date: null, myRating: 3.5, avgRating: 3.9, thumbnail: null },
+    { id: 1, title: "편의점 조합 리뷰", writer: "user1", profile_img: "https://source.unsplash.com/40x40/?face", date: "2025/01/03", update_date: "2025/01/05", myRating: 4.5, avgRating: 4.2, thumbnail: "https://source.unsplash.com/80x80/?food" },
+    { id: 2, title: "서브웨이 리뷰", writer: "user2", profile_img: "https://source.unsplash.com/40x40/?avatar", date: "2025/01/08", update_date: null, myRating: 4.0, avgRating: 3.8, thumbnail: null },
+    { id: 3, title: "CU 신상 리뷰", writer: "user3", profile_img: "https://source.unsplash.com/40x40/?portrait", date: "2025/01/10", update_date: "2025/01/12", myRating: 5.0, avgRating: 4.8, thumbnail: "https://source.unsplash.com/80x80/?drink" },
+    { id: 4, title: "세븐일레븐 신제품", writer: "user4", profile_img: "https://source.unsplash.com/40x40/?headshot", date: "2025/01/15", update_date: null, myRating: 3.5, avgRating: 3.9, thumbnail: null },
 ];
 
 const MyRatedPostsPage = () => {
@@ -23,13 +23,13 @@ const MyRatedPostsPage = () => {
     });
 
     return (
-        <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl lg:space-y-9">
+        <div className="p-4 max-w-lg mx-auto space-y-6">
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold lg:text-2xl">별점 준 글 ⭐</h2>
+                <h2 className="text-xl font-bold text-center">별점 준 글⭐</h2>
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 lg:text-base"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
                 >
                     <FaArrowLeft />
                     <span className="text-sm">뒤로 가기</span>
@@ -41,7 +41,7 @@ const MyRatedPostsPage = () => {
                 <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="border px-3 py-1 lg:py-2 rounded-md"
+                    className="border px-3 py-1 rounded-md"
                 >
                     <option value="latest">최신순</option>
                     <option value="myRating">내가 준 별점순</option>
@@ -64,39 +64,37 @@ const MyRatedPostsPage = () => {
             {/* 🔹 내가 매긴 별점 목록 */}
             <div>
                 {sortedPosts.length > 0 ? (
-                    <ul className="space-y-3 lg:space-y-5">
+                    <ul className="space-y-3">
                         {sortedPosts.map((post) => (
                             <li
                                 key={post.id}
-                                className="p-3 border rounded-lg flex items-center transition hover:shadow-md cursor-pointer lg:p-4"
-                                onClick={() => navigate(`/posts/${post.id}`)}
+                                className="p-3 border rounded-lg flex items-center justify-between transition hover:shadow-md cursor-pointer"
+                                onClick={() => navigate(`/posts/${post.id}`)} // ✅ 즉시 이동
                             >
                                 {/* 🔹 썸네일 (이미지가 있을 때만 표시) */}
                                 {post.thumbnail && (
-                                    <div className="w-14 h-14 lg:w-16 lg:h-16 flex-shrink-0">
+                                    <div className="w-14 h-14 flex-shrink-0">
                                         <img src={post.thumbnail} alt="thumbnail" className="w-full h-full object-cover rounded-md" />
                                     </div>
                                 )}
 
                                 {/* 🔹 글 정보 */}
-                                <div className="flex-1 ml-3 lg:ml-5">
-                                    <p className="block text-gray-800 font-semibold mt-1 text-sm lg:text-lg truncate">
-                                        {post.title.length > (window.innerWidth >= 1024 ? 50 : 15)
-                                            ? post.title.slice(0, window.innerWidth >= 1024 ? 50 : 15) + "..."
-                                            : post.title}
+                                <div className="flex-1 ml-3">
+                                    <p className="block text-gray-800 font-bold mt-1 text-sm">
+                                        {post.title.length > 15 ? post.title.slice(0, 15) + "..." : post.title}
                                     </p>
-                                    <div className="flex items-center space-x-2 mt-1 lg:mt-2">
+                                    <div className="flex items-center space-x-2">
                                         {/* 🔹 작성자 프로필 이미지 */}
-                                        <img src={post.profile_img} alt="Profile" className="w-4 h-4 rounded-full lg:w-6 lg:h-6" />
-                                        <p className="text-gray-600 text-xs lg:text-sm">{post.writer}</p>
+                                        <img src={post.profile_img} alt="Profile" className="w-4 h-4 rounded-full" />
+                                        <p className="text-gray-600 text-xs">{post.writer}</p>
                                     </div>
-                                    <p className="text-gray-400 text-xs mt-1 lg:mt-2 lg:text-sm">
+                                    <p className="text-gray-400 text-xs mt-1">
                                         {post.date} {post.update_date && ` (수정:${post.update_date})`}
                                     </p>
                                 </div>
 
                                 {/* 🔹 별점 */}
-                                <div className="text-gray-500 text-sm flex flex-col items-end space-y-1 lg:text-base">
+                                <div className="text-gray-500 text-sm flex flex-col items-end space-y-1">
                                     <div className="flex items-center space-x-1">
                                         <FaStar className="text-blue-500" />
                                         <span className="font-medium">{post.myRating.toFixed(1)}</span>

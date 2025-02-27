@@ -33,11 +33,11 @@ const AllPostsPage = () => {
         });
 
     return (
-        <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl lg:space-y-9">
+        <div className="p-4 max-w-2xl mx-auto space-y-6">
             {/* 🔹 헤더 & 뒤로 가기 버튼 */}
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold lg:text-2xl">전체 게시판 📁</h2>
-                <button onClick={() => navigate(-1)} className="text-gray-500 text-sm flex items-center lg:text-base">
+                <h2 className="text-xl font-bold text-center">전체 게시판 📁</h2>
+                <button onClick={() => navigate(-1)} className="text-gray-500 text-sm flex items-center">
                     <FaArrowLeft className="mr-1" /> 뒤로 가기
                 </button>
             </div>
@@ -51,11 +51,11 @@ const AllPostsPage = () => {
                         placeholder="게시글 검색..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border px-3 py-1 lg:py-2 w-full rounded-md pl-2"
+                        className="border px-3 py-1 w-full rounded-md pl-2"
                     />
                 </div>
                 {/* 정렬 옵션 */}
-                <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="border px-3 py-1 lg:py-2 rounded-md">
+                <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="border px-3 py-1 rounded-md">
                     <option value="latest">최신순</option>
                     <option value="likes">좋아요순</option>
                     <option value="rating">평점순</option>
@@ -65,40 +65,38 @@ const AllPostsPage = () => {
             {/* 🔹 게시글 목록 */}
             <div>
                 {sortedAndFilteredPosts.length > 0 ? (
-                    <ul className="space-y-3 lg:space-y-5">
+                    <ul className="space-y-3">
                         {sortedAndFilteredPosts.map((post) => (
                             <li key={post.id} className="p-3 border rounded-lg flex items-center hover:shadow-md transition-all">
                                 {/* 🔹 썸네일 (없으면 안 보이게) */}
                                 {post.thumbnail && (
-                                    <div className="w-14 h-14 lg:w-16 lg:h-16 flex-shrink-0 rounded-md overflow-hidden">
+                                    <div className="w-14 h-14 flex-shrink-0 rounded-md overflow-hidden">
                                         <img src={post.thumbnail} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
                                 )}
 
                                 {/* 🔹 게시글 정보 */}
-                                <div className="flex-1 px-3 lg:px-5 min-w-[200px]">
-                                    <button onClick={() => navigate(`/posts/${post.id}`)} className="text-gray-800 font-bold block truncate lg:text-lg">
-                                        {post.title.length > (window.innerWidth >= 1024 ? 50 : 15)
-                                            ? post.title.slice(0, window.innerWidth >= 1024 ? 50 : 15) + "..."
-                                            : post.title}
+                                <div className="flex-1 px-3 min-w-[200px]">
+                                    <button onClick={() => navigate(`/posts/${post.id}`)} className="text-gray-800 font-bold block truncate">
+                                        {post.title.length > 15 ? post.title.slice(0, 15) + "..." : post.title}
                                     </button>
                                     <div className="flex items-center mt-1 space-x-2">
                                         {/* 🔹 작성자 정보 */}
-                                        <FaUserCircle className="text-gray-400 w-4 h-4 lg:w-6 lg:h-6" />
-                                        <p className="text-gray-500 text-xs lg:text-sm">{post.user}</p>
+                                        <FaUserCircle className="text-gray-400 w-4 h-4" />
+                                        <p className="text-gray-500 text-xs">{post.user}</p>
                                     </div>
-                                    <p className="text-gray-400 text-xs mt-1 lg:text-sm">
+                                    <p className="text-gray-400 text-xs mt-1">
                                         {post.date} {post.update_date && `(수정:${post.update_date})`}
                                     </p>
                                 </div>
 
                                 {/* 🔹 좋아요 & 평점 */}
-                                <div className="flex flex-col items-end min-w-[70px] text-sm space-y-1 lg:text-base">
+                                <div className="flex flex-col items-end min-w-[70px] text-sm space-y-1">
                                     <div className="flex items-center text-yellow-500 space-x-1 w-full justify-end">
-                                        <FaStar /> <span className="w-6 lg:w-10 text-right text-gray-500">{post.rating.toFixed(1)}</span>
+                                        <FaStar /> <span className="w-6 text-right text-gray-500">{post.rating.toFixed(1)}</span>
                                     </div>
                                     <div className="flex items-center text-red-500 space-x-1 w-full justify-end">
-                                        <FaHeart /> <span className="w-6 lg:w-10 text-right text-gray-500">{post.likes}</span>
+                                        <FaHeart /> <span className="w-6 text-right text-gray-500">{post.likes}</span>
                                     </div>
                                 </div>
                             </li>
@@ -108,6 +106,8 @@ const AllPostsPage = () => {
                     <p className="text-gray-500 text-center">게시글이 없습니다.</p>
                 )}
             </div>
+
+
         </div>
     );
 };

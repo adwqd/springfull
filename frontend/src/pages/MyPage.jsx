@@ -71,66 +71,66 @@ const MyPage = () => {
     if (!userInfo) return null;
 
     return (
-        <div className="max-w-md mx-auto p-4 space-y-6 lg:max-w-4xl lg:space-y-6">
+        <div className="max-w-md mx-auto p-4 space-y-6">
             {/* 🔙 뒤로가기 버튼 */}
-            <button onClick={() => navigate(-1)} className="text-gray-600 flex items-center space-x-2 lg:text-lg">
-                <FaArrowLeft /> <span className="text-sm lg:text-base">뒤로가기</span>
+            <button onClick={() => navigate(-1)} className="text-gray-600 flex items-center space-x-2">
+                <FaArrowLeft /> <span className="text-sm">뒤로가기</span>
             </button>
 
             {/* 🏷 마이페이지 헤더 */}
-            <h2 className="text-xl font-bold text-center lg:text-2xl">마이페이지 🙍‍♂️</h2>
+            <h2 className="text-xl font-bold text-center">마이페이지 🙍‍♂️</h2>
 
             {/* 프로필 카드 */}
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col items-center space-y-3 lg:p-10 lg:space-y-5">
+            <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col items-center space-y-3">
                 <img
                     src={userInfo.profile_image || "https://source.unsplash.com/100x100/?avatar"}
                     alt="프로필"
-                    className="w-20 h-20 rounded-full border shadow-md lg:w-28 lg:h-28"
+                    className="w-20 h-20 rounded-full border shadow-md"
                 />
-                <p className="text-lg font-semibold lg:text-xl">{userInfo.nickname}</p>
+                <p className="text-lg font-semibold">{userInfo.nickname}</p>
 
                 <button
                     onClick={handleLogout}
-                    className="mt-4 bg-gray-400 text-sm text-white px-3 py-1 rounded-md hover:bg-red-500 transition lg:text-base lg:px-5 lg:py-2"
+                    className="mt-4 bg-gray-400 text-sm text-white px-3 py-1 rounded-md hover:bg-red-500 transition"
                 >
                     로그아웃
                 </button>
             </div>
 
             {/* 📌 메뉴 목록 */}
-            <div className="bg-white shadow-md rounded-lg divide-y lg:text-lg lg:space-y-2 lg:p-6">
+            <div className="bg-white shadow-md rounded-lg divide-y">
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/users/me/edit")}
                 >
                     프로필 관리 <FaCog />
                 </button>
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/users/me/posts")}
                 >
                     작성한 글 <FaEdit />
                 </button>
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/users/me/ratings")}
                 >
                     별점 준 글 <FaStar />
                 </button>
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/users/me/bookmarks")}
                 >
                     북마크 <FaBookmark />
                 </button>
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/admin/reports")}
                 >
                     신고 게시판 <FaBell />
                 </button>
                 <button
-                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100 lg:py-5"
+                    className="flex items-center justify-between p-4 w-full text-gray-700 hover:bg-gray-100"
                     onClick={() => navigate("/admin/list")}
                 >
                     전체 게시판 <FaFile />
