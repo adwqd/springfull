@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import BrandPage from "./BrandPage";
 
-const BrandBoardPage = () => {
+const BrandBoard = () => {
     const location = useLocation();
     const [currentBrand, setCurrentBrand] = useState(null);
 
@@ -22,4 +22,4 @@ const BrandBoardPage = () => {
     );
 };
 
-export default BrandBoardPage;
+export default BrandBoard;
