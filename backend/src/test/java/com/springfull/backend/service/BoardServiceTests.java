@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PostDTO;
 
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +24,13 @@ public class BoardServiceTests {
 	@Test
 	public void testRecent() {
 		for(PostDTO temp:boardService.recent()) {
+			log.info(temp);
+		}
+	}
+	
+	@Test
+	public void testSearch() {
+		for(PostDTO temp:boardService.brandList(PageRequestDTO.builder().sort(3).build()).getDtoList()) {
 			log.info(temp);
 		}
 	}

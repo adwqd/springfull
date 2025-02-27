@@ -84,7 +84,7 @@ const HotRankingPage = () => {
                     <ul className="space-y-3">
                         {rankingData.map((post, index) => (
                             <li
-                                key={post.id}
+                                key={post.post_no}
                                 className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-3 shadow-lg" : ""
                                     }`}
                                 onClick={() => navigate(`/posts/${post.post_no}`)}

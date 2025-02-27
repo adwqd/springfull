@@ -27,7 +27,7 @@ const PostWritePage = () => {
     const [selectedTags, setSelectedTags] = useState({
         category: "",
         brand: [],
-        flavors: [],
+        taste: [],
         ingredients: [],
     });
     const [showModal, setShowModal] = useState(false);      // 태그 미선택시 알림
@@ -46,7 +46,7 @@ const PostWritePage = () => {
                 return {
                     category: value,
                     brand: value === "서브웨이" ? ["서브웨이"] : [],
-                    flavors: [],
+                    taste: [],
                     ingredients: [],
                 };
             } else if (type === "brand") {
@@ -89,7 +89,7 @@ const PostWritePage = () => {
 
     // ✅ 글 작성 핸들러 (제목, 내용 필수 + 가격 숫자 체크)
     const handleSubmit = () => {
-        const { category, brand, flavors, ingredients } = selectedTags;
+        const { category, brand, taste, ingredients } = selectedTags;
 
         if (!title.trim() || !summary.trim()) {
             setShowModal(true); // 제목 또는 내용이 없으면 모달 표시
@@ -100,7 +100,7 @@ const PostWritePage = () => {
             !category ||
             (category !== "기타" && brand.length === 0) || // 기타가 아닐 경우 브랜드 필수
             (category === "기타" && brand.length === 0) || // 기타일 경우 브랜드 최소 1개 필수
-            flavors.length === 0 ||
+            taste.length === 0 ||
             ingredients.length === 0
         ) {
             setShowModal(true); // ✅ 필수 태그 미선택 시 알림 모달 표시
@@ -242,8 +242,8 @@ const PostWritePage = () => {
                                 <p className="text-gray-600 text-sm mb-1 font-semibold">맛</p>
                                 <div className="flex flex-wrap gap-1">
                                     {taste.map((flavor) => (
-                                        <button key={flavor} onClick={() => handleTagSelect("flavors", flavor)}
-                                            className={`px-3 py-1 rounded-md border ${selectedTags.flavors.includes(flavor) ? "bg-red-500 text-white" : "text-gray-500"}`}>
+                                        <button key={flavor} onClick={() => handleTagSelect("taste", flavor)}
+                                            className={`px-3 py-1 rounded-md border ${selectedTags.taste.includes(flavor) ? "bg-red-500 text-white" : "text-gray-500"}`}>
                                             {flavor}
                                         </button>
                                     ))}
