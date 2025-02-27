@@ -1,54 +1,88 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiTrendingUp } from "react-icons/fi";
+import axios from "axios";
 
-const categories = [
-    { id: "convenience", name: "편의점" },
-    { id: "subway", name: "서브웨이" },
-    { id: "others", name: "기타" },
-    { id: "collab", name: "콜라보" }
-];
 
-const brands = ["GS25", "CU", "세븐일레븐", "이마트24", "서브웨이", "기타"];
 
-const mockCategoryRankings = {
-    convenience: { title: "연세우유 생크림빵 조합", postId: 1 },
-    subway: { title: "우즈정식", postId: 2 },
-    others: { title: "하이디라오 소스 추천", postId: 3 },
-    collab: { title: "엽떡에 어울리는 토핑", postId: 4 }
-};
 
-const recentPosts = [
-    { id: 1, title: "미식만두랑 잘어울리는 라면", price: "3200원", user: "user1" },
-    { id: 2, title: "우유 말먹하는 초코과자", price: "2300원", user: "user2" },
-    { id: 3, title: "요즘 유행하는 서브웨이 조합", price: "3200원", user: "user3" }
-];
 
-const hotRankings = [
-    { title: "업데이트 예정", postId: 5 },
-    { title: "우즈정식", postId: 6 },
-    { title: "하이디라오 소스 추천", postId: 7 }
-];
 
 const HomePage = () => {
-    const navigate = useNavigate();
-    const [categoryRankings, setCategoryRankings] = useState(mockCategoryRankings);
+        const navigate = useNavigate();
+        const [imageUrl, setImageUrl] = useState({});
+        const [recentPosts, setRecentPosts] = useState([]);
+        const [hotRankings, setHotRankings] = useState([]);
+        const [categoryRankings, setCategoryRankings] = useState({});
+        const [tags, setTags] = useState({
+            category : [],
+            brand : [],
+    });
+        useEffect(() => {
+            const fetchData = async () => {
+                try {
+                    const response = await axios.get(`http://192.168.4.10:8081/recent`);
+                    if (response.data && response.data.length > 0) {
+                        console.log(response);
+                        setRecentPosts(response.data);
+        
+                        // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
+                        const imagePromises = response.data.map(async (data) => {
+                            try {
+                                const imgResponse = await axios.get(`http://localhost:8081/view/${data.thumbnail}`, { responseType: "blob" });
+                                return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
+                            } catch (error) {
+                                console.error("Error fetching image:", error);
+                                return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
+                            }
+                        });
+        
+                        // 모든 이미지 요청이 완료될 때까지 기다림
+                        const images = await Promise.all(imagePromises);
+        
+                        // imageUrl을 post_no 별로 매핑
+                        setImageUrl((prev) => {
+                            const newImageUrls = { ...prev };
+                            images.forEach(({ post_no, imageUrl }) => {
+                                newImageUrls[post_no] = imageUrl;
+                            });
+                            return newImageUrls;
+                        });
+        
+                    } else {
+                        alert("글이 없습니다.");
+                        history.back();
+                    }
+                } catch (error) {
+                    console.error("Error fetching recent posts:", error);
+                }
+                const hotRanking = await axios.get('http://192.168.4.10:8081/hotranking', {size:3});
+                setHotRankings(hotRanking.data);
+                console.log("급상승", hotRanking);
+                const cateRanking = await axios.get('http://192.168.4.10:8081/catebest');
+                setCategoryRankings(cateRanking.data);
+                console.log("카테랭킹", cateRanking);
+                const tag = await axios.post('http://192.168.4.10:8081/tag', {category: [0,1,2,3,4,5]});
+                const sortedCategory = [...tag.data.category].sort((a, b) =>
+                    a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
+                  );
+          
+                  const sortedBrand = [...tag.data.brand].sort((a, b) =>
+                    a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
+                  );
+                  setTags({
+                    category: sortedCategory,
+                    brand: sortedBrand,
+                    taste: tag.data.taste,
+                    ingredient: tag.data.ingredient, // ingredient는 이미 빈 배열
+                  });
 
-    useEffect(() => {
-        const fetchCategoryRankings = async () => {
-            try {
-                /*
-                const response = await fetch("YOUR_API_ENDPOINT");
-                const data = await response.json();
-                setCategoryRankings(data);
-                */
-            } catch (error) {
-                console.error("카테고리 랭킹 불러오기 실패:", error);
-            }
-        };
+                  console.log(categoryRankings,"rr");
+            };
+        
+            fetchData();
+        }, []);
 
-        fetchCategoryRankings();
-    }, []);
 
     return (
         <div className="min-h-screen flex flex-col px-1">
@@ -59,13 +93,13 @@ const HomePage = () => {
                     <h2 className="text-xl font-bold mb-3">브랜드 게시판 📌</h2>
                     <div className="p-4 rounded-md border border-gray-200 shadow-md space-y-2">
                         <div className="grid grid-cols-3 gap-4">
-                            {brands.map((brand) => (
+                            {tags.brand.map((brand) => (
                                 <div
-                                    key={brand}
-                                    onClick={() => navigate(`/brands/${brand}`)}
+                                    key={brand.tag_id}
+                                    onClick={() => navigate(`/brands/${brand.tag_name}`)}
                                     className="bg-green-700 text-white py-1.5 text-center rounded-md text-[15px] cursor-pointer hover:bg-green-800"
                                 >
-                                    {brand}
+                                    {brand.tag_name}
                                 </div>
                             ))}
                         </div>
@@ -78,16 +112,16 @@ const HomePage = () => {
                     <div className="grid grid-cols-3 gap-1.5">
                         {recentPosts.map((post) => (
                             <div
-                                key={post.id}
-                                onClick={() => navigate(`/posts/${post.id}`)} // ✅ 해당 글 상세보기로 이동
+                                key={post.post_no}
+                                onClick={() => navigate(`/posts/${post.post_no}`)} // ✅ 해당 글 상세보기로 이동
                                 className="border rounded-lg text-center p-2 shadow-md cursor-pointer hover:shadow-lg transition"
                             >
                                 <div className="w-full h-20 bg-gray-300 mb-2 flex items-center justify-center rounded">
-                                    <span className="text-gray-500 text-sm">이미지</span>
+                                    <span className="text-gray-500 text-sm"><img src={imageUrl[post.post_no]} alt="thumbnail"  style={{height:"80px"}}/></span>
                                 </div>
                                 <p className="font-medium text-xs text-left">{post.title}</p>
-                                <p className="text-gray-500 text-xs text-left">{post.user}</p>
-                                <p className="text-gray-600 text-xs text-left font-semibold">{post.price}</p>
+                                <p className="text-gray-500 text-xs text-left">{post.member_uuid}</p>
+                                <p className="text-gray-600 text-xs text-left font-semibold">{post.cost}</p>
                             </div>
                         ))}
                     </div>
@@ -98,22 +132,22 @@ const HomePage = () => {
                 <div>
                     <h2 className="text-xl font-bold mb-3">카테고리 랭킹 🏆</h2>
                     <div className="p-4 rounded-md border border-gray-200 shadow-md space-y-2">
-                        {categories.map((category) => (
-                            <div key={category.id} className="flex justify-between items-center border-b py-2">
+                        {tags.category.map((cate) => (
+                            <div key={cate.tag_id} className="flex justify-between items-center border-b py-2">
                                 <div
-                                    onClick={() => navigate(`/category/${category.id}`)}
+                                    onClick={() => navigate(`/category/${cate.tag_id}`)}
                                     className="text-base text-green-700 hover:underline cursor-pointer font-semibold"
                                 >
-                                    {category.name}
+                                    {cate.tag_name}
                                 </div>
-                                {categoryRankings[category.id] ? (
+                                {categoryRankings[cate.tag_name] ? (
                                     <div
-                                        onClick={() => navigate(`/posts/${categoryRankings[category.id].postId}`)}
+                                        onClick={() => navigate(`/posts/${categoryRankings[cate.tag_name].post_no}`)}
                                         className="text-gray-600 hover:text-green-600 text-sm cursor-pointer truncate max-w-[150px]"
                                     >
-                                        {categoryRankings[category.id].title.length > 15
-                                            ? categoryRankings[category.id].title.slice(0, 15) + "..."
-                                            : categoryRankings[category.id].title}
+                                        {categoryRankings[cate.tag_name].title.length > 15
+                                            ? categoryRankings[cate.tag_name].title.slice(0, 15) + "..."
+                                            : categoryRankings[cate.tag_name].title}
                                     </div>
                                 ) : (
                                     <span className="text-gray-400 text-sm">게시글 없음</span>
@@ -137,10 +171,10 @@ const HomePage = () => {
                     </div>
 
                     <div className="border border-gray-200 p-3 rounded-sm space-y-2 shadow-md">
-                        {hotRankings.map((item, index) => (
-                            <div key={index} className="border-b py-1 text-base">
+                        {hotRankings.map((item) => (
+                            <div key={item.post_no} className="border-b py-1 text-base">
                                 <div
-                                    onClick={() => navigate(`/posts/${item.postId}`)}
+                                    onClick={() => navigate(`/posts/${item.post_no}`)}
                                     className="text-gray-600 hover:text-green-600 cursor-pointer"
                                 >
                                     {item.title}
