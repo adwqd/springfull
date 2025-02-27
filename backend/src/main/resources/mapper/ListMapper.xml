@@ -195,6 +195,7 @@
 	<select id="hotRanking">
 		select *
 		from post p
+		join member m on p.member_uuid = m.member_uuid
 		join (select post_no, sum(like_number) as likes 
 			from like_record 
 			where date >= current_date()-6 and 

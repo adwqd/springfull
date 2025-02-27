@@ -2,6 +2,9 @@ package com.springfull.backend.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.ArrayList;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +25,9 @@ public class PostDetailDTO {
 	private int post_like;
 	private int hits;
 	private Double star;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
 	private LocalDateTime reg_date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
 	private LocalDateTime mod_date;
 	private String member_uuid;
 	private List<ImageDTO> image;
@@ -37,4 +42,11 @@ public class PostDetailDTO {
 	@Builder.Default
 	private List<Integer> ingredient_id = new ArrayList<>();
 	
+	public LocalDateTime getMod_Date() {
+		if(this.reg_date.equals(this.mod_date)) {
+			return null;
+		}else {
+			return mod_date;
+		}
+	}
 }

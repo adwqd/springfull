@@ -20,7 +20,7 @@ public class PostServiceTests {
 	
 	@Test
 	public void testLike() {
-		postService.like(4);
+		postService.like(23);
 	}
 	
 	@Test

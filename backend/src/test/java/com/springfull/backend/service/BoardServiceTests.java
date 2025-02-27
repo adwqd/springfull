@@ -17,9 +17,7 @@ public class BoardServiceTests {
 	
 	@Test
 	public void testCateBest() {
-		for(PostDTO temp:boardService.cateBest()) {
-			log.info(temp);
-		}
+			log.info(boardService.cateBest());
 	}
 	
 	@Test
