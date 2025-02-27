@@ -50,7 +50,7 @@ const App = () => {
     }
   }, []);
 
-  const apiURL = "http://localhost:8081";
+  const apiURL = "http://192.168.4.10:8081";
 
 
   return (
