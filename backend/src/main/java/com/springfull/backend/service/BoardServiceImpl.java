@@ -65,7 +65,13 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public List<PostDTO> cateRanking(int cate_id) {
-		return listMapper.cateRanking(cate_id, 10);
+		List<PostDTO> list = new ArrayList<>();
+		for(PostDTO temp:listMapper.cateRanking(cate_id, 10)) {
+			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
+			temp.setProfile_img("s_"+userMapper.viewProfile(temp.getMember_uuid()));
+			list.add(temp);
+		}
+		return list;
 	}
 
 	@Override

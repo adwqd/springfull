@@ -226,6 +226,7 @@
 			from star
 			group by post_no) s on p.post_no = s.post_no
 		where cate_id = #{cate_id} and p.state = 1
+		group by p.post_no
 		order by 'score' desc
 		limit 0, #{size}
 	</select>

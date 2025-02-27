@@ -67,7 +67,7 @@ public class PostMapperTests {
 	
 	@Test
 	public void testInsertStar() {
-		postMapper.insertStar(2, "aaa", (double) 3);
+		postMapper.insertStar(32, "aaa", (double) 4);
 	}
 	
 	@Test
