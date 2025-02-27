@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiTrendingUp } from "react-icons/fi";
 import axios from "axios";
+import {MyContext} from "../App";
 
 
 
@@ -18,10 +19,11 @@ const HomePage = () => {
             category : [],
             brand : [],
     });
+        const {apiURL} = useContext(MyContext);
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    const response = await axios.get(`http://192.168.4.10:8081/recent`);
+                    const response = await axios.get(`${apiURL}/recent`);
                     if (response.data && response.data.length > 0) {
                         console.log(response);
                         setRecentPosts(response.data);
@@ -29,7 +31,7 @@ const HomePage = () => {
                         // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
                         const imagePromises = response.data.map(async (data) => {
                             try {
-                                const imgResponse = await axios.get(`http://localhost:8081/view/${data.thumbnail}`, { responseType: "blob" });
+                                const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
                                 return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
                             } catch (error) {
                                 console.error("Error fetching image:", error);
@@ -56,13 +58,13 @@ const HomePage = () => {
                 } catch (error) {
                     console.error("Error fetching recent posts:", error);
                 }
-                const hotRanking = await axios.get('http://192.168.4.10:8081/hotranking', {size:3});
+                const hotRanking = await axios.get(`${apiURL}/hotranking`, {size:3});
                 setHotRankings(hotRanking.data);
                 console.log("급상승", hotRanking);
-                const cateRanking = await axios.get('http://192.168.4.10:8081/catebest');
+                const cateRanking = await axios.get(`${apiURL}/catebest`);
                 setCategoryRankings(cateRanking.data);
                 console.log("카테랭킹", cateRanking);
-                const tag = await axios.post('http://192.168.4.10:8081/tag', {category: [0,1,2,3,4,5]});
+                const tag = await axios.post(`${apiURL}/tag`, {category: [0,1,2,3,4,5]});
                 const sortedCategory = [...tag.data.category].sort((a, b) =>
                     a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
                   );
@@ -78,6 +80,7 @@ const HomePage = () => {
                   });
 
                   console.log(categoryRankings,"rr");
+                  console.log(apiURL);
             };
         
             fetchData();
