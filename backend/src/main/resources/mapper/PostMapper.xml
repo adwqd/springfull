@@ -186,4 +186,18 @@
 		set title = #{title}, cost=#{cost}, content=#{content}, mod_date=current_timestamp
 		where post_no = #{post_no}
 	</update>
+	
+	<select id="getTasteTag">
+		select pt.taste_id as tag_id, taste_name as tag_name
+		from post_taste pt
+		join taste t on t.taste_id = pt.taste_id
+		where post_no = #{post_no}
+	</select>
+	
+	<select id="getIngredientTag">
+		select pi.ingredient_id as tag_id, ingredient_name as tag_name
+		from post_ingredient pi
+		join ingredient i on i.ingredient_id = pi.ingredient_id
+		where post_no = #{post_no}
+	</select>
 </mapper>

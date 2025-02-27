@@ -25,7 +25,7 @@ public class JWTUtil {
 	private String key;
 	@Value("${com.springfull.jwt.refresh")
 	private String refreshKey;
-	public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L*60*10;
+	public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L*60*60*3;
 	public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L*60*60*72;
 	public final static String AUTHORIZATION_HEADER = "Authorization";
 	

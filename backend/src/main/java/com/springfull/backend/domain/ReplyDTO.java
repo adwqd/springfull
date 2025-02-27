@@ -19,5 +19,6 @@ public class ReplyDTO {
 	private Integer reply_like;
 	private Integer post_no;
 	private String member_uuid;
+	private String name;
 	
 }

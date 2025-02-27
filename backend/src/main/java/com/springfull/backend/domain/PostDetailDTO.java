@@ -23,6 +23,8 @@ public class PostDetailDTO {
 	private int cost;
 	private String content;
 	private int post_like;
+	private String name;
+	private String profile_img;
 	private int hits;
 	private Double star;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
@@ -41,6 +43,10 @@ public class PostDetailDTO {
 	private List<Integer> taste_id = new ArrayList<>();
 	@Builder.Default
 	private List<Integer> ingredient_id = new ArrayList<>();
+	@Builder.Default
+	private List<TagVO> taste = new ArrayList<>();
+	@Builder.Default
+	private List<TagVO> ingredient = new ArrayList<>();
 	
 	public LocalDateTime getMod_Date() {
 		if(this.reg_date.equals(this.mod_date)) {

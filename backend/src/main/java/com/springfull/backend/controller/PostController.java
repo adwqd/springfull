@@ -90,7 +90,7 @@ public class PostController {
 		return postService.modReply(replyDTO);
 	}
 	
-	@GetMapping("/member/bookmark/post_no")
+	@GetMapping("/member/bookmark/{post_no}")
 	public void bookmark(@PathVariable("post_no") int post_no, HttpServletRequest httpServletRequest) {
 		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
 		String uuid = jwtUtil.getUUID(accessToken);

@@ -1,55 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaPaperPlane, FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
+import {MyContext} from "../App";
 
 //더미 데이터
-const mockPost = {
-    id: 1,
-    category: "subway",
-    brand: "서브웨이",
-    title: "서브웨이 우즈정식",
-    price: "11,000원",
-    image: "https://source.unsplash.com/400x300/?food", // 이미지가 있을 때만 표시
-    description: `쉬림프 샌드위치에 에그마요와 베이컨 추가  
-    * 필수 재료: 쉬림프 패티, 올리브, 피클, 레터스  
-    * 추가 재료: 에그마요, 베이컨  
-      
-    하임즈 재료는 취향껏 넣으시면 됨! 추가할수록 소스가 찐!
-    하임즈 재료는 취향껏 넣으시면 됨! 추가할수록 소스가 찐!
-    하임즈 재료는 취향껏 넣으시면 됨! 추가할수록 소스가 찐!
-    하임즈 재료는 취향껏 넣으시면 됨! 추가할수록 소스가 찐!`,
-    ingredients: ["달콤한 맛", "매운 맛"],
-    tags: ["에그마요", "쉬림프"],
-    rating: 4.5,
-    likes: 42,
-    bookmarked: false,
-    createdAt: "2025/01/03",
-    updatedAt: "2025/01/05",
-    writer: {
-        name: "user123",
-        profileImg: "https://source.unsplash.com/50x50/?profile",
-    },
-    comments: [
-        { id: 1, writer: "reviewer name", content: "테이크아웃 소스랑 같이 먹어야 완전 꿀조합!", date: "2025/01/03", likes: 3, liked: false },
-        { id: 2, writer: "reviewer name", content: "다진 피클이랑 소스를 왕창 추가하니 꿀맛!", date: "2025/01/02", likes: 2, liked: false },
-    ],
-};
 
 // 브랜드별 라벨 배경색 지정
 const brandColors = {
-    "서브웨이": "bg-green-600 text-white",
-    "GS25": "bg-blue-600 text-white",
-    "CU": "bg-purple-600 text-white",
-    "이마트24": "bg-yellow-500 text-white",
-    "세븐일레븐": "bg-red-600 text-white",
-    "기타": "bg-gray-600 text-white",
+    5: "bg-green-600 text-white",
+    2: "bg-blue-600 text-white",
+    1: "bg-purple-600 text-white",
+    4: "bg-yellow-500 text-white",
+    3: "bg-red-600 text-white",
+    0: "bg-gray-600 text-white",
 };
 
 const PostDetailPage = () => {
-    const { id } = useParams();
+    const {post_no} = useParams();
+    const [userInfo, setUserInfo] = useState({
+            member_uuid : null
+        });
+    const [reply, setReply] = useState({
+        post_no : 1,
+        member_uuid : "aaa",
+        reply_content : ""
+    });
+    const [replyList, setReplyList] = useState([])
+    const [imageUrl, setImageUrl] = useState([]);
+    const [replyProfile, setReplyProfile] = useState({});
+    const token = localStorage.getItem("token");
+    const [post, setPost] = useState({
+        post_no : 13,
+        title : "",
+        content : "",
+        cost : 0,
+        image : [],
+        member_uuid : "",
+        brand_id : [],
+        taste_id : [],
+        ingredient_id : [],
+        taste : [],
+        ingredient : []
+    });
+    const [profileUrl, setProfileUrl] = useState({});    
+    const {apiURL} = useContext(MyContext);
     const navigate = useNavigate();
-
-    const [post, setPost] = useState(mockPost);
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likes);
     const [rating, setRating] = useState(post.rating);
@@ -73,15 +69,101 @@ const PostDetailPage = () => {
     //상태 완료 알림
     const [notification, setNotification] = useState("");
 
-
+    useEffect(() => {
+            const storedUserInfo = localStorage.getItem("userInfo");
+            if (storedUserInfo) {
+                setUserInfo(JSON.parse(storedUserInfo));
+              } else {
+                navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
+            }
+        }, []);
 
     // 백엔드 API 호출 자리 (현재는 더미 데이터 사용)
     useEffect(() => {
-        // ⚠️ 실제 API 요청 예시
-        // axios.get(`/api/posts/${id}`).then(response => {
-        //     setPost(response.data);
-        // }).catch(error => console.error(error));
-    }, [id]);
+        const read = async () => {
+            try {
+                const response = await axios.get(`${apiURL}/read?post_no=${post_no}&member_uuid=${userInfo.member_uuid}`);
+    
+                if (response.data !== "") {
+                    console.log("aaa", response);
+                    setPost(response.data);
+                    setRating(response.data.star);
+    
+                    // 이미지 처리
+                    const images = response.data.image;
+                    const imageRequests = images.map(async (image) => {
+                        try {
+                            const filename = image.img_uuid + "_" + image.filename;
+                            const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
+                            return URL.createObjectURL(imgResponse.data);
+                        } catch (error) {
+                            console.error("Error fetching image:", error);
+                            return null;
+                        }
+                    });
+    
+                    const imageUrls = await Promise.all(imageRequests);
+                    setImageUrl(imageUrls);
+                    setBookmarked(response.data.bookmark)
+    
+                    // 🔹 프로필 이미지 요청 (setPost 이후 response.data.member_uuid 사용)
+                    if (response.data.member_uuid) {
+                        try {
+                            const profileResponse = await axios.get(`${apiURL}/profile/${response.data.member_uuid}`, { responseType: "blob" });
+                            const profileImgUrl = URL.createObjectURL(profileResponse.data);
+                            setProfileUrl(profileImgUrl);
+                        } catch (error) {
+                            console.error("Error fetching profile image:", error);
+                            setProfileUrl(null);
+                        }
+                    }
+    
+                } else {
+                    alert("글이 없습니다.");
+                    history.back();
+                }
+            } catch (error) {
+                console.log("Error fetching post data:", error);
+            }
+        };
+    
+        const getReply = async () => {
+            try {
+                const response = await axios.get(`${apiURL}/reply/${post_no}`);
+                console.log(response.data);
+                setReplyList(response.data);
+    
+                const imagePromises = response.data.map(async (data) => {
+                    try {
+                        if (data.profile_img === null) return { member_uuid: data.member_uuid, profileUrl: null };
+                        const profileResponse = await axios.get(`${apiURL}/profile/${data.member_uuid}`, { responseType: "blob" });
+                        return { member_uuid: data.member_uuid, profileUrl: URL.createObjectURL(profileResponse.data) };
+                    } catch (error) {
+                        console.error("Error fetching profile image:", error);
+                        return { member_uuid: data.member_uuid, profileUrl: null };
+                    }
+                });
+    
+                // 모든 이미지 요청이 완료될 때까지 기다림
+                const images = await Promise.all(imagePromises);
+    
+                // imageUrl을 member_uuid 별로 매핑
+                setReplyProfile((prev) => {
+                    const newImageUrls = { ...prev };
+                    images.forEach(({ member_uuid, profileUrl }) => {
+                        newImageUrls[member_uuid] = profileUrl;
+                    });
+                    return newImageUrls;
+                });
+            } catch (error) {
+                console.error("Error fetching replies:", error);
+            }
+        };
+    
+        read();
+        getReply();
+    }, [post_no, userInfo]); // 🔹 post_no가 바뀔 때도 실행
+    
 
     //상태 알림 기능 2초 후에 사라짐
     const showNotification = (message) => {
@@ -97,6 +179,7 @@ const PostDetailPage = () => {
         setLikeCount((prevCount) =>
             liked ? prevCount - 1 : prevCount + 1 // 최신 liked 값을 직접 사용
         );
+        
 
         showNotification(liked ? "게시글 좋아요를 취소했습니다." : "게시글에 좋아요를 남겼습니다");
     };
@@ -106,12 +189,36 @@ const PostDetailPage = () => {
     const handleRating = (newRating) => {
         setRating(newRating);
         showNotification(`게시글에 ${newRating}점 평점을 남겼습니다`);
+        const star = async (stars) => {
+            const star = {
+                post_no : post_no,
+                member_uuid : userInfo.member_uuid,
+                star : stars
+            }
+            const response = await axios.post(`${apiURL}/member/star`, star, {
+                headers: {
+                    Authorization: `Bearer ${token}` // 실제 JWT 토큰
+                }
+            });
+            console.log(response);
+        }
+        
+        star(newRating);
     };
 
     // 북마크 토글
     const handleBookmark = () => {
         setBookmarked(!bookmarked);
         showNotification(bookmarked ? "게시글 북마크를 취소했습니다." : "게시글을 북마크했습니다");
+        const bookmark = async () => {           
+            const response = await axios.get(`${apiURL}/member/bookmark/${post_no}`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // 실제 JWT 토큰
+                }
+            });
+            console.log(response);
+        }
+        bookmark();
     };
 
     // 게시글 모달 토글
@@ -290,21 +397,21 @@ const PostDetailPage = () => {
                 {/* 🔹 이미지 ( 이미지 없으면 숨김) */}
                 {post.image && (
                     <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md">
-                        <img src={post.image} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" />
+                        <img src={imageUrl[0]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" />
                     </div>
                 )}
                 {/* 🔹 게시글 헤더 */}
                 <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-bold">{post.title} ({post.price})</h2>
+                    <h2 className="text-lg font-bold">{post.title} ({post.cost})</h2>
                     <button onClick={togglePostModal} className="text-gray-600 text-lg modal">⋮</button>
                 </div>
 
                 {/* 🔹 작성자 정보 */}
                 <div className="flex items-center space-x-3 border-b pb-2 border-gray-200">
-                    <img src={post.writer.profileImg} alt="프로필" className="w-6 h-6 rounded-full" />
+                    <img src={profileUrl} alt="프로필" className="w-6 h-6 rounded-full" />
                     <div>
-                        <p className="text-xs font-semibold">{post.writer.name}</p>
-                        <p className="text-xs text-gray-500">{post.createdAt}</p>
+                        <p className="text-xs font-semibold">{post.name}</p>
+                        <p className="text-xs text-gray-500">{post.reg_date}</p>
 
                     </div>
                 </div>
@@ -313,7 +420,7 @@ const PostDetailPage = () => {
                 {postModalOpen && (
                     <div className="absolute top-12 right-4 bg-white border rounded-md shadow-lg p-2 w-40 modal z-50">
                         <ul className="space-y-2 text-gray-700">
-                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => navigate(`/posts/${post.id}/edit`)}>수정</li>
+                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => navigate(`/posts/${post.post_no}/edit`)}>수정</li>
                             <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleDeleteModal}>삭제</li>
                             <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={toggleReportModal}>신고</li>
                         </ul>
@@ -322,7 +429,7 @@ const PostDetailPage = () => {
 
                 {/* 🔹 게시글 내용 */}
 
-                <pre className="whitespace-pre-wrap text-gray-700 text-sm">{post.description}</pre>
+                <pre className="whitespace-pre-wrap text-gray-700 text-sm">{post.content}</pre>
             </div>
 
             <div className="border p-3 shadow-md rounded-xl space-y-0">
@@ -336,7 +443,7 @@ const PostDetailPage = () => {
                                 {star <= rating ? "⭐" : "☆"}
                             </button>
                         ))}
-                        <span>{rating.toFixed(1)}</span>
+                        <span>{post.star ? post.star.toFixed(1) : "0"}</span>
                     </div>
 
                     {/* 🔹 좋아요 & 북마크 */}
@@ -355,14 +462,14 @@ const PostDetailPage = () => {
                 <div className="p-3 rounded-xl">
                     {/* 🔹 맛 태그 (빨간색) + 재료 태그 (노란색) → 한 줄에 표시 */}
                     <div className="flex flex-nowrap gap-2 overflow-x-auto items-center mt-2">
-                        {post.ingredients.map((ingredient, index) => (
+                        {post.ingredient.map((ingredient, index) => (
                             <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded-md whitespace-nowrap">
-                                # {ingredient}
+                                # {ingredient.tag_name}
                             </span>
                         ))}
-                        {post.tags.map((tag, index) => (
+                        {post.taste.map((tag, index) => (
                             <span key={index} className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md whitespace-nowrap">
-                                # {tag}
+                                # {tag.tag_name}
                             </span>
                         ))}
 
@@ -427,53 +534,53 @@ const PostDetailPage = () => {
                 <div className="border p-3 shadow-md rounded-xl">
                     <h3 className="text-base font-bold text-gray-800">댓글</h3>
 
-                    {comments.map((comment) => (
-                        <div key={comment.id} className="mt-3 border p-3 rounded-md shadow-sm relative text-sm">
+                    {replyList.map((reply) => (
+                        <div key={reply.reply_no} className="mt-3 border p-3 rounded-md shadow-sm relative text-sm">
 
                             {/* 작성자 정보*/}
                             <div className="flex items-center space-x-2">
-                                <img src={comment.profileImg} alt="프로필" className="w-4 h-4 rounded-full" />
-                                <p className="text-xs font-semibold text-gray-700">{comment.writer}</p>
+                                <img src={replyProfile[reply.member_uuid]} alt="프로필" className="w-4 h-4 rounded-full" />
+                                <p className="text-xs font-semibold text-gray-700">{reply.name}</p>
                             </div>
 
                             {/* 댓글 수정시 */}
                             <div className="p-2">
-                                {editingCommentId === comment.id ? (
+                                {editingCommentId === reply.reply_no ? (
                                     <textarea
                                         className="w-full border p-2 rounded-md text-sm"
                                         value={editCommentContent}
                                         onChange={(e) => setEditCommentContent(e.target.value)}
-                                        onKeyDown={(e) => handleEditKeyDown(e, comment.id)}
+                                        onKeyDown={(e) => handleEditKeyDown(e, reply.reply_no)}
                                     />
                                 ) : (
-                                    <p className=" text-gray-900">{comment.content}</p>
+                                    <p className=" text-gray-900">{reply.reply_content}</p>
                                 )}
                             </div>
 
                             {/* ✅ 좋아요 버튼 + 옵션 버튼을 오른쪽에 고정, 입력창과 겹치지 않도록 분리 */}
                             <div className="absolute top-3 right-2 flex items-center space-x-1.5">
                                 {/* 좋아요 버튼 */}
-                                <button onClick={() => handleCommentLike(comment.id)} className="text-gray-500 flex items-center space-x-1">
-                                    {comment.liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-                                    <span className="text-sm">{comment.likes}</span>
+                                <button onClick={() => handleCommentLike(reply.reply_no)} className="text-gray-500 flex items-center space-x-1">
+                                    {reply.liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+                                    <span className="text-sm">{reply.reply_like}</span>
                                 </button>
 
                                 {/* 옵션 버튼 (⋮) */}
-                                <button onClick={(e) => toggleCommentModal(e, comment.id)} className="text-gray-500">
+                                <button onClick={(e) => toggleCommentModal(e, reply.reply_no)} className="text-gray-500">
                                     ⋮
                                 </button>
                             </div>
 
 
-                            {commentModalOpen === comment.id && (
+                            {commentModalOpen === reply.reply_no && (
                                 <div className="absolute right-4 top-10 bg-white border rounded-md shadow-lg p-2 w-32 z-50">
                                     <ul className="space-y-2 text-gray-700">
-                                        {editingCommentId !== comment.id && ( // 수정 중이 아닐 때만 수정 버튼 표시
-                                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(comment.id, comment.content)}>
+                                        {editingCommentId !== reply.reply_no && ( // 수정 중이 아닐 때만 수정 버튼 표시
+                                            <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(reply.reply_no, reply.reply_content)}>
                                                 수정
                                             </li>
                                         )}
-                                        <li className="cursor-pointer hover:bg-gray-100 p-2 " onClick={() => setDeleteCommentId(comment.id)}>
+                                        <li className="cursor-pointer hover:bg-gray-100 p-2 " onClick={() => setDeleteCommentId(reply.reply_no)}>
                                             삭제
                                         </li>
                                     </ul>

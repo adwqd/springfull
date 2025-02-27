@@ -11,6 +11,7 @@ const HotRankingPage = () => {
     const [rankingData, setRankingData] = useState([]);
     const [imageUrl, setImageUrl] = useState({});
     const [profileUrl, setProfileUrl] = useState({});
+    
 
     const {apiURL} = useContext(MyContext);
     useEffect(() => {

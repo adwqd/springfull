@@ -55,7 +55,7 @@ public class PostMapperTests {
 	
 	@Test
 	public void testWriteReply() {
-		postMapper.writeReply(ReplyDTO.builder().reply_content("댓글입니다.").post_no(22).member_uuid("aaa").build());
+		postMapper.writeReply(ReplyDTO.builder().reply_content("댓글입니다.").post_no(32).member_uuid("aaa").build());
 	}
 	
 	@Test

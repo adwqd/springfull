@@ -64,7 +64,7 @@ const PostWritePage = () => {
                     console.log("로그인 성공");
                 }
             } catch (error) {
-                console.error("요청 실패. 토큰 갱신 시도", error);
+                console.log("요청 실패. 토큰 갱신 시도", error);
                 try {
                     const res = await axios.get("http://192.168.4.10:8081/token", {
                         headers: { Authorization: `Bearer ${refreshToken}` },

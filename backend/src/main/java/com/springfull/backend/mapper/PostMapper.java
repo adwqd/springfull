@@ -85,4 +85,8 @@ public interface PostMapper {
 	void updateState(@Param("post_no") int post_no, @Param("state") int state);
 	
 	void modPost(PostDetailDTO postDetailDTO);
+	
+	//태그정보
+	List<TagVO> getTasteTag(@Param("post_no") int post_no);
+	List<TagVO> getIngredientTag(@Param("post_no") int post_no);
 }

@@ -68,7 +68,7 @@ const App = () => {
             {/* 브랜드 게시글 목록 페이지*/}
             <Route path="/brands/:brand" element={<BrandBoardPage />} />
             {/* 게시글 상세보기 페이지 */}
-            <Route path="/posts/:id" element={<PostDetailPage />} />
+            <Route path="/posts/:post_no" element={<PostDetailPage />} />
             {/* 카테고리 랭킹 페이지 */}
             <Route path="/category/:category" element={<CategoryRankingPage />} />
             {/* 급상승 랭킹 페이지 */}

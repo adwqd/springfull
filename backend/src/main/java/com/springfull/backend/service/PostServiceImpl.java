@@ -1,5 +1,6 @@
 package com.springfull.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import com.springfull.backend.domain.TagVO;
 import com.springfull.backend.mapper.PostMapper;
 import com.springfull.backend.mapper.RegisterMapper;
 import com.springfull.backend.mapper.RemoveMapper;
+import com.springfull.backend.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 public class PostServiceImpl implements PostService {
 	
 	private final PostMapper postMapper;
+	private final UserMapper userMapper;
 	private final RemoveMapper removeMapper;
 	private final RegisterMapper registerMapper;
 
@@ -33,8 +36,8 @@ public class PostServiceImpl implements PostService {
 		if(postDetailDTO !=null) {
 			postDetailDTO.setBrand_id(postMapper.getBrand(post_no));
 			postDetailDTO.setCate_id(postMapper.getCate(post_no));
-			postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
-			postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
+			postDetailDTO.setTaste(postMapper.getTasteTag(post_no));
+			postDetailDTO.setIngredient(postMapper.getIngredientTag(post_no));
 			if(member_uuid!=null) {
 				if(postMapper.isBookMarked(post_no, member_uuid)!=null) {
 					postDetailDTO.setBookmark(true);
@@ -42,6 +45,8 @@ public class PostServiceImpl implements PostService {
 			}			
 			postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
 			postDetailDTO.setImage(postMapper.getImage(post_no));
+			postDetailDTO.setProfile_img(userMapper.viewProfile(member_uuid));
+			postDetailDTO.setName(userMapper.getUser(member_uuid).getName());
 		}
 		return postDetailDTO;
 	}
@@ -66,7 +71,12 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<ReplyDTO> getReply(int post_no) {
-		return postMapper.getReply(post_no);
+		List<ReplyDTO> list = new ArrayList<>();
+		for(ReplyDTO temp:postMapper.getReply(post_no)) {
+			temp.setName(userMapper.getUser(temp.getMember_uuid()).getName());
+			list.add(temp);
+		}
+		return list;
 	}
 
 	@Override
