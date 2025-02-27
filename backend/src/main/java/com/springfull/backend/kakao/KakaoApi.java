@@ -72,6 +72,7 @@ public class KakaoApi {
 	        JsonElement element = JsonParser.parseString(result);
 	        accessToken = element.getAsJsonObject().get("access_token").getAsString();
 	        refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+	        
 
 	        br.close();
 	        bw.close();
@@ -115,12 +116,17 @@ public class KakaoApi {
 	        JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
 	        String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+	        String profile = properties.getAsJsonObject().get("profile_image").getAsString();
 	        String id = element.getAsJsonObject().get("id").getAsString();
 	        System.out.println("id는 "+id);
+	        System.out.println("프로필 주소는 "+profile);
 	        //String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
 	        log.info(kakaoAccount);
+	        userInfo.put("profile", profile);
 	        userInfo.put("nickname", nickname);
 	        userInfo.put("id", id);
+	        
+	        
 	        //userInfo.put("email", email);
 
 	        br.close();

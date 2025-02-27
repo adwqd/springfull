@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springfull.backend.domain.PageRequestDTO;
 import com.springfull.backend.domain.PageResponseDTO;
@@ -29,7 +30,9 @@ import com.springfull.backend.domain.UploadResultDTO;
 import com.springfull.backend.domain.UserDTO;
 import com.springfull.backend.kakao.KakaoApi;
 import com.springfull.backend.service.UserService;
+import com.springfull.backend.util.FileStorageUtil;
 import com.springfull.backend.util.JWTUtil;
+import com.springfull.backend.util.MultipartFileUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -57,9 +60,32 @@ public class UserController {
         // 3. 사용자 정보 받기
         Map<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
         String nickname = (String) userInfo.get("nickname");
+        String profileImageUrl = (String) userInfo.get("profile");
         UserDTO userDTO = userService.login(UserDTO.builder().user_id((String)userInfo.get("id")).name(nickname).build());
-        
         String member_uuid = userDTO.getMember_uuid();
+        String profile = userService.viewProfile(member_uuid);
+        if(profile == null && profileImageUrl != null && !profileImageUrl.isEmpty()) {
+        	MultipartFile multipartFile = MultipartFileUtils.urlToMultipartFile(profileImageUrl);
+        	String originalName =  multipartFile.getOriginalFilename();
+			log.info(originalName);
+			Path savePath = Paths.get(uploadPath, member_uuid+"_"+originalName);
+			try {
+				if(Files.probeContentType(savePath).startsWith("image")) {					
+					boolean img = true;			
+					multipartFile.transferTo(savePath);
+					//썸네일 저장
+					File thumbFile = new File(uploadPath, "s_" + member_uuid+"_"+originalName);
+					Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 100, 100);						
+					UploadResultDTO uploadResultDTO = UploadResultDTO.builder().img_uuid(member_uuid).filename(originalName).img(img).build();
+					userService.insertProfile(member_uuid, originalName);
+				}else{
+				}
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }       
         String state = Integer.toString(userDTO.getState());
         if(member_uuid==null) {
         	return null;

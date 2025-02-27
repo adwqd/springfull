@@ -1,5 +1,6 @@
 package com.springfull.backend.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.springfull.backend.domain.PageRequestDTO;
@@ -11,6 +12,6 @@ public interface BoardService {
 	
 	List<PostDTO> hotRanking();
 	List<PostDTO> cateRanking(int cate_id);
-	List<PostDTO> cateBest();
+	HashMap<String, PostDTO> cateBest();
 	List<PostDTO> recent();
 }

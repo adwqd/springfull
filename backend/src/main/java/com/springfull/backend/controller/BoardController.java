@@ -2,6 +2,7 @@ package com.springfull.backend.controller;
 
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -56,8 +57,13 @@ public class BoardController {
 	}
 	
 	@GetMapping("/catebest")
-	public List<PostDTO> cateBest(){
+	public HashMap<String, PostDTO> cateBest(){
 		return boardService.cateBest();
+	}
+	
+	@GetMapping("/recent")
+	public List<PostDTO> recent(){
+		return boardService.recent();
 	}
 	
 }

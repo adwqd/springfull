@@ -1,31 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaHeart, FaTrophy, FaUserCircle } from "react-icons/fa";
+import axios from "axios";
+import {MyContext} from "../App";
 
 // 더미 데이터 (지난 7일간 급상승 랭킹)
-const mockData = [
-    { id: 1, title: "서브웨이 우즈 정식 레시피", writer: "writer1", date: "2025/02/12", updatedDate: "2025/02/14", rating: 4.8, likes: 120, image: null, profileImg: "https://source.unsplash.com/40x40/?person" },
-    { id: 2, title: "GS25 꿀조합 추천", writer: "writer2", date: "2025/02/11", updatedDate: null, rating: 4.5, likes: 80, image: "https://source.unsplash.com/80x80/?food", profileImg: "https://source.unsplash.com/40x40/?avatar" },
-    { id: 3, title: "내가 만든 최고의 레시피", writer: "writer3", date: "2025/02/10", updatedDate: "2025/02/13", rating: 4.2, likes: 65, image: null, profileImg: null },
-    { id: 4, title: "이마트24 한정판 조합", writer: "writer4", date: "2025/02/09", updatedDate: null, rating: 5.0, likes: 50, image: null, profileImg: "https://source.unsplash.com/40x40/?face" },
-];
 
 const HotRankingPage = () => {
     const navigate = useNavigate();
     const [rankingData, setRankingData] = useState([]);
+    const [imageUrl, setImageUrl] = useState({});
+    const [profileUrl, setProfileUrl] = useState({});
 
+    const {apiURL} = useContext(MyContext);
     useEffect(() => {
-        fetchRankingData();
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${apiURL}/hotranking`);
+                if (response.data && response.data.length > 0) {
+                    console.log(response);
+                    setRankingData(response.data);
+    
+                    // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
+                    const imagePromises = response.data.map(async (data) => {
+                        try {
+                            if(data.thumbnail === null) return { post_no: data.post_no, imageUrl: null };
+                            const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
+                            const profileResponse = await axios.get(`${apiURL}/view/${data.profile_img}`, { responseType: "blob" });
+                            return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data), profileUrl: URL.createObjectURL(profileResponse.data) };
+                        } catch (error) {
+                            console.error("Error fetching image:", error);
+                            return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
+                        }
+                    });
+    
+                    // 모든 이미지 요청이 완료될 때까지 기다림
+                    const images = await Promise.all(imagePromises);
+    
+                    // imageUrl을 post_no 별로 매핑
+                    setImageUrl((prev) => {
+                        const newImageUrls = { ...prev };
+                        images.forEach(({ post_no, imageUrl }) => {
+                            newImageUrls[post_no] = imageUrl;
+                        });
+                        return newImageUrls;
+                    });
+
+                    setProfileUrl((prev) => {
+                        const newProfileUrls = { ...prev };
+                        images.forEach(({ post_no, profileUrl }) => {
+                            newProfileUrls[post_no] = profileUrl;
+                        });
+                        return newProfileUrls;
+                    });
+    
+                } else {
+                    alert("글이 없습니다.");
+                    history.back();
+                }
+            } catch (error) {
+                console.error("Error fetching recent posts:", error);
+            }
+        
+        };
+    
+        fetchData();
     }, []);
 
-    const fetchRankingData = async () => {
-        try {
-            const sortedData = [...mockData].sort((a, b) => (b.likes * b.rating) - (a.likes * a.rating));
-            setRankingData(sortedData);
-        } catch (error) {
-            console.error("데이터 불러오기 실패:", error);
-        }
-    };
 
     return (
         <div className="p-4 max-w-lg mx-auto space-y-6">
@@ -43,10 +84,10 @@ const HotRankingPage = () => {
                     <ul className="space-y-3">
                         {rankingData.map((post, index) => (
                             <li
-                                key={post.id}
+                                key={post.post_no}
                                 className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-3 shadow-lg" : ""
                                     }`}
-                                onClick={() => navigate(`/posts/${post.id}`)}
+                                onClick={() => navigate(`/posts/${post.post_no}`)}
                             >
                                 {/* 🔹 1등 트로피 아이콘 / 2등 이후 숫자 */}
                                 <div className="w-6 flex items-center justify-center text-gray-600 font-bold">
@@ -56,7 +97,7 @@ const HotRankingPage = () => {
                                 {/* 🔹 등수와 이미지 사이 간격 확대 (ml-6) */}
                                 {post.image ? (
                                     <div className="w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-300 ml-3">
-                                        <img src={post.image} alt="썸네일" className="w-full h-full object-cover" />
+                                        <img src={imageUrl[post.post_no]} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
                                     <div className="w-0"></div>
@@ -69,30 +110,30 @@ const HotRankingPage = () => {
                                     </h3>
                                     <div className="flex items-center mt-1">
                                         {/* 🔹 작성자 프로필 (없으면 기본 아이콘) */}
-                                        {post.profileImg ? (
+                                        {post.profile_img ? (
                                             <img
-                                                src={post.profileImg}
+                                                src={profileUrl[post.post_no]}
                                                 alt="프로필"
                                                 className="w-4 h-4 rounded-full mr-2"
                                             />
                                         ) : (
                                             <FaUserCircle className="w-6 h-6 text-gray-400 mr-2" />
                                         )}
-                                        <p className="text-xs text-gray-500">{post.writer}</p>
+                                        <p className="text-xs text-gray-500">{post.name}</p>
                                     </div>
                                     {/* 🔹 날짜 (수정일 있으면 표시) */}
                                     <p className="text-xs text-gray-500">
-                                        {post.updatedDate ? `${post.date} (수정: ${post.updatedDate})` : post.date}
+                                        {post.mod_date ? `${post.reg_date} (수정: ${post.mod_date})` : post.reg_date}
                                     </p>
                                 </div>
 
                                 {/* 🔹 좋아요 & 평점 (세로 정렬 & 위치 고정) */}
                                 <div className="flex flex-col items-end min-w-[50px] text-sm space-y-1">
                                     <div className="flex items-center text-yellow-500 space-x-1">
-                                        <FaStar /> <span className="text-gray-500">{post.rating.toFixed(1)}</span>
+                                        <FaStar /> <span className="text-gray-500">{post.star ? post.star.toFixed(1) : "0"}</span>
                                     </div>
                                     <div className="flex items-center text-red-500 space-x-1">
-                                        <FaHeart /> <span className="text-gray-500">{post.likes}</span>
+                                        <FaHeart /> <span className="text-gray-500">{post.post_like}</span>
                                     </div>
                                 </div>
                             </li>

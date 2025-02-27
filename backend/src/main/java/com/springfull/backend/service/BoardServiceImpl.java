@@ -1,6 +1,7 @@
 package com.springfull.backend.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -52,7 +53,14 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public List<PostDTO> hotRanking() {
-		return listMapper.hotRanking();
+		List<PostDTO> list = new ArrayList<>();
+		for(PostDTO temp:listMapper.hotRanking()) {
+			temp.setStar(listMapper.getStar(temp.getPost_no()));
+			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
+			temp.setProfile_img("s_"+userMapper.viewProfile(temp.getMember_uuid()));
+			list.add(temp);
+		}
+		return list;
 	}
 
 	@Override
@@ -61,8 +69,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<PostDTO> cateBest() {
-		List<PostDTO> list = new ArrayList<>();
+	public HashMap<String, PostDTO> cateBest() {
+		HashMap<String, PostDTO> map = new HashMap<>();
 		List<TagVO> cate = registerMapper.getCate();
 		for(TagVO temp:cate) {
 			List<PostDTO> tempList = listMapper.cateRanking(temp.getTag_id(), 1);
@@ -71,10 +79,10 @@ public class BoardServiceImpl implements BoardService {
 				post = tempList.get(0);
 				post.setMember_uuid(String.valueOf(temp.getTag_id()));
 				post.setName(temp.getTag_name());
+				map.put(temp.getTag_name(), post);
 			}
-			list.add(post);
 		}
-		return list;
+		return map;
 	}
 
 	@Override

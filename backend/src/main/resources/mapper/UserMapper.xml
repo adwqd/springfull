@@ -35,6 +35,11 @@
 		select post_no, title, p.member_uuid, name, post_like, reg_date
 		from post p
 		join member m on p.member_uuid = m.member_uuid
+		<if test="sort == 3">
+			join (select avg(star) as star, post_no
+				from star
+				group by post_no) s on s.post_no = p.post_no
+		</if>	
 		<where>
 			p.state=1
 			and p.member_uuid = #{member_uuid}
@@ -50,6 +55,9 @@
 		<if test="sort == 2">
 			order by post_like desc
 		</if>
+		<if test="sort == 3">
+			order by star desc
+		</if>
 		limit #{skip}, #{size}
 	</select>
 	
@@ -57,6 +65,11 @@
 	<select id="getMyPostCount">
 		select count(*)
 		from post p
+		<if test="sort == 3">
+			join (select avg(star) as star, post_no
+				from star
+				group by post_no) s on s.post_no = p.post_no
+		</if>
 		<where>
 			p.state=1
 			and p.member_uuid = #{member_uuid}
@@ -106,6 +119,11 @@
 		from post p
 		join member m on p.member_uuid = m.member_uuid
 		join bookmark bm on p.post_no = bm.post_no
+		<if test="sort == 3">
+			join (select avg(star) as star, post_no
+				from star
+				group by post_no) s on s.post_no = p.post_no
+		</if>
 		<where>
 			p.state=1
 			and bm.member_uuid = #{member_uuid}
@@ -120,6 +138,9 @@
 		</if>
 		<if test="sort == 2">
 			order by post_like desc
+		</if>
+		<if test="sort == 3">
+			order by star desc
 		</if>
 		limit #{skip}, #{size}
 	</select>

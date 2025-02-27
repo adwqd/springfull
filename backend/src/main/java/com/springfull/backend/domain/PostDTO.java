@@ -2,6 +2,8 @@ package com.springfull.backend.domain;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,17 @@ public class PostDTO {
 	private Double star;
 	private String thumbnail;
 	private String profile_img;
-	private LocalDateTime reg_Date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd", timezone = "Asia/Seoul")
+	private LocalDateTime reg_date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd", timezone = "Asia/Seoul")
+	private LocalDateTime mod_date;
 	private Integer state;
+	
+	public LocalDateTime getMod_date() {
+		if(this.reg_date.equals(this.mod_date)) {
+			return null;
+		}else {
+			return mod_date;
+		}
+	}
 }

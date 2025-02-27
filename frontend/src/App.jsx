@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -27,6 +27,8 @@ import PostReportBoardPage from "./pages/PostReportBoardPage";
 import DeleteBoardPage from "./pages/DeleteBoardPage";
 import BoardListPage
   from "./pages/BoardListPage";
+
+  const MyContext = createContext();
 const App = () => {
   // ✅ 로그인 상태 관리
   const [userInfo, setUserInfo] = useState(null);
@@ -48,9 +50,13 @@ const App = () => {
     }
   }, []);
 
+  const apiURL = "http://localhost:8081";
+
 
   return (
     <>
+      <MyContext.Provider value={{apiURL}}>
+        
       <Router>
 
         <Navbar userInfo={userInfo} onLogout={handleLogout} />
@@ -108,8 +114,10 @@ const App = () => {
         <Footer />
 
       </Router >
+      </MyContext.Provider>
     </>
   );
 };
-
+export { MyContext };
 export default App;
+
