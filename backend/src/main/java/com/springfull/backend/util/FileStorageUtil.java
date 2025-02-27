@@ -17,10 +17,6 @@ public class FileStorageUtil {
             String fileName = uuid + "_" + file.getOriginalFilename();
             File destinationFile = new File(uploadPath + fileName);
 
-            // 폴더 없으면 생성
-            if (!destinationFile.getParentFile().exists()) {
-                destinationFile.getParentFile().mkdirs();
-            }
 
             // 파일 저장
             try (FileOutputStream fos = new FileOutputStream(destinationFile)) {

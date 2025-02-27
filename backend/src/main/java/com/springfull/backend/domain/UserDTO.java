@@ -18,12 +18,5 @@ public class UserDTO {
 	private String email;
 	private Integer state;
 	
-	public Role getRole() {
-		if(this.state==0) {
-			return Role.ROLE_ADMIN;
-		}else {
-			return Role.ROLE_USER;
-		}
-	}
 	
 }

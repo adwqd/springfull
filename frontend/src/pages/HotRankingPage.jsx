@@ -24,7 +24,7 @@ const HotRankingPage = () => {
                     // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
                     const imagePromises = response.data.map(async (data) => {
                         try {
-                            if(data.thumbnail === null) return { post_no: data.post_no, imageUrl: null };
+                            if(data.thumbnail === null) return { post_no: data.post_no, imageUrl: null, profileUrl: null };
                             const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
                             const profileResponse = await axios.get(`${apiURL}/view/${data.profile_img}`, { responseType: "blob" });
                             return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data), profileUrl: URL.createObjectURL(profileResponse.data) };

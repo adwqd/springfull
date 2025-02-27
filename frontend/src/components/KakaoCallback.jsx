@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {MyContext} from "../App";
+
 
 const KAKAO_REST_API_KEY = "f9b961caf76caffaab08ed1e2ce895cb"; // 🔥 REST API 키 입력
 const REDIRECT_URI = "http://localhost:5173/auth/kakao/callback"; // 🔥 Redirect URI 입력

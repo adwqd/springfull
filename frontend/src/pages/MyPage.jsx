@@ -1,55 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaCog, FaBookmark, FaStar, FaFile, FaPortrait, FaBell } from "react-icons/fa";
 import KakaoLoginButton from "../components/KakaoLoginButton";
 import Image from "../assets/Rules!.png"; // ✅ 이미지 경로 확인
+import axios from "axios";
+import {MyContext} from "../App";
 
 const MyPage = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
+    const [profileUrl, setProfileUrl] = useState({});
+    const {apiURL} = useContext(MyContext);
 
     // ✅ 로그인 상태 확인 (localStorage + 카카오 SDK 세션 확인)
     useEffect(() => {
         const storedUserInfo = localStorage.getItem("userInfo");
         if (storedUserInfo) {
-            setUserInfo(JSON.parse(storedUserInfo)); // ✅ 사용자 정보 설정
-        } else if (window.Kakao && window.Kakao.Auth.getAccessToken()) {
-            console.log("🔹 카카오 세션 유지됨, 사용자 정보 불러오기...");
-            fetchUserInfo(window.Kakao.Auth.getAccessToken());
-        } else {
+            setUserInfo(JSON.parse(storedUserInfo));
+          } else {
             navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
         }
     }, [navigate]);
+    useEffect(() => {
+        const fetchImage = async () => {
+            if (!userInfo || !userInfo.member_uuid) return;
+
+            try {
+                // 이미지 데이터를 비동기로 요청
+                const profileResponse = await axios.get(
+                    `${apiURL}/profile/${userInfo.member_uuid}`,
+                    { responseType: 'blob' }
+                );
+
+                // 이미지 URL을 생성하고 상태 업데이트
+                const imageUrl = URL.createObjectURL(profileResponse.data);
+                setProfileUrl(imageUrl);
+
+            } catch (error) {
+                console.error('Error fetching image:', error);
+                setProfileUrl(null);
+            }
+        };
+
+        fetchImage();
+    }, [userInfo, apiURL]);
 
     // ✅ 사용자 정보 요청 함수
-    const fetchUserInfo = async (accessToken) => {
-        try {
-            const response = await fetch("https://kapi.kakao.com/v2/user/me", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
+    // const fetchUserInfo = async (accessToken) => {
+    //     try {
+    //         const response = await fetch("https://kapi.kakao.com/v2/user/me", {
+    //             method: "GET",
+    //             headers: {
+    //                 Authorization: `Bearer ${accessToken}`,
+    //                 "Content-Type": "application/json",
+    //             },
+    //         });
 
-            const userData = await response.json();
-            console.log("✅ 카카오 사용자 정보:", userData);
+    //         const userData = await response.json();
+    //         console.log("✅ 카카오 사용자 정보:", userData);
 
-            const nickname = userData.kakao_account?.profile?.nickname || "사용자";
-            const profileImage = userData.kakao_account?.profile?.profile_image_url || "https://source.unsplash.com/100x100/?avatar";
+    //         const name = userData.kakao_account?.profile?.name || "사용자";
+    //         const profileImage = userData.kakao_account?.profile?.profile_image_url || "https://source.unsplash.com/100x100/?avatar";
 
-            const userProfile = {
-                id: userData.id || "Unknown",
-                nickname,
-                profile_image: profileImage,
-            };
+    //         const userProfile = {
+    //             id: userData.id || "Unknown",
+    //             name,
+    //             profile_image: profileImage,
+    //         };
 
-            localStorage.setItem("userInfo", JSON.stringify(userProfile)); // ✅ 사용자 정보 저장
-            setUserInfo(userProfile);
-        } catch (error) {
-            console.error("❌ 사용자 정보 요청 실패:", error);
-        }
-    };
+    //         localStorage.setItem("userInfo", JSON.stringify(userProfile)); // ✅ 사용자 정보 저장
+    //         setUserInfo(userProfile);
+    //     } catch (error) {
+    //         console.error("❌ 사용자 정보 요청 실패:", error);
+    //     }
+    // };
 
     // ✅ 로그아웃 처리
     const handleLogout = () => {
@@ -83,11 +107,11 @@ const MyPage = () => {
             {/* 프로필 카드 */}
             <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col items-center space-y-3">
                 <img
-                    src={userInfo.profile_image || "https://source.unsplash.com/100x100/?avatar"}
+                    src={profileUrl || "https://source.unsplash.com/100x100/?avatar"}
                     alt="프로필"
                     className="w-20 h-20 rounded-full border shadow-md"
                 />
-                <p className="text-lg font-semibold">{userInfo.nickname}</p>
+                <p className="text-lg font-semibold">{userInfo.name}</p>
 
                 <button
                     onClick={handleLogout}
