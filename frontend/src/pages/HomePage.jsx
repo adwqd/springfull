@@ -59,8 +59,8 @@ const HomePage = () => {
                 } catch (error) {
                     console.error("Error fetching recent posts:", error);
                 }
-                const hotRanking = await axios.get(`${apiURL}/hotranking`, {size:3});
-                setHotRankings(hotRanking.data);
+                const hotRanking = await axios.get(`${apiURL}/hotranking`);
+                setHotRankings([hotRanking.data[0],hotRanking.data[1],hotRanking.data[2]]);
                 console.log("급상승", hotRanking);
                 const cateRanking = await axios.get(`${apiURL}/catebest`);
                 setCategoryRankings(cateRanking.data);
