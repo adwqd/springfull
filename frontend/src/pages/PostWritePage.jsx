@@ -204,6 +204,22 @@ const PostWritePage = () => {
 
         const register = async () => {
             try {
+                if(images == null || images.length == 0){
+                    console.log("이미지가 없습니다", images.length);
+                    axios.post(`${apiURL}/member/register`, post, {
+                        headers: { "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                         }
+                    })
+                    .then((postResponse) => {
+                        console.log("글작성 응답", postResponse);
+                        console.log(postResponse.data);
+                    })
+                    .catch((error) => {
+                        console.error("글 작성 중 오류 발생", error);
+                    });
+                    return updatedPost;
+                }
                 // 이미지 업로드
                 const formData = new FormData();
                 for(let file of images){

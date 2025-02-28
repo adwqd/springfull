@@ -21,11 +21,8 @@ const PostDetailPage = () => {
     const [userInfo, setUserInfo] = useState({
             member_uuid : null
         });
-    const [reply, setReply] = useState({
-        post_no : 1,
-        member_uuid : "aaa",
-        reply_content : ""
-    });
+
+    const [imageIndex, setImageIndex] = useState(0);
     const [replyList, setReplyList] = useState([])
     const [imageUrl, setImageUrl] = useState([]);
     const [replyProfile, setReplyProfile] = useState({});
@@ -59,7 +56,7 @@ const PostDetailPage = () => {
     const [customReason, setCustomReason] = useState("");
 
     // 댓글 작성/수정/삭제 상태
-    const [comments, setComments] = useState(post.comments);
+    const [reply, setreply] = useState(post.reply);
     const [commentModalOpen, setCommentModalOpen] = useState(null);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editCommentContent, setEditCommentContent] = useState("");
@@ -261,15 +258,27 @@ const PostDetailPage = () => {
 
     // 게시글 삭제 처리
     const handleDeletePost = async () => {
+        let res = "";
         try {
             console.log(`🚮 게시글 삭제 요청: ${post.id}`);
-            // TODO: 실제 삭제 API 호출 자리 (백엔드 연동 필요)
-            // const response = await fetch(`/api/posts/${post.id}`, { method: "DELETE" });
-
-            // if (!response.ok) throw new Error("삭제 실패");
-
-            alert("✅ 게시글이 삭제되었습니다.");
-            navigate("/users/me"); // 삭제 후 마이페이지로 이동
+            const deletePost = async () => {           
+                const response = await axios.delete(`${apiURL}/member/post/${post_no}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}` // 실제 JWT 토큰
+                    }
+                });
+                console.log(response);
+                res = response.data;
+                console.log(res);
+                if(res ==null || res ==""){
+                    alert("✅ 게시글이 삭제되었습니다.");
+                    navigate("/users/me"); // 삭제 후 마이페이지로 이동
+                }else{
+                    alert(res);
+                }
+            }
+            deletePost();
+            toggleDeleteModal();
         } catch (error) {
             console.error("게시글 삭제 오류:", error);
             alert("삭제 중 오류가 발생했습니다.");
@@ -279,8 +288,8 @@ const PostDetailPage = () => {
     //댓글 ------------------------------------------------------------------------------------------------------------------------------------------
     // 댓글 좋아요 토글 (색상 변경 & 숫자 업데이트)
     const handleCommentLike = (commentId) => {
-        setComments((prevComments) => {
-            return prevComments.map((comment) => {
+        setreply((prevreply) => {
+            return prevreply.map((comment) => {
                 if (comment.id === commentId) {
                     const updatedLiked = !comment.liked; // 새로운 liked 상태 저장
                     showNotification(updatedLiked ? "댓글에 좋아요를 남겼습니다" : "댓글 좋아요를 취소했습니다."); // 최신 liked 값 기반으로 알림 표시
@@ -298,18 +307,30 @@ const PostDetailPage = () => {
     };
     //댓글 수정 입력창
     const handleEditComment = (commentId, content) => {
-        setEditingCommentId(commentId);
+        setEditingCommentId(userInfo.member_uuid);
         setEditCommentContent(content);
         setCommentModalOpen(null);
     };
     // ✅ 댓글 수정 저장 (Enter 키 적용)
     const handleSaveEditComment = (commentId) => {
         if (editCommentContent.trim() === "") return;
-        setComments((prev) =>
+        setreply((prev) =>
             prev.map((comment) =>
                 comment.id === commentId ? { ...comment, content: editCommentContent } : comment
             )
         );
+        const newCommentObj = {
+            reply_content: editCommentContent,
+            post_no : post_no
+        };
+        const reply = async () => {           
+            const response = await axios.put(`${apiURL}/member/reply`, newCommentObj, {
+                headers: {
+                    Authorization: `Bearer ${token}` // 실제 JWT 토큰
+                }
+            });
+            console.log(response);
+        }
         setEditingCommentId(null);
         showNotification("댓글이 수정되었습니다.");
     };
@@ -324,7 +345,7 @@ const PostDetailPage = () => {
 
     const handleDeleteComment = () => {
         if (deleteCommentId !== null) {
-            setComments((prevComments) => prevComments.filter((comment) => comment.id !== deleteCommentId));
+            setreply((prevreply) => prevreply.filter((comment) => comment.id !== deleteCommentId));
             setDeleteCommentId(null);
             showNotification("댓글이 삭제되었습니다.");
         }
@@ -335,17 +356,25 @@ const PostDetailPage = () => {
     const handleAddComment = () => {
         if (newComment.trim() === "") return;
         const newCommentObj = {
-            id: comments.length + 1,
-            writer: "현재 사용자",
             profileImg: "https://source.unsplash.com/40x40/?profile", // 더미 프로필 이미지 추가
-            content: newComment,
+            reply_content: newComment,
             date: formatDate(new Date()),
             likes: 0,
             liked: false,
+            post_no : post_no
         };
-        setComments([...comments, newCommentObj]);
-        setNewComment(""); // 입력창 초기화
+        const reply = async () => {           
+            const response = await axios.post(`${apiURL}/member/reply`, newCommentObj, {
+                headers: {
+                    Authorization: `Bearer ${token}` // 실제 JWT 토큰
+                }
+            });
+            console.log(response);
+        }
+        reply();
+        //setNewComment(""); // 입력창 초기화
         showNotification("댓글이 작성되었습니다.");
+        location.reload();
     };
 
 
@@ -370,6 +399,17 @@ const PostDetailPage = () => {
         const day = String(d.getDate()).padStart(2, "0");
         return `${year}/${month}/${day}`;
     };
+
+    const changeImage = () => {
+        let i = imageIndex+1;
+        if(i>=imageUrl.length){
+            i =0;
+        }
+        setImageIndex(i);
+        console.log(i);
+    }
+    useEffect(()=>{
+    }, [imageIndex, editingCommentId])
 
 
 
@@ -397,7 +437,7 @@ const PostDetailPage = () => {
                 {/* 🔹 이미지 ( 이미지 없으면 숨김) */}
                 {post.image && (
                     <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md">
-                        <img src={imageUrl[0]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" />
+                        <img src={imageUrl[imageIndex]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" onClick={changeImage} style={{ maxHeight: "200px", height: "auto" }}/>
                     </div>
                 )}
                 {/* 🔹 게시글 헤더 */}
@@ -575,7 +615,7 @@ const PostDetailPage = () => {
                             {commentModalOpen === reply.reply_no && (
                                 <div className="absolute right-4 top-10 bg-white border rounded-md shadow-lg p-2 w-32 z-50">
                                     <ul className="space-y-2 text-gray-700">
-                                        {editingCommentId !== reply.reply_no && ( // 수정 중이 아닐 때만 수정 버튼 표시
+                                        {editingCommentId !== reply.member_uuid && ( // 수정 중이 아닐 때만 수정 버튼 표시
                                             <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(reply.reply_no, reply.reply_content)}>
                                                 수정
                                             </li>

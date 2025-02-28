@@ -45,8 +45,8 @@ public class PostServiceImpl implements PostService {
 			}			
 			postDetailDTO.setStar(postMapper.getMyStar(post_no, member_uuid));
 			postDetailDTO.setImage(postMapper.getImage(post_no));
-			postDetailDTO.setProfile_img(userMapper.viewProfile(member_uuid));
-			postDetailDTO.setName(userMapper.getUser(member_uuid).getName());
+			postDetailDTO.setProfile_img(userMapper.viewProfile(postDetailDTO.getMember_uuid()));
+			postDetailDTO.setName(userMapper.getUser(postDetailDTO.getMember_uuid()).getName());
 		}
 		return postDetailDTO;
 	}

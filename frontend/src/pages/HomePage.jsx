@@ -31,6 +31,7 @@ const HomePage = () => {
                         // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
                         const imagePromises = response.data.map(async (data) => {
                             try {
+                                if(data.thumbnail==null){return { post_no: data.post_no, imageUrl: null };}
                                 const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
                                 return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
                             } catch (error) {
@@ -123,7 +124,7 @@ const HomePage = () => {
                                     <span className="text-gray-500 text-sm"><img src={imageUrl[post.post_no]} alt="thumbnail"  style={{height:"80px"}}/></span>
                                 </div>
                                 <p className="font-medium text-xs text-left">{post.title}</p>
-                                <p className="text-gray-500 text-xs text-left">{post.member_uuid}</p>
+                                <p className="text-gray-500 text-xs text-left">{post.name}</p>
                                 <p className="text-gray-600 text-xs text-left font-semibold">{post.cost}</p>
                             </div>
                         ))}

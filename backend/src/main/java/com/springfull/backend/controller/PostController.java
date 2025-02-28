@@ -113,7 +113,13 @@ public class PostController {
 	}
 	
 	@DeleteMapping("/member/post/{post_no}")
-	public String deletePost(@PathVariable("post_no") int post_no) {
+	public String deletePost(@PathVariable("post_no") int post_no, HttpServletRequest httpServletRequest) {
+		String accessToken = jwtUtil.getAccessToken(httpServletRequest);
+		String uuid = jwtUtil.getUUID(accessToken);
+		if(!uuid.equals(postService.read(post_no, uuid).getMember_uuid())) {
+			log.info("본인이 아니잖아");
+			return "본인 글만 삭제할수 있습니다";
+		}
 		if(postService.likeCheck(post_no)) {
 			List<ImageDTO> list = postService.getImage(post_no);
 			if(list!=null && list.size()>0) {
