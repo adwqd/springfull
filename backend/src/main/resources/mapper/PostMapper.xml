@@ -187,6 +187,13 @@
 		where post_no = #{post_no}
 	</update>
 	
+	<select id="getBrandTag">
+		select pb.brand_id as tag_id, brand_name as tag_name
+		from post_brand pb
+		join brand b on b.brand_id = pb.brand_id
+		where post_no = #{post_no}
+	</select>
+	
 	<select id="getTasteTag">
 		select pt.taste_id as tag_id, taste_name as tag_name
 		from post_taste pt

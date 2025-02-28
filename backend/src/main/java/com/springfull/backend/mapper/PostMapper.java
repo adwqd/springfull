@@ -87,6 +87,7 @@ public interface PostMapper {
 	void modPost(PostDetailDTO postDetailDTO);
 	
 	//태그정보
+	List<TagVO> getBrandTag(@Param("post_no") int post_no);
 	List<TagVO> getTasteTag(@Param("post_no") int post_no);
 	List<TagVO> getIngredientTag(@Param("post_no") int post_no);
 }

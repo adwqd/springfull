@@ -44,6 +44,8 @@ public class PostDetailDTO {
 	@Builder.Default
 	private List<Integer> ingredient_id = new ArrayList<>();
 	@Builder.Default
+	private List<TagVO> brand = new ArrayList<>();
+	@Builder.Default
 	private List<TagVO> taste = new ArrayList<>();
 	@Builder.Default
 	private List<TagVO> ingredient = new ArrayList<>();

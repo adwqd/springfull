@@ -37,6 +37,7 @@ const PostDetailPage = () => {
         brand_id : [],
         taste_id : [],
         ingredient_id : [],
+        brand : [ {tag_name: ""}],
         taste : [],
         ingredient : []
     });
@@ -90,6 +91,7 @@ const PostDetailPage = () => {
                     const images = response.data.image;
                     const imageRequests = images.map(async (image) => {
                         try {
+                            if(image ==null){return null;}
                             const filename = image.img_uuid + "_" + image.filename;
                             const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
                             return URL.createObjectURL(imgResponse.data);
@@ -132,7 +134,7 @@ const PostDetailPage = () => {
     
                 const imagePromises = response.data.map(async (data) => {
                     try {
-                        if (data.profile_img === null) return { member_uuid: data.member_uuid, profileUrl: null };
+                        if (data.profile_img === null || data.profile_img == "") return { member_uuid: data.member_uuid, profileUrl: null };
                         const profileResponse = await axios.get(`${apiURL}/profile/${data.member_uuid}`, { responseType: "blob" });
                         return { member_uuid: data.member_uuid, profileUrl: URL.createObjectURL(profileResponse.data) };
                     } catch (error) {
@@ -428,14 +430,14 @@ const PostDetailPage = () => {
 
             <div className="border p-4 shadow-md rounded-xl space-y-10 relative">
                 {/* ✅ 브랜드 라벨 (카드 내부 상단 오른쪽 고정) */}
-                <div className={`absolute top-4 right-4 px-4 py-1 text-sm font-semibold rounded-md ${brandColors[post.brand] || "bg-gray-600 text-white"}`}>
-                    {post.brand}
+                <div className={`absolute top-4 right-4 px-4 py-1 text-sm font-semibold rounded-md ${brandColors[post.brand_id[0]] || "bg-gray-600 text-white"}`}>
+                    {post.brand[0].tag_name}
                 </div>
 
 
 
                 {/* 🔹 이미지 ( 이미지 없으면 숨김) */}
-                {post.image && (
+                {post.image[0] && (
                     <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md">
                         <img src={imageUrl[imageIndex]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" onClick={changeImage} style={{ maxHeight: "200px", height: "auto" }}/>
                     </div>
