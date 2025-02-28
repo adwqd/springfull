@@ -1,176 +1,174 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { FaStar, FaHeart, FaUserCircle, FaArrowLeft, FaSearch } from "react-icons/fa";
-import axios from "axios";
-import Pagination from "../components/Pagination";
-import { MyContext } from "../App";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaHeart, FaStar, FaUserCircle } from "react-icons/fa";
+import Pagination from "../components/Pagination"; // Pagination 컴포넌트 경로
 
-// ✅ 브랜드 목록 (네비게이션용)
+// 브랜드 정보를 id와 name으로 설정 (예: GS25: id "1", CU: id "2", …)
 const brands = [
-    { id: "0", name: "기타" },
     { id: "1", name: "GS25" },
     { id: "2", name: "CU" },
     { id: "3", name: "세븐일레븐" },
     { id: "4", name: "이마트24" },
     { id: "5", name: "서브웨이" },
+    { id: "6", name: "기타" },
 ];
 
+// 더미 응답 데이터 예시 (브랜드 id에 따라 다르게 처리)
+const dummyResponseData = {
+    "1": {
+        page: 1,
+        size: 10,
+        total: 23,
+        start: 1,
+        end: 10,
+        prev: false,
+        next: true,
+        dtoList: [
+            {
+                post_no: 1,
+                title: "GS25 최고의 조합은 정말 대박이에요, 먹어봐야 합니다!",
+                member_uuid: "writer1",
+                name: "GS25",
+                post_like: 5,
+                cost: 10000,
+                star: 4.5,
+                thumbnail: "https://source.unsplash.com/80x80/?food",
+                profile_img: "https://source.unsplash.com/40x40/?person",
+                reg_Date: "2025-01-03T00:00:00Z",
+                state: 1,
+            },
+            {
+                post_no: 2,
+                title: "GS25 신상 조합 대박!",
+                member_uuid: "writer2",
+                name: "GS25",
+                post_like: 300,
+                cost: 12000,
+                star: 4.2,
+                thumbnail: "",
+                profile_img: "",
+                reg_Date: "2025-01-02T00:00:00Z",
+                state: 1,
+            },
+            // ... (게시글 10개라고 가정)
+        ],
+    },
+    "2": {
+        page: 1,
+        size: 10,
+        total: 15,
+        start: 1,
+        end: 10,
+        prev: false,
+        next: true,
+        dtoList: [
+            {
+                post_no: 3,
+                title: "CU 핫한 조합 지금 난리 났어요",
+                member_uuid: "writer3",
+                name: "CU",
+                post_like: 7,
+                cost: 9000,
+                star: 5.0,
+                thumbnail: "https://source.unsplash.com/80x80/?drink",
+                profile_img: "https://source.unsplash.com/40x40/?avatar",
+                reg_Date: "2025-01-01T00:00:00Z",
+                state: 1,
+            },
+            // ... (게시글 10개라고 가정)
+        ],
+    },
+    // dummyResponseData["3"], ["4"], ["5"], ["6"] 필요 시 추가
+};
+
 const BrandBoardPage = () => {
+    // URL 파라미터로 브랜드 id를 받음 (예: "/brands/1")
     const { brand } = useParams();
     const navigate = useNavigate();
-    const { apiURL } = useContext(MyContext);
 
+    // selectedBrand: URL에서 받은 값이 없으면 기본 "1" (GS25)
     const [selectedBrand, setSelectedBrand] = useState(brand || "1");
-    const [posts, setPosts] = useState([]);
-    const [authors, setAuthors] = useState({});
-    const [imageUrl, setImageUrl] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [sortOption, setSortOption] = useState("1"); // 최신순 기본
-    const postsPerPage = 10; // 페이지 당 게시글 수 10개
-
+    const [sortOption, setSortOption] = useState("1"); // "1": 최신순, "2": 좋아요순, "3": 평점순
     const [searchQuery, setSearchQuery] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // 게시글 불러오기 (정렬 및 페이징 적용)
-    const fetchPosts = async (brandId, page, sort, keyword = "") => {
+    // 백엔드에서 처리된 결과 (정렬 및 페이징 처리된 데이터)
+    const [posts, setPosts] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    // 백엔드 API 호출 (여기서는 더미 데이터 사용)
+    const fetchPosts = (brand, page, sort, search) => {
         setLoading(true);
-        try {
-            const response = await axios.post(`${apiURL}/list`, {
-                page,
-                size: postsPerPage,
-                brand: [brandId],
-                keyword: keyword.trim() || "", // 공백 검색 방지
-                sort: parseInt(sort, 10), //  정수 변환 (1: 최신순, 2: 좋아요순, 3: 평점순)
-            });
+        // 실제 API 호출 예시:
+        // axios.get('/api/posts', { params: { page, size:10, category: [], brand: [brand], taste: [], ingredient: [], min_cost:0, max_cost:0, keyword: search, member_uuid:"", sort, ingredientsize:0, brandsize:0, tastesize:0, skip:0 } })
+        //   .then(response => {
+        //     setPosts(response.data.dtoList);
+        //     setTotalPages(Math.ceil(response.data.total / response.data.size));
+        //   })
+        //   .catch(error => console.error("API 호출 실패", error))
+        //   .finally(() => setLoading(false));
 
-            if (!response.data || !response.data.dtoList) {
-                setPosts([]);
-                setTotalPages(1);
-                return;
-            }
-
-            // 🔹 평점 변환: 10점 만점을 5점 만점으로 변환, 없으면 `0.0`
-            let postList = response.data.dtoList.map((post) => ({
-                ...post,
-                post_like: post.post_like ?? 0, // 좋아요 없으면 0
-                star: post.star != null ? (post.star / 2).toFixed(1) : "0.0", // 10점 만점을 5점 만점으로 변환
-            }));
-
-            // 프론트에서 0.0도 포함한 정렬 (백엔드가 0.0을 제외하는 경우)
-            if (sort === "3") {
-                postList = [...postList].sort((a, b) => parseFloat(b.star) - parseFloat(a.star)); // 0.0 포함 정렬
-            }
-
-            setPosts(postList);
-            setTotalPages(Math.ceil(response.data.total / postsPerPage));
-
-            // 🔹 작성자 정보 조회 (member_uuid 기준)
-            const memberIds = [...new Set(postList.map((post) => post.member_uuid).filter(Boolean))];
-
-            if (memberIds.length > 0) {
-                const authorsData = {};
-                await Promise.all(
-                    memberIds.map(async (memberUuid) => {
-                        try {
-                            const authorResponse = await axios.get(`${apiURL}/members/${memberUuid}`);
-                            if (authorResponse.data) {
-                                authorsData[memberUuid] = {
-                                    nickname: authorResponse.data.nickname || "익명",
-                                    profile_img: authorResponse.data.profile_img ? `${apiURL}${authorResponse.data.profile_img}` : null,
-                                };
-                            }
-                        } catch (error) {
-                            console.error(`❌ 작성자 정보 조회 실패 (${memberUuid}):`, error);
-                            authorsData[memberUuid] = { nickname: "익명", profile_img: null };
-                        }
-                    })
-                );
-                setAuthors(authorsData);
-            }
-
-            // 🔹 썸네일 가져오기
-            const imagePromises = postList.map(async (data) => {
-                if (!data.thumbnail) return { post_no: data.post_no, imageUrl: null };
-                try {
-                    const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
-                    return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
-                } catch {
-                    return { post_no: data.post_no, imageUrl: null };
-                }
-            });
-
-            const images = await Promise.all(imagePromises);
-            setImageUrl((prev) => {
-                const newImageUrls = { ...prev };
-                images.forEach(({ post_no, imageUrl }) => {
-                    newImageUrls[post_no] = imageUrl;
-                });
-                return newImageUrls;
-            });
-
-        } catch (error) {
-            console.error("❌ API 호출 실패:", error);
-        } finally {
+        setTimeout(() => {
+            const dummyData = dummyResponseData[selectedBrand] || { dtoList: [], total: 0, size: 10 };
+            setPosts(dummyData.dtoList);
+            setTotalPages(Math.ceil(dummyData.total / dummyData.size));
             setLoading(false);
-        }
+        }, 500);
     };
-
-
 
     useEffect(() => {
         fetchPosts(selectedBrand, currentPage, sortOption, searchQuery);
-    }, [selectedBrand, currentPage, sortOption]);
+    }, [selectedBrand, currentPage, sortOption, searchQuery]);
 
     useEffect(() => {
+        // URL 파라미터 brand가 바뀌면 상태 업데이트
         if (brand && brand !== selectedBrand) {
             setSelectedBrand(brand);
             setCurrentPage(1);
         }
     }, [brand]);
 
-    // 검색 기능 (검색 버튼 또는 Enter 키 입력)
-    const handleSearchSubmit = () => {
-        setCurrentPage(1);
-        fetchPosts(selectedBrand, 1, sortOption, searchQuery);
-    };
-
-    // Enter 키로 검색 실행
-    const handleKeyPress = (e) => {
-        if (e.key === "Enter") {
-            handleSearchSubmit();
+    // 브랜드 선택 시, URL을 "/brands/{newBrand}"로 변경
+    const handleBrandChange = (newBrandId) => {
+        if (selectedBrand !== newBrandId) {
+            setSelectedBrand(newBrandId);
+            setCurrentPage(1);
+            navigate(`/brands/${newBrandId}`, { replace: true });
         }
     };
 
-    // 정렬 변경 시 기존 검색어 유지
     const handleSortChange = (e) => {
-        const newSort = e.target.value;
-        setSortOption(newSort);
+        setSortOption(e.target.value);
         setCurrentPage(1);
-        fetchPosts(selectedBrand, 1, newSort, searchQuery);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1);
+    };
 
-
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl">
-            {/* 🔹 헤더 & 홈 버튼 */}
+            {/* 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold lg:text-2xl">브랜드 게시판 📌</h2>
-                <button onClick={() => navigate(-1)} className="text-gray-500 text-sm lg:text-base flex items-center">
-                    <FaArrowLeft className="mr-1" />
-                    뒤로 가기
+                <button onClick={() => navigate("/")} className="text-gray-500 text-sm lg:text-base">
+                    ← 홈으로
                 </button>
             </div>
 
-            {/* 🔹 브랜드 네비게이션 */}
+            {/* 브랜드 선택 리스트 */}
             <div className="flex space-x-3 overflow-x-auto pb-3 border-b">
                 {brands.map((b) => (
                     <button
                         key={b.id}
-                        onClick={() => navigate(`/brands/${b.id}`)}
-                        className={`px-1 py-1 text-sm rounded-md transition lg:px-7 lg:py-2 lg:text-lg ${selectedBrand === b.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"
+                        onClick={() => handleBrandChange(b.id)}
+                        className={`px-0 py-1 text-sm rounded-md transition lg:px-7 lg:py-2 lg:text-lg ${selectedBrand === b.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"
                             }`}
                     >
                         {b.name}
@@ -178,87 +176,77 @@ const BrandBoardPage = () => {
                 ))}
             </div>
 
-            {/* 🔹 정렬 옵션 & 검색 */}
-            <div className="grid grid-cols-[5fr_1fr_2fr] gap-2 w-full">
+            {/* 검색창 & 정렬 옵션 */}
+            <div className="flex justify-between items-center space-x-2">
                 <input
                     type="text"
-                    placeholder="검색어 입력..."
+                    placeholder="게시글 검색..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={handleKeyPress} // Enter 키 검색 추가
-                    className="border px-3 py-2 rounded-md w-full"
+                    onChange={handleSearchChange}
+                    className="border px-3 py-1 lg:py-2 w-full rounded-md"
                 />
-                <button
-                    onClick={handleSearchSubmit}
-                    className="bg-gray-500 text-white px-1 py-2 rounded-md w-full flex justify-center items-center"
-                >
-                    검색
-                </button>
-                <select
-                    value={sortOption}
-                    onChange={handleSortChange}
-                    className="border px-3 py-2 rounded-md w-full"
-                >
+                <select value={sortOption} onChange={handleSortChange} className="border px-3 py-1 lg:py-2 rounded-md">
                     <option value="1">최신순</option>
                     <option value="2">좋아요순</option>
                     <option value="3">평점순</option>
                 </select>
             </div>
 
-
-
-
-
-
-            {/* 🔹 게시글 목록 */}
+            {/* 게시글 목록 */}
             <div>
                 {loading ? (
                     <p className="text-center">로딩중...</p>
                 ) : posts.length > 0 ? (
-                    <ul className="space-y-3">
+                    <ul className="space-y-3 lg:space-y-5">
                         {posts.map((post) => {
-                            const author = authors[post.member_uuid] || { nickname: "익명", profile_img: null };
+                            const thumbnail = post.thumbnail;
                             return (
-                                <li key={post.post_no} className="p-3 border rounded-lg flex justify-between transition hover:shadow-md">
-                                    {/* 🔹 게시글 정보 */}
-                                    <div className="flex items-center space-x-3">
-                                        {imageUrl[post.post_no] && (
-                                            <div className="w-20 h-20 flex-shrink-0">
-                                                <img src={imageUrl[post.post_no]} alt="thumbnail" className="w-full h-full object-cover rounded-md" />
-                                            </div>
-                                        )}
-                                        <div>
-                                            <button onClick={() => navigate(`/posts/${post.post_no}`)} className="block text-gray-800 font-bold text-sm">
-                                                {post.title}
-                                            </button>
-                                            <div className="flex items-center space-x-2 mt-1">
-                                                {author.profile_img ? (
-                                                    <img src={post.profile_img} alt="profile" className="w-5 h-5 rounded-full" />
-                                                ) : (
-                                                    <FaUserCircle className="text-gray-400 w-5 h-5" />
-                                                )}
-                                                <p className="text-gray-500 text-sm">{post.member_uuid}</p>
-                                            </div>
-                                            <p className="text-gray-500 text-xs mt-1">
-                                                {post.reg_date} {post.update_date && ` (수정: ${post.update_date})`}
-                                            </p>
+                                <li
+                                    key={post.post_no}
+                                    className="p-3 border rounded-lg flex items-center hover:shadow-md transition-all"
+                                >
+                                    {thumbnail && (
+                                        <div className="w-14 h-14 lg:w-16 lg:h-16 flex-shrink-0 rounded-md overflow-hidden">
+                                            <img src={thumbnail} alt="썸네일" className="w-full h-full object-cover" />
                                         </div>
+                                    )}
+                                    {/* 게시글 정보 */}
+                                    <div className="flex-1 px-3 lg:px-5 min-w-[200px]">
+                                        <button
+                                            onClick={() => navigate(`/posts/${post.post_no}`)}
+                                            className="text-gray-800 font-bold block truncate"
+                                        >
+                                            {post.title.length > (window.innerWidth >= 1024 ? 30 : 15)
+                                                ? post.title.slice(0, window.innerWidth >= 1024 ? 30 : 15) + "..."
+                                                : post.title}
+                                        </button>
+                                        <div className="flex items-center mt-1 space-x-2">
+                                            {post.profile_img ? (
+                                                <img src={post.profile_img} alt="프로필" className="w-4 h-4 rounded-full lg:w-6 lg:h-6" />
+                                            ) : (
+                                                <FaUserCircle className="text-gray-400 w-6 h-6" />
+                                            )}
+                                            <p className="text-gray-500 text-xs lg:text-sm">{post.member_uuid}</p>
+                                        </div>
+                                        <p className="text-gray-400 text-xs mt-1">
+                                            {post.reg_Date} {post.mod_date && `(수정:${post.mod_date})`}
+                                        </p>
                                     </div>
-
-                                    {/* 🔹 좋아요 & 별점 */}
-                                    {/* 🔹 좋아요 & 별점 */}
-                                    <div className="flex flex-col items-end text-sm space-y-2">
-                                        <div className="flex items-center text-yellow-500">
+                                    {/* 좋아요 & 별점 */}
+                                    <div className="flex flex-col items-end min-w-[70px] text-sm space-y-2">
+                                        <div className="flex items-center text-yellow-500 space-x-1 w-full justify-end lg:text-base">
                                             <FaStar />
-                                            <span className="ml-5 text-gray-500">{post.star}</span> {/* 5점 만점으로 변환된 값 출력 */}
+                                            <span className="w-6 lg:w-10 text-right text-gray-500 lg:text-base">
+                                                {post.star.toFixed(1)}
+                                            </span>
                                         </div>
-                                        <div className="flex items-center text-red-500">
+                                        <div className="flex items-center text-red-500 space-x-1 w-full justify-end lg:text-base">
                                             <FaHeart />
-                                            <span className="ml-5 text-gray-500">{post.post_like}</span>
+                                            <span className="w-6 lg:w-10 text-right text-gray-500 lg:text-base">
+                                                {post.post_like}
+                                            </span>
                                         </div>
                                     </div>
-
-
                                 </li>
                             );
                         })}
@@ -268,8 +256,10 @@ const BrandBoardPage = () => {
                 )}
             </div>
 
-            {/* 🔹 페이지네이션 */}
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            {/* 페이지 네이션 영역 */}
+            <div className="mt-6">
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </div>
         </div>
     );
 };
