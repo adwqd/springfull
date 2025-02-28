@@ -57,7 +57,7 @@ const PostDetailPage = () => {
     const [customReason, setCustomReason] = useState("");
 
     // 댓글 작성/수정/삭제 상태
-    const [reply, setreply] = useState(post.reply);
+    const [reply, setReply] = useState(post.reply);
     const [commentModalOpen, setCommentModalOpen] = useState(null);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editCommentContent, setEditCommentContent] = useState("");
@@ -173,14 +173,17 @@ const PostDetailPage = () => {
     //게시글 -----------------------------------------------------------------------------------------------------------------------------------------------
     // 게시글 좋아요 
     const handleLike = () => {
-        setLiked((prevLiked) => !prevLiked); // 상태만 업데이트
-
-        setLikeCount((prevCount) =>
-            liked ? prevCount - 1 : prevCount + 1 // 최신 liked 값을 직접 사용
-        );
-        
-
-        showNotification(liked ? "게시글 좋아요를 취소했습니다." : "게시글에 좋아요를 남겼습니다");
+        if(!liked){
+            setLiked(true); // 상태만 업데이트
+            const like = async () => {
+                const response = await axios.get(`${apiURL}/post-like/${post_no}`);
+                console.log(response);
+            }
+            like();
+        }else{
+            showNotification("한번만 좋아요할수 있습니다.");
+        }
+        //showNotification(liked ? "게시글 좋아요를 취소했습니다." : "게시글에 좋아요를 남겼습니다");
     };
 
 
@@ -309,37 +312,47 @@ const PostDetailPage = () => {
     };
     //댓글 수정 입력창
     const handleEditComment = (commentId, content) => {
-        setEditingCommentId(userInfo.member_uuid);
+        setEditingCommentId(commentId);
         setEditCommentContent(content);
         setCommentModalOpen(null);
     };
     // ✅ 댓글 수정 저장 (Enter 키 적용)
     const handleSaveEditComment = (commentId) => {
         if (editCommentContent.trim() === "") return;
-        setreply((prev) =>
+        setReplyList((prev) =>
             prev.map((comment) =>
-                comment.id === commentId ? { ...comment, content: editCommentContent } : comment
+                comment.reply_no === commentId ? { ...comment, content: editCommentContent } : comment
             )
         );
         const newCommentObj = {
+            reply_no : commentId,
             reply_content: editCommentContent,
             post_no : post_no
         };
-        const reply = async () => {           
+        const editReply = async () => {           
             const response = await axios.put(`${apiURL}/member/reply`, newCommentObj, {
                 headers: {
                     Authorization: `Bearer ${token}` // 실제 JWT 토큰
                 }
             });
-            console.log(response);
+            if(response.data == 0){
+                setEditingCommentId(null);
+                alert("본인글만 수정할수있습니다.");
+                location.reload();
+            }else{
+                setEditingCommentId(null);
+                showNotification("댓글이 수정되었습니다.");
+                location.reload();
+                console.log(response);
+            }
+            
         }
-        setEditingCommentId(null);
-        showNotification("댓글이 수정되었습니다.");
+        editReply();
     };
 
     // ✅ 엔터키로 댓글 저장
     const handleEditKeyDown = (e, commentId) => {
-        if (e.key === "Enter" && !e.shiftKey) {  // Shift + Enter 입력 시 줄바꿈
+        if (e.key == "Enter" && !e.shiftKey) {  // Shift + Enter 입력 시 줄바꿈
             e.preventDefault();
             handleSaveEditComment(commentId);
         }
@@ -347,7 +360,7 @@ const PostDetailPage = () => {
 
     const handleDeleteComment = () => {
         if (deleteCommentId !== null) {
-            setreply((prevreply) => prevreply.filter((comment) => comment.id !== deleteCommentId));
+            setreply((prevreply) => prevreply.filter((reply) => reply.reply_no !== deleteCommentId));
             setDeleteCommentId(null);
             showNotification("댓글이 삭제되었습니다.");
         }
@@ -617,7 +630,7 @@ const PostDetailPage = () => {
                             {commentModalOpen === reply.reply_no && (
                                 <div className="absolute right-4 top-10 bg-white border rounded-md shadow-lg p-2 w-32 z-50">
                                     <ul className="space-y-2 text-gray-700">
-                                        {editingCommentId !== reply.member_uuid && ( // 수정 중이 아닐 때만 수정 버튼 표시
+                                        {editingCommentId !== reply.reply_no && ( // 수정 중이 아닐 때만 수정 버튼 표시
                                             <li className="cursor-pointer hover:bg-gray-100 p-2" onClick={() => handleEditComment(reply.reply_no, reply.reply_content)}>
                                                 수정
                                             </li>
