@@ -23,8 +23,6 @@ import com.springfull.backend.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@CrossOrigin(origins = "http://localhost:5173")
-
 @RestController
 @RequestMapping
 @Log4j2
