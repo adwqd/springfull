@@ -2,9 +2,6 @@ import React, { useState, useEffect, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import KakaoLoginButton from "./components/KakaoLoginButton";
-import KakaoAuthHandler from "./components/KakaoAuthHandler";
-import KakaoCallback from "./components/KakaoCallback";
 import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
 
 // 회원 페이지
@@ -25,99 +22,87 @@ import PostEditPage from "./pages/PostEditPage";
 // 관리자 페이지
 import PostReportBoardPage from "./pages/PostReportBoardPage";
 import DeleteBoardPage from "./pages/DeleteBoardPage";
-import BoardListPage
-  from "./pages/BoardListPage";
+import BoardListPage from "./pages/BoardListPage";
 
-  const MyContext = createContext();
+// Context API 생성
+const MyContext = createContext();
+
 const App = () => {
   // ✅ 로그인 상태 관리
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState(() => {
+    const storedUser = localStorage.getItem("userInfo");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  // ✅ 로그인 성공 시 사용자 정보 저장
-  const handleLoginSuccess = (userData) => {
+  const [token, setToken] = useState(() => localStorage.getItem("jwtToken") || "");
+
+  // ✅ 로그인 성공 시 사용자 정보 및 토큰 저장
+  const handleLoginSuccess = (userData, jwtToken) => {
     setUserInfo(userData);
+    setToken(jwtToken);
   };
 
   // ✅ 로그아웃 처리
   const handleLogout = () => {
     setUserInfo(null);
+    setToken("");
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userInfo");
   };
 
+  // ✅ `userInfo`와 `token`을 로컬스토리지에 저장
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      setUserInfo(JSON.parse(storedUserInfo));
+    if (userInfo) {
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    } else {
+      localStorage.removeItem("userInfo");
     }
-  }, []);
+  }, [userInfo]);
 
-  const apiURL = "http://localhost:8081";
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("jwtToken", token);
+    } else {
+      localStorage.removeItem("jwtToken");
+    }
+  }, [token]);
 
+  // ✅ API URL 설정
+  const apiURL = "http://192.168.4.10:8081";
 
   return (
-    <>
-      <MyContext.Provider value={{apiURL}}>
-        
+    <MyContext.Provider value={{ apiURL }}>
       <Router>
-
         <Navbar userInfo={userInfo} onLogout={handleLogout} />
         <div className="pt-5 min-h-screen bg-white overflow-y-auto">
           <Routes>
             {/* 회원 라우팅 */}
-            {/* 메인페이지 */}
             <Route path="/" element={<HomePage />} />
-            {/* 브랜드 게시글 목록 페이지*/}
             <Route path="/brands/:brand" element={<BrandBoardPage />} />
-            {/* 게시글 상세보기 페이지 */}
             <Route path="/posts/:id" element={<PostDetailPage />} />
-            {/* 카테고리 랭킹 페이지 */}
             <Route path="/category/:category" element={<CategoryRankingPage />} />
-            {/* 급상승 랭킹 페이지 */}
             <Route path="/hotRanking" element={<HotRankingPage />} />
-            {/* 검색창 페이지 */}
             <Route path="/search/detail" element={<SearchDetailPage />} />
-            {/* 글 작성 페이지 */}
             <Route path="/posts/new" element={<PostWritePage />} />
-            {/* 글 수정/삭제 페이지 */}
             <Route path="/posts/:id/edit" element={<PostEditPage />} />
-
-            {/* 마이페이지 */}
             <Route path="/users/me" element={<MyPage userInfo={userInfo} />} />
-            {/* 북마크 목록 페이지 */}
             <Route path="/users/me/bookmarks" element={<BookmarkPage />} />
-            {/* 내가 쓴 글 목록 페이지 */}
             <Route path="/users/me/posts" element={<MyPostPage />} />
-            {/* 내가 매긴 별점을 모아는 목록 페이지 */}
             <Route path="/users/me/ratings" element={<StarRatingPage />} />
-            {/* 프로필 수정 페이지 - 카카오로 연결
-            <Route path="/users/me/edit" element={<ProfileEditPage />} /> */}
-
-            {/* 기타 */}
-            {/* 로그인 페이지 */}
             <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/oauth/kakao/callback" element={<OAuthRedirectHandler onLoginSuccess={setUserInfo} />} />
-
+            <Route path="/oauth/kakao/callback" element={<OAuthRedirectHandler onLoginSuccess={handleLoginSuccess} />} />
 
             {/* 관리자 라우팅 */}
-            {/* 관리자 로그인 페이지 - 카카오 로그인으로 관리자 권한을 준뒤 토큰을 확인 후 관리자 페이지확인*/}
-            {/* <Route path="/admin/login" element={<AdminLoginPage />} /> */}
-            {/* 신고받은 게시글 목록 페이지 */}
             <Route path="/admin/reports" element={<PostReportBoardPage />} />
-            {/* 전체 게시글 목록 페이지 */}
             <Route path="/admin/list" element={<BoardListPage />} />
-            {/* 삭제된 게시글 목록 페이지 */}
             <Route path="/admin/deletedPosts" element={<DeleteBoardPage />} />
-            {/* 회원관리 페이지 */}
-            {/* <Route path="/admin/user_list" element={<DeleteBoardPage />} /> */}
           </Routes>
         </div>
-
         <Footer />
-
-      </Router >
-      </MyContext.Provider>
-    </>
+      </Router>
+    </MyContext.Provider>
   );
 };
+
 export { MyContext };
 export default App;
-

@@ -2,89 +2,87 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiTrendingUp } from "react-icons/fi";
 import axios from "axios";
-import {MyContext} from "../App";
-
-
-
+import { MyContext } from "../App";
 
 
 
 const HomePage = () => {
-        const navigate = useNavigate();
-        const [imageUrl, setImageUrl] = useState({});
-        const [recentPosts, setRecentPosts] = useState([]);
-        const [hotRankings, setHotRankings] = useState([]);
-        const [categoryRankings, setCategoryRankings] = useState({});
-        const [tags, setTags] = useState({
-            category : [],
-            brand : [],
+    const navigate = useNavigate();
+    const [imageUrl, setImageUrl] = useState({});
+    const [recentPosts, setRecentPosts] = useState([]);
+    const [hotRankings, setHotRankings] = useState([]);
+    const [categoryRankings, setCategoryRankings] = useState({});
+    const [tags, setTags] = useState({
+        category: [],
+        brand: [],
     });
-        const {apiURL} = useContext(MyContext);
-        useEffect(() => {
-            const fetchData = async () => {
-                try {
-                    const response = await axios.get(`${apiURL}/recent`);
-                    if (response.data && response.data.length > 0) {
-                        console.log(response);
-                        setRecentPosts(response.data);
-        
-                        // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
-                        const imagePromises = response.data.map(async (data) => {
-                            try {
-                                const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
-                                return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
-                            } catch (error) {
-                                console.error("Error fetching image:", error);
-                                return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
-                            }
-                        });
-        
-                        // 모든 이미지 요청이 완료될 때까지 기다림
-                        const images = await Promise.all(imagePromises);
-        
-                        // imageUrl을 post_no 별로 매핑
-                        setImageUrl((prev) => {
-                            const newImageUrls = { ...prev };
-                            images.forEach(({ post_no, imageUrl }) => {
-                                newImageUrls[post_no] = imageUrl;
-                            });
-                            return newImageUrls;
-                        });
-        
-                    } else {
-                        alert("글이 없습니다.");
-                        history.back();
-                    }
-                } catch (error) {
-                    console.error("Error fetching recent posts:", error);
-                }
-                const hotRanking = await axios.get(`${apiURL}/hotranking`, {size:3});
-                setHotRankings(hotRanking.data);
-                console.log("급상승", hotRanking);
-                const cateRanking = await axios.get(`${apiURL}/catebest`);
-                setCategoryRankings(cateRanking.data);
-                console.log("카테랭킹", cateRanking);
-                const tag = await axios.post(`${apiURL}/tag`, {category: [0,1,2,3,4,5]});
-                const sortedCategory = [...tag.data.category].sort((a, b) =>
-                    a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
-                  );
-          
-                  const sortedBrand = [...tag.data.brand].sort((a, b) =>
-                    a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
-                  );
-                  setTags({
-                    category: sortedCategory,
-                    brand: sortedBrand,
-                    taste: tag.data.taste,
-                    ingredient: tag.data.ingredient, // ingredient는 이미 빈 배열
-                  });
+    const { apiURL } = useContext(MyContext);
 
-                  console.log(categoryRankings,"rr");
-                  console.log(apiURL);
-            };
-        
-            fetchData();
-        }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${apiURL}/recent`);
+                if (response.data && response.data.length > 0) {
+                    console.log(response);
+                    setRecentPosts(response.data);
+
+                    // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
+                    const imagePromises = response.data.map(async (data) => {
+                        try {
+                            const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
+                            return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
+                        } catch (error) {
+                            console.error("Error fetching image:", error);
+                            return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
+                        }
+                    });
+
+                    // 모든 이미지 요청이 완료될 때까지 기다림
+                    const images = await Promise.all(imagePromises);
+
+                    // imageUrl을 post_no 별로 매핑
+                    setImageUrl((prev) => {
+                        const newImageUrls = { ...prev };
+                        images.forEach(({ post_no, imageUrl }) => {
+                            newImageUrls[post_no] = imageUrl;
+                        });
+                        return newImageUrls;
+                    });
+
+                } else {
+                    alert("글이 없습니다.");
+                    history.back();
+                }
+            } catch (error) {
+                console.error("Error fetching recent posts:", error);
+            }
+            const hotRanking = await axios.get(`${apiURL}/hotranking`, { size: 3 });
+            setHotRankings(hotRanking.data);
+            console.log("급상승", hotRanking);
+            const cateRanking = await axios.get(`${apiURL}/catebest`);
+            setCategoryRankings(cateRanking.data);
+            console.log("카테랭킹", cateRanking);
+            const tag = await axios.post(`${apiURL}/tag`, { category: [0, 1, 2, 3, 4, 5] });
+            const sortedCategory = [...tag.data.category].sort((a, b) =>
+                a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
+            );
+
+            const sortedBrand = [...tag.data.brand].sort((a, b) =>
+                a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
+            );
+            setTags({
+                category: sortedCategory,
+                brand: sortedBrand,
+                taste: tag.data.taste,
+                ingredient: tag.data.ingredient, // ingredient는 이미 빈 배열
+            });
+
+            console.log(categoryRankings, "rr");
+            console.log(apiURL);
+        };
+
+        fetchData();
+    }, []);
 
 
     return (
@@ -99,13 +97,14 @@ const HomePage = () => {
                             {tags.brand.map((brand) => (
                                 <div
                                     key={brand.tag_id}
-                                    onClick={() => navigate(`/brands/${brand.tag_name}`)}
+                                    onClick={() => navigate(`/brands/${brand.tag_id}`)}  // ✅ 브랜드 ID를 URL에 전달
                                     className="bg-green-700 text-white py-1.5 text-center rounded-md text-[15px] cursor-pointer hover:bg-green-800"
                                 >
                                     {brand.tag_name}
                                 </div>
                             ))}
                         </div>
+
                     </div>
                 </div>
 
@@ -120,7 +119,7 @@ const HomePage = () => {
                                 className="border rounded-lg text-center p-2 shadow-md cursor-pointer hover:shadow-lg transition"
                             >
                                 <div className="w-full h-20 bg-gray-300 mb-2 flex items-center justify-center rounded">
-                                    <span className="text-gray-500 text-sm"><img src={imageUrl[post.post_no]} alt="thumbnail"  style={{height:"80px"}}/></span>
+                                    <span className="text-gray-500 text-sm"><img src={imageUrl[post.post_no]} alt="thumbnail" style={{ height: "80px" }} /></span>
                                 </div>
                                 <p className="font-medium text-xs text-left">{post.title}</p>
                                 <p className="text-gray-500 text-xs text-left">{post.member_uuid}</p>

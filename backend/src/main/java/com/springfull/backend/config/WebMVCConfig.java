@@ -29,4 +29,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 		registry.addInterceptor(tokenInterceptor)
 		.addPathPatterns("/token/*");
 	}
+
+	
 }
