@@ -71,9 +71,7 @@ const PostDetailPage = () => {
             const storedUserInfo = localStorage.getItem("userInfo");
             if (storedUserInfo) {
                 setUserInfo(JSON.parse(storedUserInfo));
-              } else {
-                navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
-            }
+              }
         }, []);
 
     // 백엔드 API 호출 자리 (현재는 더미 데이터 사용)
