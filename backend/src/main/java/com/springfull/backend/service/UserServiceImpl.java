@@ -89,6 +89,7 @@ public class UserServiceImpl implements UserService {
 		for(PostDTO temp : userMapper.starPost(pageRequestDTO)) {
 			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
 			temp.setProfile_img(userMapper.viewProfile(temp.getMember_uuid()));
+			temp.setStar(listMapper.getStar(temp.getPost_no()));
 			dtoList.add(temp);
 		}
 		Integer count = userMapper.getStarPostCount(pageRequestDTO);

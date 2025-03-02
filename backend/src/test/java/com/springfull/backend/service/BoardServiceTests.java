@@ -34,4 +34,9 @@ public class BoardServiceTests {
 			log.info(temp);
 		}
 	}
+	
+	@Test
+	public void testHot() {
+		log.info(boardService.hotRanking());
+	}
 }

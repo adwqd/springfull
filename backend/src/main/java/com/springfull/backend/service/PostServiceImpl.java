@@ -36,6 +36,8 @@ public class PostServiceImpl implements PostService {
 		if(postDetailDTO !=null) {
 			postDetailDTO.setBrand_id(postMapper.getBrand(post_no));
 			postDetailDTO.setCate_id(postMapper.getCate(post_no));
+			postDetailDTO.setTaste_id(postMapper.getTaste(post_no));
+			postDetailDTO.setIngredient_id(postMapper.getIngredient(post_no));
 			postDetailDTO.setBrand(postMapper.getBrandTag(post_no));
 			postDetailDTO.setTaste(postMapper.getTasteTag(post_no));
 			postDetailDTO.setIngredient(postMapper.getIngredientTag(post_no));

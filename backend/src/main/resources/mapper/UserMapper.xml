@@ -82,7 +82,7 @@
 	</select>
 	
 	<select id="starPost" resultType="com.springfull.backend.domain.PostDTO">
-		select p.post_no, title, p.member_uuid, name, post_like, reg_date, star
+		select p.post_no, title, p.member_uuid, name, post_like, reg_date, star as mystar
 		from post p
 		join member m on p.member_uuid = m.member_uuid
 		join star s on p.post_no = s.post_no
@@ -95,7 +95,16 @@
 				</trim>
 			</if>
 		</where>
+		<if test="sort == 1">
+			order by post_no desc
+		</if>
+		<if test="sort == 2">
+			order by post_like desc
+		</if>
+		<if test="sort == 3">
 			order by star desc
+		</if>
+			
 		limit #{skip}, #{size}
 	</select>
 	

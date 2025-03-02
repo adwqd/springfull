@@ -18,7 +18,7 @@
 			join post_ingredient pi on p.post_no = pi.post_no
 		</if>
 		<if test="sort == 3">
-			join (select avg(star) as star, post_no
+			left join (select avg(star) as star, post_no
 				from star
 				group by post_no) s on s.post_no = p.post_no
 		</if>	
@@ -206,10 +206,7 @@
 		join member m on p.member_uuid = m.member_uuid
 		join (select post_no, sum(like_number) as likes 
 			from like_record 
-			where date >= current_date()-6 and 
-			<![CDATA[
-					date <=current_date()
-			]]> 
+			WHERE `date` BETWEEN CURRENT_DATE() - INTERVAL 6 DAY AND CURRENT_DATE()
 			group by post_no) lr on lr.post_no = p.post_no
 		where p.state=1
 		order by likes desc

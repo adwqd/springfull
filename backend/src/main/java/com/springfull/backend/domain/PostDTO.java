@@ -28,6 +28,7 @@ public class PostDTO {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd", timezone = "Asia/Seoul")
 	private LocalDateTime mod_date;
 	private Integer state;
+	private Double myStar;
 	
 	public LocalDateTime getMod_date() {
 		if(this.reg_date.equals(this.mod_date)) {

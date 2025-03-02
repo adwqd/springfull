@@ -187,8 +187,6 @@ const PostDetailPage = () => {
 
     // 별점 추가
     const handleRating = (newRating) => {
-        setRating(newRating);
-        showNotification(`게시글에 ${newRating}점 평점을 남겼습니다`);
         const star = async (stars) => {
             const star = {
                 post_no : post_no,
@@ -202,14 +200,19 @@ const PostDetailPage = () => {
             });
             console.log(response);
         }
-        
+        if(userInfo.member_uuid!=null){
+        setRating(newRating);
+        showNotification(`게시글에 ${newRating}점 평점을 남겼습니다`);
         star(newRating);
+        }else{
+            alert("회원만 별점을 남길수 있습니다.");
+        }
+        
     };
 
     // 북마크 토글
     const handleBookmark = () => {
-        setBookmarked(!bookmarked);
-        showNotification(bookmarked ? "게시글 북마크를 취소했습니다." : "게시글을 북마크했습니다");
+        
         const bookmark = async () => {           
             const response = await axios.get(`${apiURL}/member/bookmark/${post_no}`, {
                 headers: {
@@ -218,7 +221,14 @@ const PostDetailPage = () => {
             });
             console.log(response);
         }
-        bookmark();
+        if(userInfo.member_uuid!=null){
+            setBookmarked(!bookmarked);
+            showNotification(bookmarked ? "게시글 북마크를 취소했습니다." : "게시글을 북마크했습니다");
+            bookmark();
+        }else{
+            alert("회원만 북마크할수있습니다.");
+        }
+        
     };
 
     // 게시글 모달 토글
@@ -358,7 +368,7 @@ const PostDetailPage = () => {
 
     const handleDeleteComment = () => {
         if (deleteCommentId !== null) {
-            setreply((prevreply) => prevreply.filter((reply) => reply.reply_no !== deleteCommentId));
+            setReply((prevreply) => prevreply.filter((reply) => reply.reply_no !== deleteCommentId));
             setDeleteCommentId(null);
             showNotification("댓글이 삭제되었습니다.");
         }
@@ -384,10 +394,15 @@ const PostDetailPage = () => {
             });
             console.log(response);
         }
-        reply();
+        if(userInfo.member_uuid!=null){
+            reply();
         //setNewComment(""); // 입력창 초기화
-        showNotification("댓글이 작성되었습니다.");
-        location.reload();
+            showNotification("댓글이 작성되었습니다.");
+            location.reload();
+        }else{
+            alert("회원만 댓글을 남길수 있습니다.");
+        }
+        
     };
 
 
@@ -542,10 +557,10 @@ const PostDetailPage = () => {
                                 className="border px-3 py-2 w-full rounded-md mb-4"
                             >
                                 <option value="">사유 선택</option>
-                                <option value="부적절한 내용">부적절한 내용</option>
-                                <option value="허위 정보">허위 정보</option>
-                                <option value="스팸 또는 광고">스팸 또는 광고</option>
-                                <option value="기타">기타</option>
+                                <option value="1">부적절한 내용</option>
+                                <option value="2">허위 정보</option>
+                                <option value="3">스팸 또는 광고</option>
+                                <option value="0">기타</option>
                             </select>
 
                             {/* 기타 사유 입력 필드 (기타 선택 시 활성화) */}

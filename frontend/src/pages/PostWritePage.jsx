@@ -141,7 +141,7 @@ const PostWritePage = () => {
             if (type === "category") {
                 return {
                     category: [tag_id], // 단일 값으로 저장
-                    brand: tag_id === 2 ? [tag_id] : [], // 예제: 서브웨이는 고정 브랜드
+                    brand: tag_id === 2 ? [5] : [], // 예제: 서브웨이는 고정 브랜드
                     taste: [],
                     ingredients: [],
                 };

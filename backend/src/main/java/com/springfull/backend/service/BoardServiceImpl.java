@@ -59,6 +59,7 @@ public class BoardServiceImpl implements BoardService {
 			temp.setThumbnail(listMapper.getThumbnail(temp.getPost_no()));
 			temp.setProfile_img("s_"+userMapper.viewProfile(temp.getMember_uuid()));
 			list.add(temp);
+			log.info(temp);
 		}
 		return list;
 	}
