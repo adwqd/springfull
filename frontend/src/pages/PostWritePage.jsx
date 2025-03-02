@@ -2,15 +2,15 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTrash, FaPlus, FaArrowLeft, FaPaperPlane } from "react-icons/fa";
 import axios from "axios";
-import {MyContext} from "../App";
+import { MyContext } from "../App";
 
 // ✅ 태그 데이터
 
 const PostWritePage = () => {
     const [name, setName] = useState("애옹쓰.jpg");
-    const {apiURL} = useContext(MyContext);
+    const { apiURL } = useContext(MyContext);
     const [userInfo, setUserInfo] = useState({
-        member_uuid : null
+        member_uuid: null
     });
     const navigate = useNavigate();
     const [tags, setTags] = useState({
@@ -33,15 +33,15 @@ const PostWritePage = () => {
         ingredients: [],
     });
     const [post, setPost] = useState({
-        post_no : 0,
+        post_no: 0,
         title: "",
-        content : "",
-        cost : 0,
-        member_uuid : "aaa",
-        image : [],
-        brand_id : [],
-        taste_id : [],
-        ingredient_id : []
+        content: "",
+        cost: 0,
+        member_uuid: "aaa",
+        image: [],
+        brand_id: [],
+        taste_id: [],
+        ingredient_id: []
     })
     const [showModal, setShowModal] = useState(false);      // 태그 미선택시 알림
     const [notification, setNotification] = useState(""); // 글 작성 알림
@@ -58,7 +58,7 @@ const PostWritePage = () => {
                 const response = await axios.get(`${apiURL}/member/check`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-    
+
                 console.log("응답 데이터:", response.data);
                 if (response.status === 200) {
                     console.log("로그인 성공");
@@ -69,7 +69,7 @@ const PostWritePage = () => {
                     const res = await axios.get("http://192.168.4.10:8081/token", {
                         headers: { Authorization: `Bearer ${refreshToken}` },
                     });
-    
+
                     if (!res.data || res.data.length === 0) {
                         alert("다시 로그인 해주세요");
                         localStorage.removeItem("token");
@@ -91,48 +91,48 @@ const PostWritePage = () => {
                 }
             }
         };
-    
+
         checkAuth();
         const storedUserInfo = localStorage.getItem("userInfo");
         if (storedUserInfo) {
             setUserInfo(JSON.parse(storedUserInfo));
-          } else {
+        } else {
             navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
         }
     }, []);
 
-    useEffect(()=>{
-        setPost({...post, member_uuid : userInfo.member_uuid})
+    useEffect(() => {
+        setPost({ ...post, member_uuid: userInfo.member_uuid })
     }, [userInfo])
 
-    useEffect(()=>{        
+    useEffect(() => {
         const fetchData = async () => {
             const response = await axios.post(`${apiURL}/tag`, selectedTags);
             console.log("태그 가져오기", response);
             console.log(response.data);
             const sortedCategory = [...response.data.category].sort((a, b) =>
                 a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
-              );
-      
-              const sortedBrand = [...response.data.brand].sort((a, b) =>
+            );
+
+            const sortedBrand = [...response.data.brand].sort((a, b) =>
                 a.tag_name === "기타" ? 1 : b.tag_name === "기타" ? -1 : 0
-              );
-              setTags({
+            );
+            setTags({
                 category: sortedCategory,
                 brand: sortedBrand,
                 taste: response.data.taste,
                 ingredient: response.data.ingredient, // ingredient는 이미 빈 배열
-              });
+            });
         };
         fetchData();
-        console.log("태그"+tags);
+        console.log("태그" + tags);
         setPost({
             ...post,
-            brand_id : selectedTags.brand,
-            taste_id : selectedTags.taste,
-            ingredient_id : selectedTags.ingredients
+            brand_id: selectedTags.brand,
+            taste_id: selectedTags.taste,
+            ingredient_id: selectedTags.ingredients
         });
-        console.log("포스트상태",post);
+        console.log("포스트상태", post);
     }, [selectedTags]);
 
     // ✅ 태그 선택 핸들러
@@ -184,7 +184,7 @@ const PostWritePage = () => {
     // ✅ 글 작성 핸들러 (제목, 내용 필수 + 가격 숫자 체크)
     const handleSubmit = () => {
         const { category, brand, taste, ingredients } = selectedTags;
-        console.log("태그들",category, brand, taste, ingredients)
+        console.log("태그들", category, brand, taste, ingredients)
 
         if (!post.title.trim() || !post.content.trim()) {
             setShowModal(true); // 제목 또는 내용이 없으면 모달 표시
@@ -204,57 +204,60 @@ const PostWritePage = () => {
 
         const register = async () => {
             try {
-                if(images == null || images.length == 0){
+                if (images == null || images.length == 0) {
                     console.log("이미지가 없습니다", images.length);
                     axios.post(`${apiURL}/member/register`, post, {
-                        headers: { "Content-Type": "application/json",
+                        headers: {
+                            "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`
-                         }
+                        }
                     })
-                    .then((postResponse) => {
-                        console.log("글작성 응답", postResponse);
-                        console.log(postResponse.data);
-                    })
-                    .catch((error) => {
-                        console.error("글 작성 중 오류 발생", error);
-                    });
+                        .then((postResponse) => {
+                            console.log("글작성 응답", postResponse);
+                            console.log(postResponse.data);
+                        })
+                        .catch((error) => {
+                            console.error("글 작성 중 오류 발생", error);
+                        });
                     return updatedPost;
                 }
                 // 이미지 업로드
                 const formData = new FormData();
-                for(let file of images){
-                formData.append("files", file);
+                for (let file of images) {
+                    formData.append("files", file);
                 }
-        
+
                 const uploadResponse = await axios.post(`${apiURL}/member/upload`, formData, {
-                    headers: { "Content-Type": "multipart/form-data",
+                    headers: {
+                        "Content-Type": "multipart/form-data",
                         Authorization: `Bearer ${token}`
-                     },
-                    
+                    },
+
                 });
                 console.log("이미지 업로드 응답", uploadResponse);
                 console.log(uploadResponse.data[0].link);
-        
+
                 // 상태 업데이트 후 글 작성
                 setName(uploadResponse.data[0].link);
                 setPost((prevPost) => {
                     const updatedPost = { ...prevPost, image: uploadResponse.data };
                     // 글 작성 요청을 setPost가 완료된 후 실행
                     axios.post(`${apiURL}/member/register`, updatedPost, {
-                        headers: { "Content-Type": "application/json",
+                        headers: {
+                            "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`
-                         }
+                        }
                     })
-                    .then((postResponse) => {
-                        console.log("글작성 응답", postResponse);
-                        console.log(postResponse.data);
-                    })
-                    .catch((error) => {
-                        console.error("글 작성 중 오류 발생", error);
-                    });
+                        .then((postResponse) => {
+                            console.log("글작성 응답", postResponse);
+                            console.log(postResponse.data);
+                        })
+                        .catch((error) => {
+                            console.error("글 작성 중 오류 발생", error);
+                        });
                     return updatedPost;
                 });
-        
+
             } catch (error) {
                 console.error("업로드나 글작성 중 오류 발생", error);
             }
@@ -269,7 +272,7 @@ const PostWritePage = () => {
         const input = e.target.value;
         if (/^\d*$/.test(input)) { // 숫자만 허용
             setPrice(input);
-            setPost({...post, cost : e.target.value});
+            setPost({ ...post, cost: e.target.value });
         }
     };
 
@@ -284,7 +287,7 @@ const PostWritePage = () => {
     //             : [];
 
     return (
-        <div className="max-w-2xl mx-auto p-4 space-y-6">
+        <div className="max-w-2xl mx-auto p-4 space-y-6 lg:max-w-4xl">
             {/* 🔙 뒤로가기 버튼 */}
             <button onClick={() => navigate(-1)} className="text-gray-600 flex items-center space-x-2">
                 <FaArrowLeft /> <span className="text-sm">뒤로가기</span>
@@ -297,10 +300,10 @@ const PostWritePage = () => {
                 <label className="block text-base font-semibold text-gray-700 mb-1">제목</label>
                 <input
                     type="text"
-                    placeholder="제목을 입력해주세요 (최대 20자)"
-                    maxLength={20}
+                    placeholder="제목을 입력해주세요 (최대 50자)"
+                    maxLength={50}
                     value={post.title}
-                    onChange={(e) => setPost({...post, title:e.target.value})}
+                    onChange={(e) => setPost({ ...post, title: e.target.value })}
                     className="border p-3 w-full rounded-md shadow-md"
                 />
 
@@ -310,7 +313,7 @@ const PostWritePage = () => {
                     placeholder="내용을 입력해주세요 (최대 200자)"
                     maxLength={200}
                     value={post.content}
-                    onChange={(e) => setPost({...post, content:e.target.value})}
+                    onChange={(e) => setPost({ ...post, content: e.target.value })}
                     className="border p-3 w-full rounded-md h-40 shadow-md"
                 />
 

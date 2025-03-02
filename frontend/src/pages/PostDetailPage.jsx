@@ -2,25 +2,26 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaPaperPlane, FaArrowLeft } from "react-icons/fa";
 import axios from "axios";
-import {MyContext} from "../App";
+import { MyContext } from "../App";
 
 //더미 데이터
 
 // 브랜드별 라벨 배경색 지정
 const brandColors = {
-    5: "bg-green-600 text-white",
-    2: "bg-blue-600 text-white",
-    1: "bg-purple-600 text-white",
-    4: "bg-yellow-500 text-white",
-    3: "bg-red-600 text-white",
     0: "bg-gray-600 text-white",
+    1: "bg-blue-600 text-white",
+    2: "bg-purple-600 text-white",
+    3: "bg-red-600 text-white",
+    4: "bg-yellow-500 text-white",
+    5: "bg-green-600 text-white",
+
 };
 
 const PostDetailPage = () => {
-    const {post_no} = useParams();
+    const { post_no } = useParams();
     const [userInfo, setUserInfo] = useState({
-            member_uuid : null
-        });
+        member_uuid: null
+    });
 
     const [imageIndex, setImageIndex] = useState(0);
     const [replyList, setReplyList] = useState([])
@@ -28,21 +29,21 @@ const PostDetailPage = () => {
     const [replyProfile, setReplyProfile] = useState({});
     const token = localStorage.getItem("token");
     const [post, setPost] = useState({
-        post_no : 13,
-        title : "",
-        content : "",
-        cost : 0,
-        image : [],
-        member_uuid : "",
-        brand_id : [],
-        taste_id : [],
-        ingredient_id : [],
-        brand : [ {tag_name: ""}],
-        taste : [],
-        ingredient : []
+        post_no: 13,
+        title: "",
+        content: "",
+        cost: 0,
+        image: [],
+        member_uuid: "",
+        brand_id: [],
+        taste_id: [],
+        ingredient_id: [],
+        brand: [{ tag_name: "" }],
+        taste: [],
+        ingredient: []
     });
-    const [profileUrl, setProfileUrl] = useState({});    
-    const {apiURL} = useContext(MyContext);
+    const [profileUrl, setProfileUrl] = useState({});
+    const { apiURL } = useContext(MyContext);
     const navigate = useNavigate();
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likes);
@@ -68,28 +69,28 @@ const PostDetailPage = () => {
     const [notification, setNotification] = useState("");
 
     useEffect(() => {
-            const storedUserInfo = localStorage.getItem("userInfo");
-            if (storedUserInfo) {
-                setUserInfo(JSON.parse(storedUserInfo));
-              }
-        }, []);
+        const storedUserInfo = localStorage.getItem("userInfo");
+        if (storedUserInfo) {
+            setUserInfo(JSON.parse(storedUserInfo));
+        }
+    }, []);
 
     // 백엔드 API 호출 자리 (현재는 더미 데이터 사용)
     useEffect(() => {
         const read = async () => {
             try {
                 const response = await axios.get(`${apiURL}/read?post_no=${post_no}&member_uuid=${userInfo.member_uuid}`);
-    
+
                 if (response.data !== "") {
                     console.log("aaa", response);
                     setPost(response.data);
                     setRating(response.data.star);
-    
+
                     // 이미지 처리
                     const images = response.data.image;
                     const imageRequests = images.map(async (image) => {
                         try {
-                            if(image ==null){return null;}
+                            if (image == null) { return null; }
                             const filename = image.img_uuid + "_" + image.filename;
                             const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
                             return URL.createObjectURL(imgResponse.data);
@@ -98,11 +99,11 @@ const PostDetailPage = () => {
                             return null;
                         }
                     });
-    
+
                     const imageUrls = await Promise.all(imageRequests);
                     setImageUrl(imageUrls);
                     setBookmarked(response.data.bookmark)
-    
+
                     // 🔹 프로필 이미지 요청 (setPost 이후 response.data.member_uuid 사용)
                     if (response.data.member_uuid) {
                         try {
@@ -114,7 +115,7 @@ const PostDetailPage = () => {
                             setProfileUrl(null);
                         }
                     }
-    
+
                 } else {
                     alert("글이 없습니다.");
                     history.back();
@@ -123,13 +124,13 @@ const PostDetailPage = () => {
                 console.log("Error fetching post data:", error);
             }
         };
-    
+
         const getReply = async () => {
             try {
                 const response = await axios.get(`${apiURL}/reply/${post_no}`);
                 console.log(response.data);
                 setReplyList(response.data);
-    
+
                 const imagePromises = response.data.map(async (data) => {
                     try {
                         if (data.profile_img === null || data.profile_img == "") return { member_uuid: data.member_uuid, profileUrl: null };
@@ -140,10 +141,10 @@ const PostDetailPage = () => {
                         return { member_uuid: data.member_uuid, profileUrl: null };
                     }
                 });
-    
+
                 // 모든 이미지 요청이 완료될 때까지 기다림
                 const images = await Promise.all(imagePromises);
-    
+
                 // imageUrl을 member_uuid 별로 매핑
                 setReplyProfile((prev) => {
                     const newImageUrls = { ...prev };
@@ -156,11 +157,11 @@ const PostDetailPage = () => {
                 console.error("Error fetching replies:", error);
             }
         };
-    
+
         read();
         getReply();
     }, [post_no, userInfo]); // 🔹 post_no가 바뀔 때도 실행
-    
+
 
     //상태 알림 기능 2초 후에 사라짐
     const showNotification = (message) => {
@@ -171,14 +172,14 @@ const PostDetailPage = () => {
     //게시글 -----------------------------------------------------------------------------------------------------------------------------------------------
     // 게시글 좋아요 
     const handleLike = () => {
-        if(!liked){
+        if (!liked) {
             setLiked(true); // 상태만 업데이트
             const like = async () => {
                 const response = await axios.get(`${apiURL}/post-like/${post_no}`);
                 console.log(response);
             }
             like();
-        }else{
+        } else {
             showNotification("한번만 좋아요할수 있습니다.");
         }
         //showNotification(liked ? "게시글 좋아요를 취소했습니다." : "게시글에 좋아요를 남겼습니다");
@@ -191,9 +192,9 @@ const PostDetailPage = () => {
         showNotification(`게시글에 ${newRating}점 평점을 남겼습니다`);
         const star = async (stars) => {
             const star = {
-                post_no : post_no,
-                member_uuid : userInfo.member_uuid,
-                star : stars
+                post_no: post_no,
+                member_uuid: userInfo.member_uuid,
+                star: stars
             }
             const response = await axios.post(`${apiURL}/member/star`, star, {
                 headers: {
@@ -202,7 +203,7 @@ const PostDetailPage = () => {
             });
             console.log(response);
         }
-        
+
         star(newRating);
     };
 
@@ -210,7 +211,7 @@ const PostDetailPage = () => {
     const handleBookmark = () => {
         setBookmarked(!bookmarked);
         showNotification(bookmarked ? "게시글 북마크를 취소했습니다." : "게시글을 북마크했습니다");
-        const bookmark = async () => {           
+        const bookmark = async () => {
             const response = await axios.get(`${apiURL}/member/bookmark/${post_no}`, {
                 headers: {
                     Authorization: `Bearer ${token}` // 실제 JWT 토큰
@@ -264,7 +265,7 @@ const PostDetailPage = () => {
         let res = "";
         try {
             console.log(`🚮 게시글 삭제 요청: ${post.id}`);
-            const deletePost = async () => {           
+            const deletePost = async () => {
                 const response = await axios.delete(`${apiURL}/member/post/${post_no}`, {
                     headers: {
                         Authorization: `Bearer ${token}` // 실제 JWT 토큰
@@ -273,10 +274,10 @@ const PostDetailPage = () => {
                 console.log(response);
                 res = response.data;
                 console.log(res);
-                if(res ==null || res ==""){
+                if (res == null || res == "") {
                     alert("✅ 게시글이 삭제되었습니다.");
                     navigate("/users/me"); // 삭제 후 마이페이지로 이동
-                }else{
+                } else {
                     alert(res);
                 }
             }
@@ -323,27 +324,27 @@ const PostDetailPage = () => {
             )
         );
         const newCommentObj = {
-            reply_no : commentId,
+            reply_no: commentId,
             reply_content: editCommentContent,
-            post_no : post_no
+            post_no: post_no
         };
-        const editReply = async () => {           
+        const editReply = async () => {
             const response = await axios.put(`${apiURL}/member/reply`, newCommentObj, {
                 headers: {
                     Authorization: `Bearer ${token}` // 실제 JWT 토큰
                 }
             });
-            if(response.data == 0){
+            if (response.data == 0) {
                 setEditingCommentId(null);
                 alert("본인글만 수정할수있습니다.");
                 location.reload();
-            }else{
+            } else {
                 setEditingCommentId(null);
                 showNotification("댓글이 수정되었습니다.");
                 location.reload();
                 console.log(response);
             }
-            
+
         }
         editReply();
     };
@@ -374,9 +375,9 @@ const PostDetailPage = () => {
             date: formatDate(new Date()),
             likes: 0,
             liked: false,
-            post_no : post_no
+            post_no: post_no
         };
-        const reply = async () => {           
+        const reply = async () => {
             const response = await axios.post(`${apiURL}/member/reply`, newCommentObj, {
                 headers: {
                     Authorization: `Bearer ${token}` // 실제 JWT 토큰
@@ -414,14 +415,14 @@ const PostDetailPage = () => {
     };
 
     const changeImage = () => {
-        let i = imageIndex+1;
-        if(i>=imageUrl.length){
-            i =0;
+        let i = imageIndex + 1;
+        if (i >= imageUrl.length) {
+            i = 0;
         }
         setImageIndex(i);
         console.log(i);
     }
-    useEffect(()=>{
+    useEffect(() => {
     }, [imageIndex, editingCommentId])
 
 
@@ -450,7 +451,7 @@ const PostDetailPage = () => {
                 {/* 🔹 이미지 ( 이미지 없으면 숨김) */}
                 {post.image[0] && (
                     <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md">
-                        <img src={imageUrl[imageIndex]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" onClick={changeImage} style={{ maxHeight: "200px", height: "auto" }}/>
+                        <img src={imageUrl[imageIndex]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" onClick={changeImage} style={{ maxHeight: "200px", height: "auto" }} />
                     </div>
                 )}
                 {/* 🔹 게시글 헤더 */}

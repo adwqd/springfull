@@ -2,43 +2,45 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaHeart, FaTrophy, FaUserCircle } from "react-icons/fa";
 import axios from "axios";
-import {MyContext} from "../App";
-
-// 더미 데이터 (지난 7일간 급상승 랭킹)
+import { MyContext } from "../App";
 
 const HotRankingPage = () => {
     const navigate = useNavigate();
     const [rankingData, setRankingData] = useState([]);
     const [imageUrl, setImageUrl] = useState({});
     const [profileUrl, setProfileUrl] = useState({});
-    
 
-    const {apiURL} = useContext(MyContext);
+    const { apiURL } = useContext(MyContext);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${apiURL}/hotranking`);
                 if (response.data && response.data.length > 0) {
-                    console.log(response);
                     setRankingData(response.data);
-    
-                    // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
+
+                    // 🔹 이미지 & 프로필 비동기 요청
                     const imagePromises = response.data.map(async (data) => {
                         try {
-                            if(data.thumbnail === null) return { post_no: data.post_no, imageUrl: null, profileUrl: null };
-                            const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
-                            const profileResponse = await axios.get(`${apiURL}/view/${data.profile_img}`, { responseType: "blob" });
-                            return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data), profileUrl: URL.createObjectURL(profileResponse.data) };
-                        } catch (error) {
-                            console.error("Error fetching image:", error);
-                            return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
+                            const imgResponse = data.thumbnail
+                                ? await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" })
+                                : null;
+                            const profileResponse = data.profile_img
+                                ? await axios.get(`${apiURL}/view/${data.profile_img}`, { responseType: "blob" })
+                                : null;
+
+                            return {
+                                post_no: data.post_no,
+                                imageUrl: imgResponse ? URL.createObjectURL(imgResponse.data) : null,
+                                profileUrl: profileResponse ? URL.createObjectURL(profileResponse.data) : null,
+                            };
+                        } catch {
+                            return { post_no: data.post_no, imageUrl: null, profileUrl: null };
                         }
                     });
-    
-                    // 모든 이미지 요청이 완료될 때까지 기다림
+
                     const images = await Promise.all(imagePromises);
-    
-                    // imageUrl을 post_no 별로 매핑
+
                     setImageUrl((prev) => {
                         const newImageUrls = { ...prev };
                         images.forEach(({ post_no, imageUrl }) => {
@@ -54,87 +56,83 @@ const HotRankingPage = () => {
                         });
                         return newProfileUrls;
                     });
-    
+
                 } else {
-                    alert("글이 없습니다.");
-                    history.back();
+                    alert("급상승 게시글이 없습니다.");
+                    navigate(-1);
                 }
             } catch (error) {
-                console.error("Error fetching recent posts:", error);
+                console.error("🔥 급상승 랭킹 불러오기 실패:", error);
             }
-        
         };
-    
+
         fetchData();
     }, []);
 
-
     return (
-        <div className="p-4 max-w-lg mx-auto space-y-6">
+        <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl">
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">급상승 랭킹 📈</h2>
-                <button onClick={() => navigate("/")} className="text-gray-500 text-sm">
-                    ← 홈으로
+                <h2 className="text-xl font-bold lg:text-2xl">급상승 랭킹 📈</h2>
+                <button onClick={() => navigate(-1)} className="text-gray-500 text-sm lg:text-base flex items-center">
+                    ← 뒤로 가기
                 </button>
             </div>
 
-            {/* 🔹 랭킹 리스트 */}
+            {/* 🔹 게시글 목록 */}
             <div>
                 {rankingData.length > 0 ? (
                     <ul className="space-y-3">
                         {rankingData.map((post, index) => (
                             <li
                                 key={post.post_no}
-                                className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-3 shadow-lg" : ""
-                                    }`}
+                                className={`p-3 border rounded-lg flex justify-between items-center transition hover:shadow-md ${index === 0 ? "bg-yellow-100 border-yellow-400 p-4 shadow-lg scale-105" : ""}`}
                                 onClick={() => navigate(`/posts/${post.post_no}`)}
                             >
-                                {/* 🔹 1등 트로피 아이콘 / 2등 이후 숫자 */}
-                                <div className="w-6 flex items-center justify-center text-gray-600 font-bold">
-                                    {index === 0 ? <FaTrophy className="text-yellow-600 text-lg" /> : index + 1}
+                                {/* 🔹 숫자 or 트로피 아이콘 (세로 중앙 정렬) */}
+                                <div className="flex items-center">
+                                    {index === 0 ? (
+                                        <FaTrophy className="text-yellow-600 text-lg mr-3" />
+                                    ) : (
+                                        <span className="text-gray-500 text-sm font-bold mr-3 w-6 flex items-center justify-center">
+                                            {index + 1}.
+                                        </span>
+                                    )}
                                 </div>
 
-                                {/* 🔹 등수와 이미지 사이 간격 확대 (ml-6) */}
-                                {post.image ? (
-                                    <div className="w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-300 ml-3">
+                                {/* 🔹 이미지 (없으면 공백 없이 텍스트 영역 앞으로 이동) */}
+                                {post.thumbnail ? (
+                                    <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-300">
                                         <img src={imageUrl[post.post_no]} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
-                                ) : (
-                                    <div className="w-0"></div>
-                                )}
+                                ) : null}
 
                                 {/* 🔹 게시글 정보 */}
                                 <div className="flex-1 px-3 min-w-[200px]">
-                                    <h3 className={`text-gray-800 font-bold truncate text-sm`}>
-                                        {post.title.length > 15 ? post.title.slice(0, 15) + "..." : post.title}
+                                    <h3 className="text-gray-800 font-bold truncate text-sm lg:text-base">
+                                        {post.title.length > 20 ? post.title.slice(0, 20) + "..." : post.title}
                                     </h3>
                                     <div className="flex items-center mt-1">
                                         {/* 🔹 작성자 프로필 (없으면 기본 아이콘) */}
                                         {post.profile_img ? (
-                                            <img
-                                                src={profileUrl[post.post_no]}
-                                                alt="프로필"
-                                                className="w-4 h-4 rounded-full mr-2"
-                                            />
+                                            <img src={profileUrl[post.post_no]} alt="프로필" className="w-5 h-5 rounded-full mr-2" />
                                         ) : (
                                             <FaUserCircle className="w-6 h-6 text-gray-400 mr-2" />
                                         )}
                                         <p className="text-xs text-gray-500">{post.name}</p>
                                     </div>
-                                    {/* 🔹 날짜 (수정일 있으면 표시) */}
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-gray-400 text-xs mt-1">
                                         {post.mod_date ? `${post.reg_date} (수정: ${post.mod_date})` : post.reg_date}
                                     </p>
                                 </div>
 
                                 {/* 🔹 좋아요 & 평점 (세로 정렬 & 위치 고정) */}
                                 <div className="flex flex-col items-end min-w-[50px] text-sm space-y-1">
-                                    <div className="flex items-center text-yellow-500 space-x-1">
-                                        <FaStar /> <span className="text-gray-500">{post.star ? post.star.toFixed(1) : "0"}</span>
+                                    <div className="flex items-center text-yellow-500 space-x-1 w-full justify-end">
+                                        <FaStar /> <span className="w-6 text-right text-gray-500">{post.star ? parseFloat(post.star).toFixed(1) : "0"}</span>
                                     </div>
-                                    <div className="flex items-center text-red-500 space-x-1">
-                                        <FaHeart /> <span className="text-gray-500">{post.post_like}</span>
+                                    <div className="flex items-center text-red-500 space-x-1 w-full justify-end">
+                                        <FaHeart /> <span className="w-6 text-right text-gray-500">{post.post_like}</span>
                                     </div>
                                 </div>
                             </li>

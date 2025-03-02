@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaStar, FaHeart, FaTrophy, FaUserCircle } from "react-icons/fa";
+import { FaStar, FaHeart, FaTrophy, FaUserCircle, FaArrowLeft } from "react-icons/fa";
 import axios from "axios";
-import {MyContext} from "../App";
+import { MyContext } from "../App";
 
-// 카테고리 목록
+// ✅ 카테고리 목록
 const categories = [
     { id: "1", name: "편의점" },
     { id: "2", name: "서브웨이" },
     { id: "0", name: "기타" },
-    //{ id: "collab", name: "콜라보" }, // 자동 등록
 ];
-
 
 const CategoryRankingPage = () => {
     const navigate = useNavigate();
     const { category } = useParams();
-    const [selectedCategory, setSelectedCategory] = useState(category || "convenience");
+    const [selectedCategory, setSelectedCategory] = useState(category || "1");
     const [rankingData, setRankingData] = useState([]);
     const [imageUrl, setImageUrl] = useState({});
     const [profileUrl, setProfileUrl] = useState({});
-    const {apiURL} = useContext(MyContext);
+    const { apiURL } = useContext(MyContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,26 +28,26 @@ const CategoryRankingPage = () => {
             try {
                 const response = await axios.get(`${apiURL}/cateranking/${category}`);
                 if (response.data && response.data.length > 0) {
-                    console.log(response);
                     setRankingData(response.data);
-    
-                    // 각 게시물의 썸네일을 가져오는 요청을 병렬 처리
+
+                    // 🔹 썸네일 및 프로필 이미지 가져오기 (비동기 처리)
                     const imagePromises = response.data.map(async (data) => {
                         try {
-                            if(data.thumbnail === null) return { post_no: data.post_no, imageUrl: null, profileUrl: null };
+                            if (data.thumbnail === null) return { post_no: data.post_no, imageUrl: null, profileUrl: null };
                             const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
                             const profileResponse = await axios.get(`${apiURL}/view/${data.profile_img}`, { responseType: "blob" });
-                            return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data), profileUrl: URL.createObjectURL(profileResponse.data) };
+                            return {
+                                post_no: data.post_no,
+                                imageUrl: URL.createObjectURL(imgResponse.data),
+                                profileUrl: URL.createObjectURL(profileResponse.data)
+                            };
                         } catch (error) {
-                            console.error("Error fetching image:", error);
-                            return { post_no: data.post_no, imageUrl: null };  // 실패 시 null 설정
+                            return { post_no: data.post_no, imageUrl: null, profileUrl: null };
                         }
                     });
-    
-                    // 모든 이미지 요청이 완료될 때까지 기다림
+
                     const images = await Promise.all(imagePromises);
-    
-                    // imageUrl을 post_no 별로 매핑
+
                     setImageUrl((prev) => {
                         const newImageUrls = { ...prev };
                         images.forEach(({ post_no, imageUrl }) => {
@@ -65,63 +63,42 @@ const CategoryRankingPage = () => {
                         });
                         return newProfileUrls;
                     });
-    
+
                 } else {
                     alert("글이 없습니다.");
-                    history.back();
+                    navigate(-1);
                 }
             } catch (error) {
-                console.error("Error fetching recent posts:", error);
+                console.error("데이터 불러오기 실패:", error);
             }
-        
         };
-    
+
         fetchData();
     }, [category]);
 
-    // useEffect(() => {
-    //     categories.map((tag)=>{
-    //         if(tag.name ==category){
-    //             setSelectedCategory(tag.id);
-    //             console.log(selectedCategory);
-    //         }
-    //     })
-    // }, [category]);
-
-
-    // const fetchRankingData = async () => {
-    //     try {
-    //         if (selectedCategory === "collab") {
-    //             setRankingData(mockData.filter((post) => post.category.length > 1));
-    //         } else {
-    //             setRankingData(mockData.filter((post) => post.category.includes(selectedCategory)));
-    //         }
-    //     } catch (error) {
-    //         console.error("데이터 불러오기 실패:", error);
-    //     }
-    // };
-
+    // ✅ 카테고리 클릭 시 페이지 이동
     const handleCategoryClick = (categoryId) => {
         navigate(`/category/${categoryId}`);
     };
 
     return (
-        <div className="p-4 max-w-lg mx-auto space-y-6">
+        <div className="p-4 max-w-lg mx-auto space-y-6 lg:max-w-4xl">
             {/* 🔹 헤더 & 홈 버튼 */}
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">카테고리 랭킹</h2>
-                <button onClick={() => navigate("/")} className="text-gray-500 text-sm">
-                    ← 홈으로
+                <h2 className="text-xl font-bold lg:text-2xl">카테고리 랭킹 🏆</h2>
+                <button onClick={() => navigate(-1)} className="text-gray-500 text-sm lg:text-base flex items-center">
+                    <FaArrowLeft className="mr-1" /> 뒤로 가기
                 </button>
             </div>
 
-            {/* 🔹 카테고리 선택 리스트 */}
+            {/* 🔹 카테고리 네비게이션 */}
             <div className="flex space-x-3 overflow-x-auto pb-3 border-b">
                 {categories.map((c) => (
                     <button
                         key={c.id}
                         onClick={() => handleCategoryClick(c.id)}
-                        className={`px-1 py-1 text-sm rounded-md transition ${category === c.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"}`}
+                        className={`px-2 py-1 text-sm rounded-md transition lg:px-7 lg:py-2 lg:text-lg ${category === c.id ? "text-green-700 font-bold border-b-2 border-green-700" : "text-gray-500"
+                            }`}
                     >
                         {c.name}
                     </button>
@@ -135,46 +112,44 @@ const CategoryRankingPage = () => {
                         {rankingData.map((post, index) => (
                             <li
                                 key={post.post_no}
-                                className={`p-3 border rounded-lg flex items-center hover:shadow-md transition-all ${index === 0 ? "bg-yellow-100 border-yellow-400 p-4 shadow-lg scale-105" : ""
+                                className={`p-3 border rounded-lg flex justify-between items-center transition hover:shadow-md ${index === 0 ? "bg-yellow-100 border-yellow-400 p-4 shadow-lg scale-105" : ""
                                     }`}
                                 onClick={() => navigate(`/posts/${post.post_no}`)}
                             >
-                                {/* 🔹 1등 트로피 아이콘 */}
-                                {index === 0 ? (
-                                    <FaTrophy className="text-yellow-600 text-lg flex-shrink-0" />
-                                ) : (
-                                    <span className="text-gray-500 text-sm w-6 text-center font-bold">{index + 1}.</span>
-                                )}
+                                {/* 🔹 숫자 or 트로피 아이콘 (세로 중앙 정렬) */}
+                                <div className="flex items-center">
+                                    {index === 0 ? (
+                                        <FaTrophy className="text-yellow-600 text-lg mr-3" />
+                                    ) : (
+                                        <span className="text-gray-500 text-sm font-bold mr-3 w-6 flex items-center justify-center">
+                                            {index + 1}.
+                                        </span>
+                                    )}
+                                </div>
 
                                 {/* 🔹 이미지 (없으면 공백 없이 텍스트 영역 앞으로 이동) */}
                                 {post.thumbnail ? (
-                                    <div className="w-12 h-12 flex-shrink-0 rounded-md overflow-hidden bg-gray-300 ml-3">
+                                    <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-300">
                                         <img src={imageUrl[post.post_no]} alt="썸네일" className="w-full h-full object-cover" />
                                     </div>
-                                ) : (
-                                    <div className="w-0"></div>
-                                )}
+                                ) : null}
 
                                 {/* 🔹 게시글 정보 */}
                                 <div className="flex-1 px-3 min-w-[200px]">
                                     <h3 className={`text-gray-800 font-bold truncate ${index === 0 ? "text-base text-yellow-800" : "text-sm"}`}>
-                                        {post.title.length > 15 ? post.title.slice(0, 15) + "..." : post.title}
+                                        {post.title.length > 20 ? post.title.slice(0, 20) + "..." : post.title}
                                     </h3>
                                     <div className="flex items-center mt-1">
                                         {/* 🔹 작성자 프로필 (없으면 기본 아이콘) */}
                                         {post.profile_img ? (
-                                            <img
-                                                src={profileUrl[post.post_no]}
-                                                alt="프로필"
-                                                className="w-4 h-4 rounded-full mr-2"
-                                            />
+                                            <img src={profileUrl[post.post_no]} alt="프로필" className="w-5 h-5 rounded-full mr-2" />
                                         ) : (
                                             <FaUserCircle className="w-6 h-6 text-gray-400 mr-2" />
                                         )}
-                                        <p className="text-xs text-gray-500">{post.name} </p>
+                                        <p className="text-xs text-gray-500">{post.name}</p>
                                     </div>
                                     <p className="text-gray-400 text-xs mt-1">
-                                        {post.reg_date} {post.mod_date && `(수정:${post.mod_date})`}
+                                        {post.reg_date} {post.mod_date && `(수정: ${post.mod_date})`}
                                     </p>
                                 </div>
 
