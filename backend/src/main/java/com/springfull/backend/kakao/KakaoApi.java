@@ -31,7 +31,6 @@ public class KakaoApi {
 		String accessToken = "";
 	    String refreshToken = "";
 	    String reqUrl = "https://kauth.kakao.com/oauth/token";
-
 	    try{
 	        URL url = (new URI(reqUrl)).toURL();
 	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const AuthKakao = () => {
     const navigate = useNavigate();
-    const REST_API_KEY = "f9b961caf76caffaab08ed1e2ce895cb"; // 🔹 카카오 REST API 키
-    const REDIRECT_URI = "http://localhost:5173/oauth/kakao/callback"; // 🔹 리디렉트 URI
+    const REST_API_KEY = "6d359ee5b5e0d0aa0ae57d4714f1b04c"; // 🔹 카카오 REST API 키
+    const REDIRECT_URI = "http://m-it.iptime.org:50580/oauth/kakao/callback"; // 🔹 리디렉트 URI
 
     useEffect(() => {
         const getKakaoToken = async () => {

@@ -9,8 +9,12 @@ import { MyContext } from "../App";
 const HomePage = () => {
     const navigate = useNavigate();
     const [imageUrl, setImageUrl] = useState({});
-    const [recentPosts, setRecentPosts] = useState([]);
-    const [hotRankings, setHotRankings] = useState([]);
+    const [recentPosts, setRecentPosts] = useState([
+        {title: ""}
+    ]);
+    const [hotRankings, setHotRankings] = useState([
+        {title: ""}
+    ]);
     const [categoryRankings, setCategoryRankings] = useState({});
     const [tags, setTags] = useState({
         category: [],
@@ -51,8 +55,6 @@ const HomePage = () => {
                     });
 
                 } else {
-                    alert("글이 없습니다.");
-                    history.back();
                 }
             } catch (error) {
                 console.error("Error fetching recent posts:", error);

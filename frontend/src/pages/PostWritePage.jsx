@@ -218,7 +218,7 @@ const PostWritePage = () => {
                     .catch((error) => {
                         console.error("글 작성 중 오류 발생", error);
                     });
-                    return updatedPost;
+                    return null;
                 }
                 // 이미지 업로드
                 const formData = new FormData();

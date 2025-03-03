@@ -50,7 +50,7 @@ const App = () => {
     }
   }, []);
 
-  const apiURL = "http://192.168.4.10:8081";
+  const apiURL = "http://m-it.iptime.org:50680";
 
 
   return (

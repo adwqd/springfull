@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {MyContext} from "../App";
 
-const KAKAO_REST_API_KEY = "f9b961caf76caffaab08ed1e2ce895cb"; // 🔥 REST API 키
-const REDIRECT_URI = "http://localhost:5173/oauth/kakao/callback"; // 🔥 카카오 개발자 콘솔과 일치해야 함
+const KAKAO_REST_API_KEY = "6d359ee5b5e0d0aa0ae57d4714f1b04c"; // 🔥 REST API 키
+const REDIRECT_URI = "http://m-it.iptime.org:50580/oauth/kakao/callback"; // 🔥 카카오 개발자 콘솔과 일치해야 함
 
 
 // 🔹 OAuth Redirect 처리 컴포넌트

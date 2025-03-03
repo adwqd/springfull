@@ -91,7 +91,7 @@ const PostDetailPage = () => {
                         try {
                             if(image ==null){return null;}
                             const filename = image.img_uuid + "_" + image.filename;
-                            const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
+                            const imgResponse = await axios.get(`${apiURL}/view/${filename}`, { responseType: "blob" });
                             return URL.createObjectURL(imgResponse.data);
                         } catch (error) {
                             console.error("Error fetching image:", error);

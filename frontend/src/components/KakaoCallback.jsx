@@ -4,8 +4,8 @@ import axios from "axios";
 import {MyContext} from "../App";
 
 
-const KAKAO_REST_API_KEY = "f9b961caf76caffaab08ed1e2ce895cb"; // 🔥 REST API 키 입력
-const REDIRECT_URI = "http://localhost:5173/auth/kakao/callback"; // 🔥 Redirect URI 입력
+const KAKAO_REST_API_KEY = "6d359ee5b5e0d0aa0ae57d4714f1b04c"; // 🔥 REST API 키 입력
+const REDIRECT_URI = "http://m-it.iptime.org:50580/oauth/kakao/callback"; // 🔥 Redirect URI 입력
 
 const KakaoCallback = () => {
     const navigate = useNavigate();

@@ -146,7 +146,7 @@ const PostEditPage = () => {
                 try {
                     if(image ==null){return null;}
                     const filename = image.img_uuid + "_" + image.filename;
-                    const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
+                    const imgResponse = await axios.get(`${apiURL}/view/${filename}`, { responseType: "blob" });
                     return URL.createObjectURL(imgResponse.data);
                 } catch (error) {
                     console.error("Error fetching image:", error);
@@ -285,7 +285,7 @@ const PostEditPage = () => {
             try {
                 if(images == null || images.length == 0){
                     console.log("이미지가 없습니다", images.length);
-                    axios.post(`${apiURL}/member/register`, post, {
+                    axios.put(`${apiURL}/member/post`, post, {
                         headers: { "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`
                          }
@@ -297,7 +297,7 @@ const PostEditPage = () => {
                     .catch((error) => {
                         console.error("글 작성 중 오류 발생", error);
                     });
-                    return updatedPost;
+                    return null;
                 }
                 // 이미지 업로드
                 const formData = new FormData();
