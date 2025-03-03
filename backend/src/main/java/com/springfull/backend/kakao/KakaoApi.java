@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.shaded.gson.JsonElement;
@@ -20,9 +21,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 public class KakaoApi {
-	private String kakaoApiKey = "f9b961caf76caffaab08ed1e2ce895cb";
-
-	private String kakaoRedirectUri = "http://localhost:5173/oauth/kakao/callback";
+	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+	private String kakaoApiKey;
+	@Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+	private String kakaoRedirectUri;
     
     //인가 코드를 받아서 accessToken을 반환
 	public String getAccessToken(String code){

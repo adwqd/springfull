@@ -36,7 +36,7 @@
 		from post p
 		join member m on p.member_uuid = m.member_uuid
 		<if test="sort == 3">
-			join (select avg(star) as star, post_no
+			left join (select avg(star) as star, post_no
 				from star
 				group by post_no) s on s.post_no = p.post_no
 		</if>	
@@ -45,7 +45,7 @@
 			and p.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>
@@ -66,7 +66,7 @@
 		select count(*)
 		from post p
 		<if test="sort == 3">
-			join (select avg(star) as star, post_no
+			left join (select avg(star) as star, post_no
 				from star
 				group by post_no) s on s.post_no = p.post_no
 		</if>
@@ -75,7 +75,7 @@
 			and p.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>
@@ -91,7 +91,7 @@
 			and s.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>
@@ -117,7 +117,7 @@
 			and s.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>
@@ -129,7 +129,7 @@
 		join member m on p.member_uuid = m.member_uuid
 		join bookmark bm on p.post_no = bm.post_no
 		<if test="sort == 3">
-			join (select avg(star) as star, post_no
+			left join (select avg(star) as star, post_no
 				from star
 				group by post_no) s on s.post_no = p.post_no
 		</if>
@@ -138,7 +138,7 @@
 			and bm.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>
@@ -163,7 +163,7 @@
 			and bm.member_uuid = #{member_uuid}
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 		</where>

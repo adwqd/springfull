@@ -36,7 +36,7 @@ public class UserMapperTests {
 	
 	@Test
 	public void testStarPost() {
-		for(PostDTO temp: userMapper.starPost(PageRequestDTO.builder().member_uuid("aaa").build())) {
+		for(PostDTO temp: userMapper.starPost(PageRequestDTO.builder().member_uuid("70de0ced-e5a8-4d38-86c0-4a5fddaafdd1").keyword("바비").build())) {
 			log.info(temp);
 		}
 	}

@@ -1,25 +1,157 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaBookmark, FaArrowLeft } from "react-icons/fa"; // ✅ 북마크 아이콘 추가
+import axios from "axios";
+import Pagination from "../components/Pagination";
+import { MyContext } from "../App"; 
 
-// 📝 **데모 데이터 (API 연결 전까지 사용)**
-const mockBookmarkedPosts = [
-    { id: 1, title: "편의점 조합 추천", writer: "user1", profile_img: "https://source.unsplash.com/40x40/?face", date: "2025/01/03", update_date: "2025/01/05", thumbnail: "https://source.unsplash.com/80x80/?food" },
-    { id: 2, title: "서브웨이 꿀조합", writer: "user2", profile_img: "https://source.unsplash.com/40x40/?avatar", date: "2025/01/08", update_date: null, thumbnail: null },
-    { id: 3, title: "CU 신상 먹어봤음", writer: "user3", profile_img: "https://source.unsplash.com/40x40/?portrait", date: "2025/01/10", update_date: "2025/01/12", thumbnail: "https://source.unsplash.com/80x80/?drink" },
-    { id: 4, title: "세븐일레븐 신제품 분석", writer: "user4", profile_img: "https://source.unsplash.com/40x40/?headshot", date: "2025/01/15", update_date: null, thumbnail: null },
-];
+
 
 const BookmarkPage = () => {
     const navigate = useNavigate();
-    const [sortOption, setSortOption] = useState("latest"); // ✅ 기본 정렬 최신순
+        const { apiURL } = useContext(MyContext);
+        const [userInfo, setUserInfo] = useState(null);
+        const [posts, setPosts] = useState([]);
+        const [authors, setAuthors] = useState({});
+        const [imageUrl, setImageUrl] = useState({});
+        const [profileUrl, setProfileUrl] = useState({});
+        const [loading, setLoading] = useState(false);
+        const [currentPage, setCurrentPage] = useState(1);
+        const [totalPages, setTotalPages] = useState(1);
+        const [sortOption, setSortOption] = useState("1"); // 최신순 기본
+        const postsPerPage = 10; // 페이지 당 게시글 수 10개
+    
+        const [searchQuery, setSearchQuery] = useState("");
+        const token = localStorage.getItem("token");
+        const refreshToken = localStorage.getItem("refreshToken");
+        useEffect(() => {
+            const storedUserInfo = localStorage.getItem("userInfo");
+            if (storedUserInfo) {
+                setUserInfo(JSON.parse(storedUserInfo));
+              } else {
+                navigate("/login"); // ✅ 로그인 안 되어 있으면 로그인 페이지로 이동
+            }
+        }, [navigate]);
 
-    // ✅ 정렬 기능 (최신순, 오래된순)
-    const sortedPosts = [...mockBookmarkedPosts].sort((a, b) => {
-        if (sortOption === "latest") return new Date(b.date) - new Date(a.date); // 최신순
-        if (sortOption === "oldest") return new Date(a.date) - new Date(b.date); // 오래된순
-        return 0;
-    });
+        const fetchPosts = async (page, sort, keyword = "") => {
+            setLoading(true);
+            try {
+                const response = await axios.post(`${apiURL}/member/mybookmark`, {
+                    page,
+                    size: postsPerPage,
+                    keyword: keyword.trim() || "", // 공백 검색 방지
+                    sort: parseInt(sort, 10), //  정수 변환 (1: 최신순, 2: 좋아요순, 3: 평점순)
+                }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+    
+                if (!response.data || !response.data.dtoList) {
+                    setPosts([]);
+                    setTotalPages(1);
+                    return;
+                }
+    
+                // 🔹 평점 변환: 10점 만점을 5점 만점으로 변환, 없으면 `0.0`
+                let postList = response.data.dtoList.map((post) => ({
+                    ...post,
+                    post_like: post.post_like ?? 0, // 좋아요 없으면 0
+                    star: post.star != null ? (post.star).toFixed(1) : "0.0", // 10점 만점을 5점 만점으로 변환
+                }));
+    
+                // 프론트에서 0.0도 포함한 정렬 (백엔드가 0.0을 제외하는 경우)
+                if (sort === "3") {
+                    postList = [...postList].sort((a, b) => parseFloat(b.star) - parseFloat(a.star)); // 0.0 포함 정렬
+                }
+    
+                setPosts(postList);
+                setTotalPages(Math.ceil(response.data.total / postsPerPage));
+    
+                // 🔹 작성자 정보 조회 (member_uuid 기준)
+                const memberIds = [...new Set(postList.map((post) => post.member_uuid).filter(Boolean))];
+    
+                if (memberIds.length > 0) {
+                    const authorsData = {};
+                    await Promise.all(
+                        postList.map(async (postList) => {
+                                    authorsData[postList.member_uuid] = {
+                                        nickname: postList.name || "익명",
+                                        profile_img: postList.member_uuid
+                                    };
+                        })
+                    );
+                    setAuthors(authorsData);
+                }
+    
+                // 🔹 썸네일 가져오기
+                const imagePromises = postList.map(async (data) => {
+                    if (!data.thumbnail) return { post_no: data.post_no, imageUrl: null };
+                    try {
+                        const imgResponse = await axios.get(`${apiURL}/view/${data.thumbnail}`, { responseType: "blob" });
+                        return { post_no: data.post_no, imageUrl: URL.createObjectURL(imgResponse.data) };
+                    } catch {
+                        return { post_no: data.post_no, imageUrl: null };
+                    }
+                });
+    
+                const images = await Promise.all(imagePromises);
+                setImageUrl((prev) => {
+                    const newImageUrls = { ...prev };
+                    images.forEach(({ post_no, imageUrl }) => {
+                        newImageUrls[post_no] = imageUrl;
+                    });
+                    return newImageUrls;
+                });
+    
+                const profilePromises = postList.map(async (data) => {
+                    if (!data.member_uuid) return { post_no: data.post_no, profileUrl: null };
+                    try {
+                        const imgResponse = await axios.get(`${apiURL}/profile/${data.member_uuid}`, { responseType: "blob" });
+                        return { post_no: data.post_no, profileUrl: URL.createObjectURL(imgResponse.data) };
+                    } catch {
+                        return { post_no: data.post_no, profileUrl: null };
+                    }
+                });
+    
+                const profile = await Promise.all(profilePromises);
+                setProfileUrl((prev) => {
+                    const newImageUrls = { ...prev };
+                    profile.forEach(({ post_no, profileUrl }) => {
+                        newImageUrls[post_no] = profileUrl;
+                    });
+                    return newImageUrls;
+                });
+    
+            } catch (error) {
+                console.error("❌ API 호출 실패:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        useEffect(() => {
+                    fetchPosts(currentPage, sortOption, searchQuery);
+                }, [currentPage, sortOption]);
+        
+            // 검색 기능 (검색 버튼 또는 Enter 키 입력)
+            const handleSearchSubmit = () => {
+                setCurrentPage(1);
+                fetchPosts(1, sortOption, searchQuery);
+            };
+        
+            // Enter 키로 검색 실행
+            const handleKeyPress = (e) => {
+                if (e.key === "Enter") {
+                    handleSearchSubmit();
+                }
+            };
+        
+            // 정렬 변경 시 기존 검색어 유지
+            const handleSortChange = (e) => {
+                const newSort = e.target.value;
+                setSortOption(newSort);
+                setCurrentPage(1);
+                fetchPosts(1, newSort, searchQuery);
+            };
 
     return (
         <div className="p-4 max-w-lg mx-auto space-y-6">
@@ -36,31 +168,46 @@ const BookmarkPage = () => {
             </div>
 
             {/* 🔽 정렬 옵션 */}
-            <div className="flex justify-end mt-3">
+            <div className="grid grid-cols-[5fr_1fr_2fr] gap-2 w-full">
+                <input
+                    type="text"
+                    placeholder="검색어 입력..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleKeyPress} // Enter 키 검색 추가
+                    className="border px-3 py-2 rounded-md w-full"
+                />
+                <button
+                    onClick={handleSearchSubmit}
+                    className="bg-gray-500 text-white px-1 py-2 rounded-md w-full flex justify-center items-center"
+                >
+                    검색
+                </button>
                 <select
                     value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
-                    className="border px-3 py-1 rounded-md"
+                    onChange={handleSortChange}
+                    className="border px-3 py-2 rounded-md w-full"
                 >
-                    <option value="latest">최신순</option>
-                    <option value="oldest">오래된순</option>
+                    <option value="1">최신순</option>
+                    <option value="2">좋아요순</option>
+                    <option value="3">내 평점순</option>
                 </select>
             </div>
 
             {/* 🔹 북마크한 글 목록 */}
             <div>
-                {sortedPosts.length > 0 ? (
+                {posts.length > 0 ? (
                     <ul className="space-y-3">
-                        {sortedPosts.map((post) => (
+                        {posts.map((post) => (
                             <li
-                                key={post.id}
+                                key={post.post_no}
                                 className="p-3 border rounded-lg flex items-center justify-between transition hover:shadow-md cursor-pointer"
-                                onClick={() => navigate(`/posts/${post.id}`)} // ✅ 즉시 이동
+                                onClick={() => navigate(`/posts/${post.post_no}`)} // ✅ 즉시 이동
                             >
                                 {/* 🔹 썸네일 (이미지가 있을 때만 표시) */}
                                 {post.thumbnail && (
                                     <div className="w-14 h-14 flex-shrink-0">
-                                        <img src={post.thumbnail} alt="thumbnail" className="w-full h-full object-cover rounded-md" />
+                                        <img src={imageUrl[post.post_no]} alt="thumbnail" className="w-full h-full object-cover rounded-md" />
                                     </div>
                                 )}
 
@@ -71,11 +218,11 @@ const BookmarkPage = () => {
                                     </p>
                                     <div className="flex items-center space-x-2">
                                         {/* 🔹 작성자 프로필 이미지 */}
-                                        <img src={post.profile_img} alt="Profile" className="w-4 h-4 rounded-full" />
-                                        <p className="text-gray-600 text-xs">{post.writer}</p>
+                                        <img src={profileUrl[post.post_no]} alt="Profile" className="w-4 h-4 rounded-full" />
+                                        <p className="text-gray-600 text-xs">{post.name}</p>
                                     </div>
                                     <p className="text-gray-400 text-xs mt-1">
-                                        {post.date} {post.update_date && ` (수정:${post.update_date})`}
+                                        {post.reg_date} {post.mod_date && ` (수정:${post.mod_date})`}
                                     </p>
                                 </div>
 
@@ -90,6 +237,7 @@ const BookmarkPage = () => {
                     <p className="text-gray-500 text-center">북마크한 게시글이 없습니다.</p>
                 )}
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </div>
     );
 };

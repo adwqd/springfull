@@ -54,7 +54,7 @@
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 			<!-- 가격 검색 -->
@@ -101,7 +101,10 @@
 	
 	
 	<select id="getCount">
-		select count(*)
+		select count(distinct p1.post_no)
+		from post p1
+		where p1.post_no in (
+		select p.post_no
 		from post p
 		<if test="brand != null and brand.size>0">
 			join post_brand pb on p.post_no = pb.post_no
@@ -146,7 +149,7 @@
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
 				<trim prefix="and">
-					title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+					(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 				</trim>
 			</if>
 			<!-- 가격 검색 -->
@@ -163,6 +166,7 @@
 				</trim>
 			</if>
 		</where>
+		group by p.post_no
 		<trim prefix="having" prefixOverrides="and">
 			<if test="brand != null and brand.size>0">
 				count(distinct brand_id)>=1
@@ -178,6 +182,7 @@
 	    		</trim>
 			</if>
 		</trim>
+		)
 	</select>
 	
 	<select id="getStar" resultType="double">

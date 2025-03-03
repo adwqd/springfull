@@ -9,7 +9,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 		group by p.post_no
@@ -28,7 +28,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%')
+				(title like concat('%',#{keyword},'%') or content like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 	</select>
@@ -45,7 +45,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				member_uuid like concat('%',#{keyword},'%') or name like concat('%',#{keyword},'%')
+				(member_uuid like concat('%',#{keyword},'%') or name like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 		limit #{skip}, #{size}
@@ -57,7 +57,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				member_uuid like concat('%',#{keyword},'%') or name like concat('%',#{keyword},'%')
+				(member_uuid like concat('%',#{keyword},'%') or name like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 	</select>
@@ -74,7 +74,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				content like concat('%',#{keyword},'%')
+				(content like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 		order by report_no desc
@@ -87,7 +87,7 @@
 		<where>
 			<!-- 키워드 검색 -->
 			<if test="keyword != null and keyword.length>0">
-				content like concat('%',#{keyword},'%')
+				(content like concat('%',#{keyword},'%'))
 			</if>
 		</where>
 	</select>

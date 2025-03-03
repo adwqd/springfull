@@ -14,11 +14,9 @@ const mockRatedPosts = [
 ];
 
 const MyRatedPostsPage = () => {
-    const { brand } = useParams();
         const navigate = useNavigate();
         const { apiURL } = useContext(MyContext);
         const [userInfo, setUserInfo] = useState(null);
-        const [selectedBrand, setSelectedBrand] = useState(brand || "1");
         const [posts, setPosts] = useState([]);
         const [authors, setAuthors] = useState({});
         const [imageUrl, setImageUrl] = useState({});
@@ -42,13 +40,12 @@ const MyRatedPostsPage = () => {
             }, [navigate]);
 
     // ✅ 정렬 기능 (최신순, 내가 준 별점순, 평균 별점순)
-    const fetchPosts = async (brandId, page, sort, keyword = "") => {
+    const fetchPosts = async (page, sort, keyword = "") => {
         setLoading(true);
         try {
             const response = await axios.post(`${apiURL}/member/starpost`, {
                 page,
                 size: postsPerPage,
-                brand: [brandId],
                 keyword: keyword.trim() || "", // 공백 검색 방지
                 sort: parseInt(sort, 10), //  정수 변환 (1: 최신순, 2: 좋아요순, 3: 평점순)
             }, {
@@ -139,13 +136,13 @@ const MyRatedPostsPage = () => {
     };
 
     useEffect(() => {
-            fetchPosts(selectedBrand, currentPage, sortOption, searchQuery);
-        }, [selectedBrand, currentPage, sortOption]);
+            fetchPosts(currentPage, sortOption, searchQuery);
+        }, [currentPage, sortOption]);
 
     // 검색 기능 (검색 버튼 또는 Enter 키 입력)
     const handleSearchSubmit = () => {
         setCurrentPage(1);
-        fetchPosts(selectedBrand, 1, sortOption, searchQuery);
+        fetchPosts(1, sortOption, searchQuery);
     };
 
     // Enter 키로 검색 실행
@@ -160,7 +157,7 @@ const MyRatedPostsPage = () => {
         const newSort = e.target.value;
         setSortOption(newSort);
         setCurrentPage(1);
-        fetchPosts(selectedBrand, 1, newSort, searchQuery);
+        fetchPosts(1, newSort, searchQuery);
     };
 
     return (
@@ -244,7 +241,7 @@ const MyRatedPostsPage = () => {
                                                 <p className="text-gray-500 text-sm">{post.name}</p>
                                             </div>
                                             <p className="text-gray-500 text-xs mt-1">
-                                                {post.reg_date} {post.update_date && ` (수정: ${post.update_date})`}
+                                                {post.reg_date} {post.mod_date && ` (수정: ${post.mod_date})`}
                                             </p>
                                         </div>
                                     </div>

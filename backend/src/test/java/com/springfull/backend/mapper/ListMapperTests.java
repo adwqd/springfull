@@ -24,7 +24,7 @@ public class ListMapperTests {
 	
 	@Test
 	public void testGetCount() {
-		List<Integer> aa = new ArrayList<>(Arrays.asList(5));
+		List<Integer> aa = new ArrayList<>(Arrays.asList(1,2,3,4,5,6));
 		PageRequestDTO pageRequestDTO = new PageRequestDTO();
 		pageRequestDTO.setBrand(aa);
 		log.info(listMapper.getCount(pageRequestDTO));

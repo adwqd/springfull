@@ -136,7 +136,27 @@ const PostEditPage = () => {
                 brand : response.data.brand_id,
                 taste : response.data.taste_id,
                 ingredients : response.data.ingredient_id
-            })
+            });
+            if(response.data.member_uuid != JSON.parse(localStorage.getItem("userInfo")).member_uuid){
+                alert("본인 글만 수정할수 있습니다.");
+                history.back();
+                }
+            const images = response.data.image;
+            const imageRequests = images.map(async (image) => {
+                try {
+                    if(image ==null){return null;}
+                    const filename = image.img_uuid + "_" + image.filename;
+                    const imgResponse = await axios.get(`http://localhost:8081/view/${filename}`, { responseType: "blob" });
+                    return URL.createObjectURL(imgResponse.data);
+                } catch (error) {
+                    console.error("Error fetching image:", error);
+                    return null;
+                }
+            });
+
+            const imageUrls = await Promise.all(imageRequests);
+            setSample(imageUrls);
+            setImages(imageUrls);
         }
         getPost();
     }, [id]);
@@ -242,28 +262,85 @@ const PostEditPage = () => {
 
     // ✅ 수정 완료 처리
     const handleEditSubmit = () => {
-        if (!isFormValid()) {
-            setShowModal(true);
+        const { category, brand, taste, ingredients } = selectedTags;
+        console.log("태그들",category, brand, taste, ingredients)
+
+        if (!post.title.trim() || !post.content.trim()) {
+            setShowModal(true); // 제목 또는 내용이 없으면 모달 표시
             return;
         }
 
-        const updatedPost = {
-            id: mockPost.id,
-            title,
-            summary,
-            price,
-            category: selectedTags.category,
-            brand: selectedTags.brand,
-            flavors: selectedTags.flavors,
-            ingredients: selectedTags.ingredients,
-            images,
-            createdAt: mockPost.createdAt,
-            updatedAt: new Date().toISOString().split("T")[0],
-        };
+        if (
+            !category ||
+            (!category.includes(0) && brand.length === 0) || // 기타가 아닐 경우 브랜드 필수
+            (category.includes(0) && brand.length === 0) || // 기타일 경우 브랜드 최소 1개 필수
+            taste.length === 0 ||
+            ingredients.length === 0
+        ) {
+            setShowModal(true); // ✅ 필수 태그 미선택 시 알림 모달 표시
+            return;
+        }
 
-        console.log("수정된 데이터:", updatedPost);
-        showNotification("게시글이 수정되었습니다!");
-        setTimeout(() => navigate(`/posts/${id}`), 500);
+        const register = async () => {
+            try {
+                if(images == null || images.length == 0){
+                    console.log("이미지가 없습니다", images.length);
+                    axios.post(`${apiURL}/member/register`, post, {
+                        headers: { "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                         }
+                    })
+                    .then((postResponse) => {
+                        console.log("글작성 응답", postResponse);
+                        console.log(postResponse.data);
+                    })
+                    .catch((error) => {
+                        console.error("글 작성 중 오류 발생", error);
+                    });
+                    return updatedPost;
+                }
+                // 이미지 업로드
+                const formData = new FormData();
+                for(let file of images){
+                formData.append("files", file);
+                }
+        
+                const uploadResponse = await axios.post(`${apiURL}/member/upload`, formData, {
+                    headers: { "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${token}`
+                     },
+                    
+                });
+                console.log("이미지 업로드 응답", uploadResponse);
+                console.log(uploadResponse.data[0].link);
+        
+                // 상태 업데이트 후 글 작성
+                setName(uploadResponse.data[0].link);
+                setPost((prevPost) => {
+                    const updatedPost = { ...prevPost, image: uploadResponse.data };
+                    // 글 작성 요청을 setPost가 완료된 후 실행
+                    axios.put(`${apiURL}/member/post`, updatedPost, {
+                        headers: { "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                         }
+                    })
+                    .then((postResponse) => {
+                        console.log("글작성 응답", postResponse);
+                        console.log(postResponse.data);
+                    })
+                    .catch((error) => {
+                        console.error("글 작성 중 오류 발생", error);
+                    });
+                    return updatedPost;
+                });
+        
+            } catch (error) {
+                console.error("업로드나 글작성 중 오류 발생", error);
+            }
+        };
+        register();
+        showNotification("글이 수정되었습니다"); // ✅ 댓글 작성 알림과 동일한 위치에 표시
+        setTimeout(() => navigate("/"), 500); // ✅ 0.5초 후 홈으로 이동
     };
 
     return (
