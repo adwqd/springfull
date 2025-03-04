@@ -464,9 +464,14 @@ const PostDetailPage = () => {
 
                 {/* 🔹 이미지 ( 이미지 없으면 숨김) */}
                 {post.image[0] && (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md">
-                        <img src={imageUrl[imageIndex]} alt="게시글 이미지" className="w-full h-full object-cover rounded-md" onClick={changeImage} style={{ maxHeight: "200px", height: "auto" }}/>
-                    </div>
+                    <div className="w-full bg-gray-200 flex items-center justify-center rounded-md aspect-[16/9] overflow-hidden">
+                    <img 
+                      src={imageUrl[imageIndex]} 
+                      alt="게시글 이미지" 
+                      className="w-auto h-full max-w-full max-h-full object-contain rounded-md" 
+                      onClick={changeImage} 
+                    />
+                  </div>
                 )}
                 {/* 🔹 게시글 헤더 */}
                 <div className="flex justify-between items-center">
@@ -564,7 +569,7 @@ const PostDetailPage = () => {
                             </select>
 
                             {/* 기타 사유 입력 필드 (기타 선택 시 활성화) */}
-                            {selectedReason === "기타" && (
+                            {selectedReason === "0" && (
                                 <textarea
                                     className="w-full border p-2 rounded-md text-sm mb-4"
                                     placeholder="신고 사유를 입력하세요..."

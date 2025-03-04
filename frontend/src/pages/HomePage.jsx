@@ -122,7 +122,7 @@ const HomePage = () => {
                                 className="border rounded-lg text-center p-2 shadow-md cursor-pointer hover:shadow-lg transition"
                             >
                                 <div className="w-full h-20 bg-gray-300 mb-2 flex items-center justify-center rounded">
-                                    <span className="text-gray-500 text-sm"><img src={imageUrl[post.post_no]} alt="thumbnail" style={{ height: "80px" }} /></span>
+                                    <span className="text-gray-500 text-sm">{imageUrl[post.post_no] &&<img src={imageUrl[post.post_no]} alt="thumbnail" style={{ height: "80px" }} />}</span>
                                 </div>
                                 <p className="font-medium text-xs text-left">{post.title}</p>
                                 <p className="text-gray-500 text-xs text-left">{post.name}</p>

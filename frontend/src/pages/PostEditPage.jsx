@@ -4,34 +4,6 @@ import { FaArrowLeft, FaPaperPlane, FaTrash, FaPlus } from "react-icons/fa";
 import axios from "axios";
 import {MyContext} from "../App";
 
-// ✅ 기존 게시글 데이터 (API 연동 전까지 사용)
-const mockPost = {
-    id: 1,
-    title: "서브웨이 우즈정식",
-    summary: "쉬림프 샌드위치에 에그마요와 베이컨 추가",
-    price: "11000",
-    category: "서브웨이",
-    brand: ["서브웨이"],
-    flavors: ["매운 맛", "달콤한 맛"],
-    ingredients: ["새우", "에그마요"],
-    images: ["https://source.unsplash.com/400x300/?food"],
-    createdAt: "2025/01/03",
-    updatedAt: null,
-};
-
-// ✅ 태그 데이터
-const categories = ["편의점", "서브웨이", "기타"];
-const brandsByCategory = {
-    편의점: ["GS25", "CU", "세븐일레븐", "이마트24"],
-    서브웨이: ["서브웨이"],
-    기타: ["GS25", "CU", "세븐일레븐", "이마트24", "서브웨이", "기타"],
-};
-const flavors = ["달콤한 맛", "새콤한 맛", "담백한 맛", "느끼한 맛", "쓴 맛", "매운 맛"];
-const ingredientsByCategory = {
-    편의점: ["음료/주류", "냉동/냉장식품", "신선식품", "디저트", "라면", "스낵류"],
-    서브웨이: ["돼지고기/베이컨", "소고기", "닭고기", "에그마요", "새우", "참치", "기타"],
-    기타: ["배달음식", "매장음식", "마이레시피"]
-};
 
 const PostEditPage = () => {
     const { id } = useParams();
@@ -91,7 +63,7 @@ const PostEditPage = () => {
             } catch (error) {
                 console.log("요청 실패. 토큰 갱신 시도", error);
                 try {
-                    const res = await axios.get("http://192.168.4.10:8081/token", {
+                    const res = await axios.get(`${apiURL}/token`, {
                         headers: { Authorization: `Bearer ${refreshToken}` },
                     });
     
@@ -100,7 +72,7 @@ const PostEditPage = () => {
                         localStorage.removeItem("token");
                         localStorage.removeItem("refreshToken");
                         localStorage.removeItem("userInfo");
-                        location.href = "/";
+                        navigate("/login");
                     } else {
                         console.log("새로운 토큰:", res.data);
                         localStorage.setItem("token", res.data.accessToken);
@@ -112,7 +84,7 @@ const PostEditPage = () => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("refreshToken");
                     localStorage.removeItem("userInfo");
-                    location.href = "/";
+                    navigate("/login");
                 }
             }
         };
@@ -212,13 +184,6 @@ const PostEditPage = () => {
             }
         });
     };
-
-    // ✅ 현재 선택된 카테고리에 따른 브랜드 및 재료 목록 가져오기
-    const currentBrands = selectedTags.category ? brandsByCategory[selectedTags.category] : [];
-    const currentIngredients =
-        selectedTags.category === "기타"
-            ? [...ingredientsByCategory["편의점"], ...ingredientsByCategory["서브웨이"], ...ingredientsByCategory["기타"]]
-            : ingredientsByCategory[selectedTags.category] || [];
 
     // ✅ 이미지 추가 핸들러 (최대 10개)
     const handleImageUpload = (event) => {

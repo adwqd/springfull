@@ -66,7 +66,7 @@ const PostWritePage = () => {
             } catch (error) {
                 console.log("요청 실패. 토큰 갱신 시도", error);
                 try {
-                    const res = await axios.get("http://192.168.4.10:8081/token", {
+                    const res = await axios.get(`${apiURL}/token`, {
                         headers: { Authorization: `Bearer ${refreshToken}` },
                     });
     
@@ -75,7 +75,7 @@ const PostWritePage = () => {
                         localStorage.removeItem("token");
                         localStorage.removeItem("refreshToken");
                         localStorage.removeItem("userInfo");
-                        location.href = "/";
+                        navigate("/login");
                     } else {
                         console.log("새로운 토큰:", res.data);
                         localStorage.setItem("token", res.data.accessToken);
@@ -87,7 +87,7 @@ const PostWritePage = () => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("refreshToken");
                     localStorage.removeItem("userInfo");
-                    location.href = "/";
+                    navigate("/login");
                 }
             }
         };

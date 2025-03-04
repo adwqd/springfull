@@ -6,6 +6,9 @@ import Image from "../assets/Rules!.png"; // ✅ 이미지 경로 확인
 import axios from "axios";
 import {MyContext} from "../App";
 
+const REST_API_KEY = "6d359ee5b5e0d0aa0ae57d4714f1b04c"; // 🔹 카카오 REST API 키
+const REDIRECT_URI = "http://m-it.iptime.org:50580"; // 🔹 로그아웃 리디렉트 URI
+
 const MyPage = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
@@ -82,12 +85,18 @@ const MyPage = () => {
                 console.log("✅ 카카오 로그아웃 완료!");
             });
         }
-
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("userInfo"); // ✅ localStorage에서 로그인 정보 삭제
         setUserInfo(null);
         console.log("✅ 로컬 스토리지 초기화 완료!");
-
-        alert("로그아웃되었습니다.");
+        const logOut = () => {
+            const logout = `https://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${REDIRECT_URI}`;
+            window.location.href = logout;
+        }
+        
+        logOut();
+        //alert("로그아웃되었습니다.");
         navigate("/login"); // ✅ 로그인 페이지로 이동
     };
 

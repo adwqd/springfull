@@ -8,6 +8,7 @@ import { MyContext } from "../App";
 // 📝 **데모 데이터 (API 연결 전까지 사용)**
 
 
+
 const MyPostsPage = () => {
     const navigate = useNavigate();
         const { apiURL } = useContext(MyContext);
@@ -124,6 +125,30 @@ const MyPostsPage = () => {
         
                 } catch (error) {
                     console.error("❌ API 호출 실패:", error);
+                    try {
+                        const res = await axios.get(`${apiURL}/token`, {
+                            headers: { Authorization: `Bearer ${refreshToken}` },
+                        });
+        
+                        if (!res.data || res.data.length === 0) {
+                            alert("다시 로그인 해주세요");
+                            localStorage.removeItem("token");
+                            localStorage.removeItem("refreshToken");
+                            localStorage.removeItem("userInfo");
+                            navigate("/login");
+                        } else {
+                            console.log("새로운 토큰:", res.data);
+                            localStorage.setItem("token", res.data.accessToken);
+                            localStorage.setItem("refreshToken", res.data.refreshToken);
+                            location.reload();
+                        }
+                    } catch (fail) {
+                        console.error("토큰 갱신 실패", fail);
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("refreshToken");
+                        localStorage.removeItem("userInfo");
+                        navigate("/login");
+                    }
                 } finally {
                     setLoading(false);
                 }
